@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>disable</ImplicitUsings>
+        <Nullable>disable</Nullable>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <DebugType>pdbonly</DebugType>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <DebugSymbols>true</DebugSymbols>
+      <DebugType>pdbonly</DebugType>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="BenchmarkDotNet" Version="0.13.12" />
+      <PackageReference Include="BenchmarkDotNet.Diagnostics.Windows" Version="0.13.12" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Benchmark.Arch\Benchmark.Arch.csproj" />
+      <ProjectReference Include="..\Benchmark.LeoEcs\Benchmark.LeoEcs.csproj" />
+      <ProjectReference Include="..\Benchmark.Morpeh\Benchmark.Morpeh.csproj" />
+      <ProjectReference Include="..\Benchmark._Context\Benchmark._Context.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Utils\ArrayExtensions\" />
+    </ItemGroup>
+
+</Project>
