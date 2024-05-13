@@ -8,7 +8,7 @@ namespace Benchmark.Benchmarks;
 [ArtifactsPath(".benchmark_results/" + nameof(RemoveComponent<T>))]
 [MemoryDiagnoser]
 #if CHECK_CACHE_MISSES
-    [HardwareCounters(BenchmarkDotNet.Diagnosers.HardwareCounter.CacheMisses)]
+[HardwareCounters(BenchmarkDotNet.Diagnosers.HardwareCounter.CacheMisses)]
 #endif
 public class RemoveComponent<T> : BenchmarkBase<T> where T : BenchmarkContextBase, new()
 {
@@ -28,32 +28,32 @@ public class RemoveComponent<T> : BenchmarkBase<T> where T : BenchmarkContextBas
     [Benchmark]
     public void RemoveOneComponent()
     {
-        for (var i = 0; i < EntityCount; i++)
-            Context.RemoveComponent<Component1>(entityIds[i]);
+        Context.Warmup<Component1>(0);
+        Context.RemoveComponent<Component1>(entityIds, 0);
         Context.Commit();
     }
     
     [Benchmark]
     public void RemoveTwoComponent()
     {
-        for (var i = 0; i < EntityCount; i++)
-            Context.RemoveComponent<Component1, Component2>(entityIds[i]);
+        Context.Warmup<Component1, Component2>(0);
+        Context.RemoveComponent<Component1, Component2>(entityIds, 0);
         Context.Commit();
     }
     
     [Benchmark]
     public void RemoveThreeComponent()
     {
-        for (var i = 0; i < EntityCount; i++)
-            Context.RemoveComponent<Component1, Component2, Component3>(entityIds[i]);
+        Context.Warmup<Component1, Component2, Component3>(0);
+        Context.RemoveComponent<Component1, Component2, Component3>(entityIds, 0);
         Context.Commit();
     }
     
     [Benchmark]
     public void RemoveFourComponent()
     {
-        for (var i = 0; i < EntityCount; i++)
-            Context.RemoveComponent<Component1, Component2, Component3, Component4>(entityIds[i]);
+        Context.Warmup<Component1, Component2, Component3, Component4>(0);
+        Context.RemoveComponent<Component1, Component2, Component3, Component4>(entityIds, 0);
         Context.Commit();
     }
 }

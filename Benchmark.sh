@@ -10,7 +10,6 @@ then
 fi
 
 dotnet run --project Benchmark/Benchmark.csproj -c Release --no-build
-cat ./.benchmark_results/**/*.md > ./results.md
 
 # post-clean
 rm -rf ./.benchmark_results

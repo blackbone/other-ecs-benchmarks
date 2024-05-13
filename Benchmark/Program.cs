@@ -1,21 +1,31 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using Benchmark;
 using Benchmark._Context;
 using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Engines;
+using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Order;
 using BenchmarkDotNet.Running;
 
 PreloadAssemblies();
 
 // configure runner
-IConfig configuration = DefaultConfig.Instance.WithOptions(ConfigOptions.DisableOptimizationsValidator)
-    .WithOption(ConfigOptions.JoinSummary, true)
-    .WithOrderer(new DefaultOrderer(SummaryOrderPolicy.FastestToSlowest))
+IConfig configuration = DefaultConfig.Instance
+        .AddJob(Job.Default
+             .WithUnrollFactor(16)
+             .WithStrategy(RunStrategy.Throughput)
+             .WithAnalyzeLaunchVariance(true)
+             .Apply())
+        .WithOptions(ConfigOptions.DisableOptimizationsValidator)
+        .WithOption(ConfigOptions.JoinSummary, true)
+        .WithOrderer(new DefaultOrderer(SummaryOrderPolicy.FastestToSlowest))
     ;
 
 var contextTypes = GetNestedTypes(typeof(BenchmarkContextBase), static t => t is { IsAbstract: false, IsGenericType: false });
@@ -29,6 +39,22 @@ foreach (var baseBenchmarkType in baseBenchmarkTypes)
     if (args.Length > 0) benchmarkSwitcher.Run(args, configuration);
     else benchmarkSwitcher.RunAll(configuration);
 }
+
+// join reports
+var contents = Directory.GetFiles("./.benchmark_results", "*.md", SearchOption.AllDirectories)
+    .Order()
+    .Select(File.ReadLines)
+    .Select(e => e.ToArray())
+    .ToArray();
+var content = new List<string>();
+content.AddRange(contents[0][..11]);
+content.Add(string.Empty);
+foreach (var reportContent in contents)
+{
+    content.AddRange(reportContent[11..]);
+    content.Add(string.Empty);
+}
+File.WriteAllText("./report.md", string.Join("\r\n", content), Encoding.UTF8);
 
 return 0;
 

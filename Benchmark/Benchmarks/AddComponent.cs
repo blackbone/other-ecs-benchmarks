@@ -8,7 +8,7 @@ namespace Benchmark.Benchmarks;
 [BenchmarkCategory(Categories.StructuralChanges)]
 [MemoryDiagnoser]
 #if CHECK_CACHE_MISSES
-    [HardwareCounters(BenchmarkDotNet.Diagnosers.HardwareCounter.CacheMisses)]
+[HardwareCounters(BenchmarkDotNet.Diagnosers.HardwareCounter.CacheMisses)]
 #endif
 public class AddComponent<T> : BenchmarkBase<T> where T : BenchmarkContextBase, new()
 {
@@ -27,39 +27,38 @@ public class AddComponent<T> : BenchmarkBase<T> where T : BenchmarkContextBase, 
 
     protected override void OnCleanup()
     {
-        for (var i = 0; i < EntityCount; i++)
-            Context.RemoveComponent<Component1, Component2, Component3, Component4>(entityIds[i]);
+        Context.RemoveComponent<Component1, Component2, Component3, Component4>(entityIds);
     }
 
     [Benchmark]
     public void AddOneComponent()
     {
-        for (var i = 0; i < EntityCount; i++)
-            Context.AddComponent<Component1>(entityIds[i]);
+        Context.Warmup<Component1>(0);
+        Context.AddComponent<Component1>(entityIds, 0);
         Context.Commit();
     }
     
     [Benchmark]
     public void AddTwoComponent()
     {
-        for (var i = 0; i < EntityCount; i++)
-            Context.AddComponent<Component1, Component2>(entityIds[i]);
+        Context.Warmup<Component1, Component2>(0);
+        Context.AddComponent<Component1, Component2>(entityIds, 0);
         Context.Commit();
     }
     
     [Benchmark]
     public void AddThreeComponent()
     {
-        for (var i = 0; i < EntityCount; i++)
-            Context.AddComponent<Component1, Component2, Component3>(entityIds[i]);
+        Context.Warmup<Component1, Component2, Component3>(0);
+        Context.AddComponent<Component1, Component2, Component3>(entityIds, 0);
         Context.Commit();
     }
     
     [Benchmark]
     public void AddFourComponent()
     {
-        for (var i = 0; i < EntityCount; i++)
-            Context.AddComponent<Component1, Component2, Component3, Component4>(entityIds[i]);
+        Context.Warmup<Component1, Component2, Component3, Component4>(0);
+        Context.AddComponent<Component1, Component2, Component3, Component4>(entityIds, 0);
         Context.Commit();
     }
 }

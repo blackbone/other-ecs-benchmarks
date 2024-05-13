@@ -1,6 +1,5 @@
 using Benchmark._Context;
 using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Diagnosers;
 
 namespace Benchmark
 {

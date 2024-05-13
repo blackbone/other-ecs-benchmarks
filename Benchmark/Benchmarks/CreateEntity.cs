@@ -7,7 +7,7 @@ namespace Benchmark.Benchmarks;
 [BenchmarkCategory(Categories.StructuralChanges)]
 [MemoryDiagnoser]
 #if CHECK_CACHE_MISSES
-    [HardwareCounters(BenchmarkDotNet.Diagnosers.HardwareCounter.CacheMisses)]
+[HardwareCounters(BenchmarkDotNet.Diagnosers.HardwareCounter.CacheMisses)]
 #endif
 public class CreateEntity<T> : BenchmarkBase<T> where T : BenchmarkContextBase, new()
 {
@@ -22,32 +22,36 @@ public class CreateEntity<T> : BenchmarkBase<T> where T : BenchmarkContextBase, 
     [Benchmark]
     public void CreateEntitiesWithOneComponent()
     {
+        Context.Warmup<Component1>(0);
         for (var i = 0; i < EntityCount; i++)
-            Context.CreateEntity<Component1>(); 
+            Context.CreateEntity<Component1>(0); 
         Context.Commit();
     }
     
     [Benchmark]
     public void CreateEntitiesWithTwoComponent()
     {
+        Context.Warmup<Component1, Component2>(0);
         for (var i = 0; i < EntityCount; i++)
-            Context.CreateEntity<Component1, Component2>();
+            Context.CreateEntity<Component1, Component2>(0);
         Context.Commit();
     }
     
     [Benchmark]
     public void CreateEntitiesWithThreeComponent()
     {
-        for (var i = 0; i < EntityCount; i++)
-            Context.CreateEntity<Component1, Component2, Component3>();
+        Context.Warmup<Component1, Component2, Component3>(0);
+        for (var i = 0; i < EntityCount; i++) 
+            Context.CreateEntity<Component1, Component2, Component3>(0);
         Context.Commit();
     }
     
     [Benchmark]
     public void CreateEntitiesWithFourComponent()
     {
+        Context.Warmup<Component1, Component2, Component3, Component4>(0);
         for (var i = 0; i < EntityCount; i++)
-            Context.CreateEntity<Component1, Component2, Component3, Component4>();
+            Context.CreateEntity<Component1, Component2, Component3, Component4>(0);
         Context.Commit();
     }
 }
