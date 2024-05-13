@@ -14,7 +14,7 @@ public class RemoveComponent<T> : BenchmarkBase<T> where T : BenchmarkContextBas
 {
     private int[] entityIds;
     
-    [Params(false, true)] public bool Shuffled { get; set; }
+    // [Params(false, true)] public bool Shuffled { get; set; }
 
     protected override void OnSetup()
     {
@@ -22,7 +22,7 @@ public class RemoveComponent<T> : BenchmarkBase<T> where T : BenchmarkContextBas
         for (var i = 0; i < EntityCount; i++)
             entityIds[i] = Context.CreateEntity<Component1, Component2, Component3, Component4>();
         
-        if (Shuffled) entityIds.Shuffle();
+        // if (Shuffled) entityIds.Shuffle();
     }
 
     [Benchmark]

@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Text;
 using Benchmark;
 using Benchmark._Context;
+using BenchmarkDotNet.Columns;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Engines;
 using BenchmarkDotNet.Jobs;
@@ -18,14 +19,15 @@ PreloadAssemblies();
 
 // configure runner
 IConfig configuration = DefaultConfig.Instance
-        .AddJob(Job.Default
-             .WithUnrollFactor(16)
-             .WithStrategy(RunStrategy.Throughput)
-             .WithAnalyzeLaunchVariance(true)
-             .Apply())
+        // .AddJob(Job.Default
+        //      .WithUnrollFactor(16)
+        //      .WithStrategy(RunStrategy.Throughput)
+        //      .WithAnalyzeLaunchVariance(true)
+        //      .Apply())
         .WithOptions(ConfigOptions.DisableOptimizationsValidator)
         .WithOption(ConfigOptions.JoinSummary, true)
         .WithOrderer(new DefaultOrderer(SummaryOrderPolicy.FastestToSlowest))
+        .HideColumns(Column.Gen0, Column.Gen1, Column.Gen2, Column.Error, Column.StdDev)
     ;
 
 var contextTypes = GetNestedTypes(typeof(BenchmarkContextBase), static t => t is { IsAbstract: false, IsGenericType: false });

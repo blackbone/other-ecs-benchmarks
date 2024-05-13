@@ -14,7 +14,7 @@ public class AddComponent<T> : BenchmarkBase<T> where T : BenchmarkContextBase, 
 {
     private int[] entityIds;
 
-    [Params(false, true)] public bool Shuffled { get; set; }
+    // [Params(false, true)] public bool Shuffled { get; set; }
     
     protected override void OnSetup()
     {
@@ -22,7 +22,7 @@ public class AddComponent<T> : BenchmarkBase<T> where T : BenchmarkContextBase, 
         for (var i = 0; i < EntityCount; i++)
             entityIds[i] = Context.CreateEntity();
         
-        if (Shuffled) entityIds.Shuffle();
+        // if (Shuffled) entityIds.Shuffle();
     }
 
     protected override void OnCleanup()
