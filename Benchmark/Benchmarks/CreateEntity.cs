@@ -6,9 +6,7 @@ namespace Benchmark.Benchmarks;
 [ArtifactsPath(".benchmark_results/" + nameof(CreateEntity<T>))]
 [BenchmarkCategory(Categories.StructuralChanges)]
 [MemoryDiagnoser]
-#if CHECK_CACHE_MISSES
 [HardwareCounters(BenchmarkDotNet.Diagnosers.HardwareCounter.CacheMisses)]
-#endif
 public class CreateEntity<T> : BenchmarkBase<T> where T : BenchmarkContextBase, new()
 {
     [Benchmark]

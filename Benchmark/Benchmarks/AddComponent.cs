@@ -1,5 +1,4 @@
 using Benchmark._Context;
-using Benchmark.Utils;
 using BenchmarkDotNet.Attributes;
 
 namespace Benchmark.Benchmarks;
@@ -7,9 +6,7 @@ namespace Benchmark.Benchmarks;
 [ArtifactsPath(".benchmark_results/" + nameof(AddComponent<T>))]
 [BenchmarkCategory(Categories.StructuralChanges)]
 [MemoryDiagnoser]
-#if CHECK_CACHE_MISSES
 [HardwareCounters(BenchmarkDotNet.Diagnosers.HardwareCounter.CacheMisses)]
-#endif
 public class AddComponent<T> : BenchmarkBase<T> where T : BenchmarkContextBase, new()
 {
     private int[] entityIds;
