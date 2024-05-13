@@ -11,6 +11,7 @@ using Benchmark._Context;
 using BenchmarkDotNet.Columns;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Engines;
+using BenchmarkDotNet.Exporters;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Order;
 using BenchmarkDotNet.Running;
@@ -19,11 +20,12 @@ PreloadAssemblies();
 
 // configure runner
 IConfig configuration = DefaultConfig.Instance
-        // .AddJob(Job.Default
-        //      .WithUnrollFactor(16)
-        //      .WithStrategy(RunStrategy.Throughput)
-        //      .WithAnalyzeLaunchVariance(true)
-        //      .Apply())
+        .AddJob(Job.Default
+             .WithUnrollFactor(16)
+             .WithStrategy(RunStrategy.Throughput)
+             .WithAnalyzeLaunchVariance(true)
+             .Apply())
+        .AddExporter(MarkdownExporter.GitHub)
         .WithOptions(ConfigOptions.DisableOptimizationsValidator)
         .WithOption(ConfigOptions.JoinSummary, true)
         .WithOrderer(new DefaultOrderer(SummaryOrderPolicy.FastestToSlowest))
