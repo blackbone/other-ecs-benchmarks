@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/sh
 
 # pre-clean
 rm -rf ./.benchmark_results
