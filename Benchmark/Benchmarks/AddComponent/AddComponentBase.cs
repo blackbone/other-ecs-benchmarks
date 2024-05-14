@@ -6,7 +6,7 @@ public abstract class AddComponentBase<T> : BenchmarkBase<T> where T : Benchmark
 {
     protected int[] entityIds;
 
-    protected sealed override void OnSetup()
+    protected override void OnSetup()
     {
         entityIds = new int[EntityCount];
         for (var i = 0; i < EntityCount; i++)

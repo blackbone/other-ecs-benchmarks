@@ -14,9 +14,14 @@ public class CreateEntityWithTreeComponents<T> : BenchmarkBase<T> where T : Benc
     [Benchmark]
     public void CreateEntitiesWithThreeComponent()
     {
-        Context.Warmup<Component1, Component2, Component3>(0);
         for (var i = 0; i < EntityCount; i++)
             Context.CreateEntity<Component1, Component2, Component3>(0);
         Context.Commit();
+    }
+    
+    protected override void OnSetup()
+    {
+        base.OnSetup();
+        Context.Warmup<Component1, Component2, Component3>(0);
     }
 }

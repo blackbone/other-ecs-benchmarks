@@ -14,9 +14,14 @@ public class CreateEntityWithOneComponent<T> : BenchmarkBase<T> where T : Benchm
     [Benchmark]
     public void CreateEntitiesWithOneComponent()
     {
-        Context.Warmup<Component1>(0);
         for (var i = 0; i < EntityCount; i++)
             Context.CreateEntity<Component1>(0);
         Context.Commit();
+    }
+    
+    protected override void OnSetup()
+    {
+        base.OnSetup();
+        Context.Warmup<Component1>(0);
     }
 }

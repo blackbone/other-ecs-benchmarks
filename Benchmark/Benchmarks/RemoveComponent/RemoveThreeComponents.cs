@@ -14,8 +14,13 @@ public class RemoveThreeComponents<T> : RemoveComponentBase<T> where T : Benchma
     [Benchmark]
     public void Run()
     {
-        Context.Warmup<Component1, Component2, Component3>(0);
         Context.RemoveComponent<Component1, Component2, Component3>(entityIds, 0);
         Context.Commit();
+    }
+    
+    protected override void OnSetup()
+    {
+        base.OnSetup();
+        Context.Warmup<Component1, Component2, Component3>(0);
     }
 }

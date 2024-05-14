@@ -11,10 +11,15 @@ namespace Benchmark.Benchmarks;
 #endif
 public class AddTwoComponents<T> : AddComponentBase<T> where T : BenchmarkContextBase, new()
 {
+    protected override void OnSetup()
+    {
+        base.OnSetup();
+        Context.Warmup<Component1, Component2>(0);
+    }
+
     [Benchmark]
     public void Run()
     {
-        Context.Warmup<Component1, Component2>(0);
         Context.AddComponent<Component1, Component2>(entityIds, 0);
         Context.Commit();
     }

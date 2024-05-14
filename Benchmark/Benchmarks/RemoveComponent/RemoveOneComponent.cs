@@ -18,4 +18,10 @@ public class RemoveOneComponent<T> : RemoveComponentBase<T> where T : BenchmarkC
         Context.RemoveComponent<Component1>(entityIds, 0);
         Context.Commit();
     }
+    
+    protected override void OnSetup()
+    {
+        base.OnSetup();
+        Context.Warmup<Component1>(0);
+    }
 }

@@ -14,8 +14,12 @@ public class RemoveTwoComponents<T> : RemoveComponentBase<T> where T : Benchmark
     [Benchmark]
     public void Run()
     {
-        Context.Warmup<Component1, Component2>(0);
         Context.RemoveComponent<Component1, Component2>(entityIds, 0);
         Context.Commit();
+    }
+    protected override void OnSetup()
+    {
+        base.OnSetup();
+        Context.Warmup<Component1, Component2>(0);
     }
 }

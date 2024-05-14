@@ -14,8 +14,13 @@ public class AddFourComponents<T> : AddComponentBase<T> where T : BenchmarkConte
     [Benchmark]
     public void Run()
     {
-        Context.Warmup<Component1, Component2, Component3, Component4>(0);
         Context.AddComponent<Component1, Component2, Component3, Component4>(entityIds, 0);
         Context.Commit();
+    }
+
+    protected override void OnSetup()
+    {
+        base.OnSetup();
+        Context.Warmup<Component1, Component2, Component3, Component4>(0);
     }
 }

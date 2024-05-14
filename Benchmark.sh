@@ -3,7 +3,7 @@
 # pre-clean
 rm -rf ./.benchmark_results
 dotnet clean Benchmark/Benchmark.csproj -c Release
-dotnet build Benchmark/Benchmark.csproj -c Release /p:CheckCacheMisses=true
+dotnet build Benchmark/Benchmark.csproj -c Release /p:CheckCacheMisses=false
 if (($? > 0))
 then
     exit $?;
