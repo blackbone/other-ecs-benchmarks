@@ -24,13 +24,35 @@ public class MorpehContext : BenchmarkContextBase
         world = null;
     }
 
-    public override void Lock() { /* no op */ }
-    public override void Commit() => world.Commit();
-    
-    public override void Warmup<T1>(int poolId) => stashes[poolId] = [world.GetStash<T1>()];
-    public override void Warmup<T1, T2>(int poolId) => stashes[poolId] = [world.GetStash<T1>(), world.GetStash<T2>()];
-    public override void Warmup<T1, T2, T3>(int poolId) => stashes[poolId] = [world.GetStash<T1>(), world.GetStash<T2>(), world.GetStash<T3>()];
-    public override void Warmup<T1, T2, T3, T4>(int poolId) => stashes[poolId] = [world.GetStash<T1>(), world.GetStash<T2>(), world.GetStash<T3>(), world.GetStash<T4>()];
+    public override void Lock()
+    {
+        /* no op */
+    }
+
+    public override void Commit()
+    {
+        world.Commit();
+    }
+
+    public override void Warmup<T1>(int poolId)
+    {
+        stashes[poolId] = [world.GetStash<T1>()];
+    }
+
+    public override void Warmup<T1, T2>(int poolId)
+    {
+        stashes[poolId] = [world.GetStash<T1>(), world.GetStash<T2>()];
+    }
+
+    public override void Warmup<T1, T2, T3>(int poolId)
+    {
+        stashes[poolId] = [world.GetStash<T1>(), world.GetStash<T2>(), world.GetStash<T3>()];
+    }
+
+    public override void Warmup<T1, T2, T3, T4>(int poolId)
+    {
+        stashes[poolId] = [world.GetStash<T1>(), world.GetStash<T2>(), world.GetStash<T3>(), world.GetStash<T4>()];
+    }
 
     public override int CreateEntity()
     {
@@ -46,13 +68,9 @@ public class MorpehContext : BenchmarkContextBase
         n++;
         var entity = world.CreateEntity();
         if (stashes.TryGetValue(poolId, out var pool))
-        {
             ((Stash<T1>)pool[0]).Add(entity);
-        }
         else
-        {
             entity.AddComponent<T1>();
-        }
         entities[n] = entity;
         return n;
     }
@@ -71,6 +89,7 @@ public class MorpehContext : BenchmarkContextBase
             entity.AddComponent<T1>();
             entity.AddComponent<T2>();
         }
+
         entities[n] = entity;
         return n;
     }
@@ -91,6 +110,7 @@ public class MorpehContext : BenchmarkContextBase
             entity.AddComponent<T2>();
             entity.AddComponent<T3>();
         }
+
         entities[n] = entity;
         return n;
     }
@@ -113,6 +133,7 @@ public class MorpehContext : BenchmarkContextBase
             entity.AddComponent<T3>();
             entity.AddComponent<T4>();
         }
+
         entities[n] = entity;
         return n;
     }

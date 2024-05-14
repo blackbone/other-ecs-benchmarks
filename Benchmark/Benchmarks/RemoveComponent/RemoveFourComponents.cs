@@ -6,7 +6,9 @@ namespace Benchmark.Benchmarks;
 [BenchmarkCategory(Categories.StructuralChanges)]
 [ArtifactsPath(".benchmark_results/" + nameof(RemoveFourComponents<T>))]
 [MemoryDiagnoser]
+#if CHECK_CACHE_MISSES
 [HardwareCounters(BenchmarkDotNet.Diagnosers.HardwareCounter.CacheMisses)]
+#endif
 public class RemoveFourComponents<T> : RemoveComponentBase<T> where T : BenchmarkContextBase, new()
 {
     [Benchmark]

@@ -14,7 +14,7 @@ on:
 
 jobs:
   benchmark:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4
@@ -28,7 +28,7 @@ jobs:
       run: dotnet clean Benchmark/Benchmark.csproj -c Release
       
     - name: Build Benchmark
-      run: dotnet build Benchmark/Benchmark.csproj -c Release /p:CheckCacheMisses=true
+      run: dotnet build Benchmark/Benchmark.csproj -c Release /p:CheckCacheMisses=false
       
     - name: Run Benchmark
       run: dotnet run --project Benchmark/Benchmark.csproj -c Release --no-build

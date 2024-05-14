@@ -21,11 +21,11 @@ PreloadAssemblies();
 
 // configure runner
 IConfig configuration = DefaultConfig.Instance
-        // .AddJob(Job.Default
-        //      .WithUnrollFactor(16)
-        //      .WithStrategy(RunStrategy.Throughput)
-        //      .WithAnalyzeLaunchVariance(true)
-        //      .Apply())
+        .AddJob(Job.Default
+            .WithUnrollFactor(16)
+            .WithStrategy(RunStrategy.Throughput)
+            .WithAnalyzeLaunchVariance(true)
+            .Apply())
         .AddExporter(MarkdownExporter.GitHub)
         .WithOptions(ConfigOptions.DisableOptimizationsValidator)
         .WithOption(ConfigOptions.JoinSummary, true)
@@ -33,8 +33,10 @@ IConfig configuration = DefaultConfig.Instance
         .HideColumns(Column.Gen0, Column.Gen1, Column.Gen2, Column.Error, Column.StdDev, Column.Method)
     ;
 
-var contextTypes = GetNestedTypes(typeof(BenchmarkContextBase), static t => t is { IsAbstract: false, IsGenericType: false });
-var baseBenchmarkTypes = GetNestedTypes(typeof(BenchmarkBase), static t => t is { IsAbstract: false, IsGenericType: true });
+var contextTypes = GetNestedTypes(typeof(BenchmarkContextBase),
+    static t => t is { IsAbstract: false, IsGenericType: false });
+var baseBenchmarkTypes =
+    GetNestedTypes(typeof(BenchmarkBase), static t => t is { IsAbstract: false, IsGenericType: true });
 
 // run benchmarks
 foreach (var baseBenchmarkType in baseBenchmarkTypes)
@@ -48,7 +50,8 @@ foreach (var baseBenchmarkType in baseBenchmarkTypes)
 // join reports
 var contents = Directory.GetFiles("./.benchmark_results", "*.md", SearchOption.AllDirectories)
     .Order()
-    .Select(file => (Regex.Match(file, @"\.benchmark_results/(?'name'\w+)/").Groups["name"].Value, File.ReadLines(file).ToArray()))
+    .Select(file => (Regex.Match(file, @"\.benchmark_results/(?'name'\w+)/").Groups["name"].Value,
+        File.ReadLines(file).ToArray()))
     .ToArray();
 
 var content = new List<string>();
@@ -60,6 +63,7 @@ foreach (var (benchmark, reportContent) in contents)
     content.AddRange(reportContent[11..]);
     content.Add(string.Empty);
 }
+
 File.WriteAllText("./report.md", string.Join("\r\n", content), Encoding.UTF8);
 
 return 0;
@@ -67,9 +71,14 @@ return 0;
 void PreloadAssemblies()
 {
     var loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies().ToList();
+    if (loadedAssemblies.Count == 0) return;
     var loadedPaths = loadedAssemblies.Select(a => a.Location).ToArray();
+    if (loadedPaths.Length == 0) return;
     var referencedPaths = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.dll");
-    var toLoad = referencedPaths.Where(r => !loadedPaths.Contains(r, StringComparer.InvariantCultureIgnoreCase)).ToList();
+    if (referencedPaths.Length == 0) return;
+    var toLoad = referencedPaths.Where(r => !loadedPaths.Contains(r, StringComparer.InvariantCultureIgnoreCase))
+        .ToList();
+    if (toLoad.Count == 0) return;
     toLoad.ForEach(path => loadedAssemblies.Add(AppDomain.CurrentDomain.Load(AssemblyName.GetAssemblyName(path))));
 }
 

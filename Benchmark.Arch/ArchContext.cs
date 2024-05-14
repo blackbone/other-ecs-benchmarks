@@ -28,9 +28,16 @@ public class ArchContext : BenchmarkContextBase
         world = null;
     }
 
-    public override void Lock() { /* no op */ }
-    public override void Commit() { /* no op */ }
-    
+    public override void Lock()
+    {
+        /* no op */
+    }
+
+    public override void Commit()
+    {
+        /* no op */
+    }
+
     public override void Warmup<T1>(int poolId)
     {
         archetypes[poolId] = [typeof(T1)];
@@ -105,7 +112,7 @@ public class ArchContext : BenchmarkContextBase
 
     public override void AddComponent<T1>(in int[] entityIds, in int poolId = -1)
     {
-        for (int i = 0; i < entityIds.Length; i++)
+        for (var i = 0; i < entityIds.Length; i++)
         {
             var entity = entities[entityIds[i]];
             world.Add<T1>(entity);
@@ -114,7 +121,7 @@ public class ArchContext : BenchmarkContextBase
 
     public override void AddComponent<T1, T2>(in int[] entityIds, in int poolId = -1)
     {
-        for (int i = 0; i < entityIds.Length; i++)
+        for (var i = 0; i < entityIds.Length; i++)
         {
             var entity = entities[entityIds[i]];
             world.Add<T1, T2>(entity);
@@ -123,7 +130,7 @@ public class ArchContext : BenchmarkContextBase
 
     public override void AddComponent<T1, T2, T3>(in int[] entityIds, in int poolId = -1)
     {
-        for (int i = 0; i < entityIds.Length; i++)
+        for (var i = 0; i < entityIds.Length; i++)
         {
             var entity = entities[entityIds[i]];
             world.Add<T1, T2, T3>(entity);
@@ -132,7 +139,7 @@ public class ArchContext : BenchmarkContextBase
 
     public override void AddComponent<T1, T2, T3, T4>(in int[] entityIds, in int poolId = -1)
     {
-        for (int i = 0; i < entityIds.Length; i++)
+        for (var i = 0; i < entityIds.Length; i++)
         {
             var entity = entities[entityIds[i]];
             world.Add<T1, T2, T3, T4>(entity);
@@ -141,7 +148,7 @@ public class ArchContext : BenchmarkContextBase
 
     public override void RemoveComponent<T1>(in int[] entityIds, in int poolId = -1)
     {
-        for (int i = 0; i < entityIds.Length; i++)
+        for (var i = 0; i < entityIds.Length; i++)
         {
             var entity = entities[entityIds[i]];
             world.Remove<T1>(entity);
@@ -150,7 +157,7 @@ public class ArchContext : BenchmarkContextBase
 
     public override void RemoveComponent<T1, T2>(in int[] entityIds, in int poolId = -1)
     {
-        for (int i = 0; i < entityIds.Length; i++)
+        for (var i = 0; i < entityIds.Length; i++)
         {
             var entity = entities[entityIds[i]];
             world.Remove<T1, T2>(entity);
@@ -159,7 +166,7 @@ public class ArchContext : BenchmarkContextBase
 
     public override void RemoveComponent<T1, T2, T3>(in int[] entityIds, in int poolId = -1)
     {
-        for (int i = 0; i < entityIds.Length; i++)
+        for (var i = 0; i < entityIds.Length; i++)
         {
             var entity = entities[entityIds[i]];
             world.Remove<T1, T2, T3>(entity);
@@ -168,7 +175,7 @@ public class ArchContext : BenchmarkContextBase
 
     public override void RemoveComponent<T1, T2, T3, T4>(in int[] entityIds, in int poolId = -1)
     {
-        for (int i = 0; i < entityIds.Length; i++)
+        for (var i = 0; i < entityIds.Length; i++)
         {
             var entity = entities[entityIds[i]];
             world.Remove<T1, T2, T3, T4>(entity);

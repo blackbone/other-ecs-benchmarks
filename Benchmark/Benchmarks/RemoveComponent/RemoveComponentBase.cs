@@ -5,7 +5,7 @@ namespace Benchmark.Benchmarks;
 public abstract class RemoveComponentBase<T> : BenchmarkBase<T> where T : BenchmarkContextBase, new()
 {
     protected int[] entityIds;
-    
+
     protected sealed override void OnSetup()
     {
         entityIds = new int[EntityCount];
