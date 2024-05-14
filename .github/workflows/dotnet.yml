@@ -25,8 +25,14 @@ jobs:
       with:
         dotnet-version: 8.0.x
         
+    - name: Clean Benchmark
+      run: dotnet clean source\Ecs.CSharp.Benchmark\Ecs.CSharp.Benchmark.csproj -c Release
+      
+    - name: Build Benchmark
+      run: dotnet build Benchmark/Benchmark.csproj -c Release /p:CheckCacheMisses=true
+      
     - name: Run Benchmark
-      run: ./Benchmark.sh
+      run: dotnet run --project source\Ecs.CSharp.Benchmark\Ecs.CSharp.Benchmark.csproj -c Release --no-build
       
     - name: Update Gist
       uses: exuanbo/actions-deploy-gist@v1

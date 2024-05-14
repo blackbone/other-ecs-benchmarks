@@ -21,16 +21,16 @@ PreloadAssemblies();
 
 // configure runner
 IConfig configuration = DefaultConfig.Instance
-        .AddJob(Job.Default
-             .WithUnrollFactor(16)
-             .WithStrategy(RunStrategy.Throughput)
-             .WithAnalyzeLaunchVariance(true)
-             .Apply())
+        // .AddJob(Job.Default
+        //      .WithUnrollFactor(16)
+        //      .WithStrategy(RunStrategy.Throughput)
+        //      .WithAnalyzeLaunchVariance(true)
+        //      .Apply())
         .AddExporter(MarkdownExporter.GitHub)
         .WithOptions(ConfigOptions.DisableOptimizationsValidator)
         .WithOption(ConfigOptions.JoinSummary, true)
         .WithOrderer(new DefaultOrderer(SummaryOrderPolicy.FastestToSlowest))
-        .HideColumns(Column.Gen0, Column.Gen1, Column.Gen2, Column.Error, Column.StdDev)
+        .HideColumns(Column.Gen0, Column.Gen1, Column.Gen2, Column.Error, Column.StdDev, Column.Method)
     ;
 
 var contextTypes = GetNestedTypes(typeof(BenchmarkContextBase), static t => t is { IsAbstract: false, IsGenericType: false });

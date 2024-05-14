@@ -6,6 +6,7 @@ namespace Benchmark.Arch;
 
 public class ArchContext : BenchmarkContextBase
 {
+    private int entityCount;
     private World world;
     private Entity[] entities;
     private Dictionary<int, ComponentType[]> archetypes;
@@ -13,6 +14,7 @@ public class ArchContext : BenchmarkContextBase
 
     public override void Setup(int entityCount)
     {
+        this.entityCount = entityCount;
         world = World.Create();
         entities = new Entity[entityCount];
         archetypes = new Dictionary<int, ComponentType[]>();
@@ -29,10 +31,29 @@ public class ArchContext : BenchmarkContextBase
     public override void Lock() { /* no op */ }
     public override void Commit() { /* no op */ }
     
-    public override void Warmup<T1>(int poolId) => archetypes[poolId] = [typeof(T1)];
-    public override void Warmup<T1, T2>(int poolId) => archetypes[poolId] = [typeof(T1), typeof(T2)];
-    public override void Warmup<T1, T2, T3>(int poolId) => archetypes[poolId] = [typeof(T1), typeof(T2), typeof(T3)];
-    public override void Warmup<T1, T2, T3, T4>(int poolId) => archetypes[poolId] = [typeof(T1), typeof(T2), typeof(T3), typeof(T4)];
+    public override void Warmup<T1>(int poolId)
+    {
+        archetypes[poolId] = [typeof(T1)];
+        world.Reserve(archetypes[poolId], entityCount);
+    }
+
+    public override void Warmup<T1, T2>(int poolId)
+    {
+        archetypes[poolId] = [typeof(T1), typeof(T2)];
+        world.Reserve(archetypes[poolId], entityCount);
+    }
+
+    public override void Warmup<T1, T2, T3>(int poolId)
+    {
+        archetypes[poolId] = [typeof(T1), typeof(T2), typeof(T3)];
+        world.Reserve(archetypes[poolId], entityCount);
+    }
+
+    public override void Warmup<T1, T2, T3, T4>(int poolId)
+    {
+        archetypes[poolId] = [typeof(T1), typeof(T2), typeof(T3), typeof(T4)];
+        world.Reserve(archetypes[poolId], entityCount);
+    }
 
     public override int CreateEntity()
     {
