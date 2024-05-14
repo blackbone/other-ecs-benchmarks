@@ -7,6 +7,10 @@ on:
   workflow_dispatch:
   push:
     branches: [ "main" ]
+    paths:
+    - '**.cs'
+    - '**.csproj'
+    - '**.sln'
 
 jobs:
   build:

@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using Benchmark;
 using Benchmark._Context;
 using BenchmarkDotNet.Columns;
@@ -47,14 +48,15 @@ foreach (var baseBenchmarkType in baseBenchmarkTypes)
 // join reports
 var contents = Directory.GetFiles("./.benchmark_results", "*.md", SearchOption.AllDirectories)
     .Order()
-    .Select(File.ReadLines)
-    .Select(e => e.ToArray())
+    .Select(file => (Regex.Match(file, @"\.benchmark_results/(?'name'\w+)/").Groups["name"].Value, File.ReadLines(file).ToArray()))
     .ToArray();
+
 var content = new List<string>();
-content.AddRange(contents[0][..11]);
+content.AddRange(contents[0].Item2[..11]);
 content.Add(string.Empty);
-foreach (var reportContent in contents)
+foreach (var (benchmark, reportContent) in contents)
 {
+    content.Add($"# {benchmark}");
     content.AddRange(reportContent[11..]);
     content.Add(string.Empty);
 }
