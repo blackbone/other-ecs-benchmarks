@@ -1,4 +1,5 @@
 ﻿using Arch.Core;
+using Arch.Core.Extensions;
 using Arch.Core.Utils;
 using Benchmark._Context;
 
@@ -6,26 +7,26 @@ namespace Benchmark.Arch;
 
 public class ArchContext : BenchmarkContextBase
 {
-    private int entityCount;
-    private World world;
-    private Entity[] entities;
-    private Dictionary<int, ComponentType[]> archetypes;
-    private int n = -1;
+    private int _entityCount;
+    private World? _world;
+    private Entity[]? _entities;
+    private Dictionary<int, ComponentType[]>? _archetypes;
+    private int _n;
 
     public override void Setup(int entityCount)
     {
-        this.entityCount = entityCount;
-        world = World.Create();
-        entities = new Entity[entityCount];
-        archetypes = new Dictionary<int, ComponentType[]>();
-        n = -1;
+        _entityCount = entityCount;
+        _world = World.Create();
+        _entities = new Entity[entityCount];
+        _archetypes = new Dictionary<int, ComponentType[]>();
+        _n = 0;
     }
 
     public override void Cleanup()
     {
-        world?.Clear();
-        world?.Dispose();
-        world = null;
+        _world?.Clear();
+        _world?.Dispose();
+        _world = null;
     }
 
     public override void Lock()
@@ -40,145 +41,284 @@ public class ArchContext : BenchmarkContextBase
 
     public override void Warmup<T1>(int poolId)
     {
-        archetypes[poolId] = [typeof(T1)];
-        world.Reserve(archetypes[poolId], entityCount);
+        _archetypes![poolId] = [typeof(T1)];
+        _world!.Reserve(_archetypes[poolId], _entityCount);
     }
 
     public override void Warmup<T1, T2>(int poolId)
     {
-        archetypes[poolId] = [typeof(T1), typeof(T2)];
-        world.Reserve(archetypes[poolId], entityCount);
+        _archetypes![poolId] = [typeof(T1), typeof(T2)];
+        _world!.Reserve(_archetypes[poolId], _entityCount);
     }
 
     public override void Warmup<T1, T2, T3>(int poolId)
     {
-        archetypes[poolId] = [typeof(T1), typeof(T2), typeof(T3)];
-        world.Reserve(archetypes[poolId], entityCount);
+        _archetypes![poolId] = [typeof(T1), typeof(T2), typeof(T3)];
+        _world!.Reserve(_archetypes[poolId], _entityCount);
     }
 
     public override void Warmup<T1, T2, T3, T4>(int poolId)
     {
-        archetypes[poolId] = [typeof(T1), typeof(T2), typeof(T3), typeof(T4)];
-        world.Reserve(archetypes[poolId], entityCount);
+        _archetypes![poolId] = [typeof(T1), typeof(T2), typeof(T3), typeof(T4)];
+        _world!.Reserve(_archetypes[poolId], _entityCount);
     }
 
-    public override int CreateEntity()
+    public override void CreateEntities(in Span<int> entityIds)
     {
-        n++;
-        var entity = world.Create();
-        entities[n] = entity;
-        return n;
-    }
-
-    public override int CreateEntity<T1>(in int poolId = -1)
-    {
-        n++;
-        Entity entity;
-        if (archetypes.TryGetValue(poolId, out var archetype)) entity = world.Create(archetype);
-        else entity = world.Create<T1>();
-        entities[n] = entity;
-        return n;
-    }
-
-    public override int CreateEntity<T1, T2>(in int poolId = -1)
-    {
-        n++;
-        Entity entity;
-        if (archetypes.TryGetValue(poolId, out var archetype)) entity = world.Create(archetype);
-        else entity = world.Create<T1, T2>();
-        entities[n] = entity;
-        return n;
-    }
-
-    public override int CreateEntity<T1, T2, T3>(in int poolId = -1)
-    {
-        n++;
-        Entity entity;
-        if (archetypes.TryGetValue(poolId, out var archetype)) entity = world.Create(archetype);
-        else entity = world.Create<T1, T2, T3>();
-        entities[n] = entity;
-        return n;
-    }
-
-    public override int CreateEntity<T1, T2, T3, T4>(in int poolId = -1)
-    {
-        n++;
-        Entity entity;
-        if (archetypes.TryGetValue(poolId, out var archetype)) entity = world.Create(archetype);
-        else entity = world.Create<T1, T2, T3, T4>();
-        entities[n] = entity;
-        return n;
-    }
-
-    public override void AddComponent<T1>(in int[] entityIds, in int poolId = -1)
-    {
-        for (var i = 0; i < entityIds.Length; i++)
+        for (int i = 0; i < entityIds.Length; i++)
         {
-            var entity = entities[entityIds[i]];
-            world.Add<T1>(entity);
+            var entity = _world!.Create();
+            entityIds[i] = _n;
+            _entities![_n] = entity;
+            ++_n;
         }
     }
 
-    public override void AddComponent<T1, T2>(in int[] entityIds, in int poolId = -1)
+    public override void CreateEntities<T1>(in Span<int> entityIds, in int poolId = -1)
     {
-        for (var i = 0; i < entityIds.Length; i++)
+        if (_archetypes!.TryGetValue(poolId, out var archetype))
         {
-            var entity = entities[entityIds[i]];
-            world.Add<T1, T2>(entity);
+            for (int i = 0; i < entityIds.Length; i++)
+            {
+                _entities![_n] = _world!.Create(archetype);
+                entityIds[i] = _n;
+                ++_n;
+            }
+        }
+        else
+        {
+            for (int i = 0; i < entityIds.Length; i++)
+            {
+                _entities![_n] = _world!.Create<T1>();
+                entityIds[i] = _n;
+                ++_n;
+            }
         }
     }
 
-    public override void AddComponent<T1, T2, T3>(in int[] entityIds, in int poolId = -1)
+    public override void CreateEntities<T1, T2>(in Span<int> entityIds, in int poolId = -1)
     {
-        for (var i = 0; i < entityIds.Length; i++)
+        if (_archetypes!.TryGetValue(poolId, out var archetype))
         {
-            var entity = entities[entityIds[i]];
-            world.Add<T1, T2, T3>(entity);
+            for (int i = 0; i < entityIds.Length; i++)
+            {
+                _entities![_n] = _world!.Create(archetype);
+                entityIds[i] = _n;
+                ++_n;
+            }
+        }
+        else
+        {
+            for (int i = 0; i < entityIds.Length; i++)
+            {
+                _entities![_n] = _world!.Create<T1, T2>();
+                entityIds[i] = _n;
+                ++_n;
+            }
         }
     }
 
-    public override void AddComponent<T1, T2, T3, T4>(in int[] entityIds, in int poolId = -1)
+    public override void CreateEntities<T1, T2, T3>(in Span<int> entityIds, in int poolId = -1)
     {
-        for (var i = 0; i < entityIds.Length; i++)
+        if (_archetypes!.TryGetValue(poolId, out var archetype))
         {
-            var entity = entities[entityIds[i]];
-            world.Add<T1, T2, T3, T4>(entity);
+            for (int i = 0; i < entityIds.Length; i++)
+            {
+                _entities![_n] = _world!.Create(archetype);
+                entityIds[i] = _n;
+                ++_n;
+            }
+        }
+        else
+        {
+            for (int i = 0; i < entityIds.Length; i++)
+            {
+                _entities![_n] = _world!.Create<T1, T2, T3>();
+                entityIds[i] = _n;
+                ++_n;
+            }
         }
     }
 
-    public override void RemoveComponent<T1>(in int[] entityIds, in int poolId = -1)
+    public override void CreateEntities<T1, T2, T3, T4>(in Span<int> entityIds, in int poolId = -1)
     {
-        for (var i = 0; i < entityIds.Length; i++)
+        if (_archetypes!.TryGetValue(poolId, out var archetype))
         {
-            var entity = entities[entityIds[i]];
-            world.Remove<T1>(entity);
+            for (int i = 0; i < entityIds.Length; i++)
+            {
+                _entities![_n] = _world!.Create(archetype);
+                entityIds[i] = _n;
+                ++_n;
+            }
+        }
+        else
+        {
+            for (int i = 0; i < entityIds.Length; i++)
+            {
+                _entities![_n] = _world!.Create<T1, T2, T3, T4>();
+                entityIds[i] = _n;
+                ++_n;
+            }
         }
     }
 
-    public override void RemoveComponent<T1, T2>(in int[] entityIds, in int poolId = -1)
+    public override void AddComponent<T1>(in Span<int> entityIds, in int poolId = -1)
     {
-        for (var i = 0; i < entityIds.Length; i++)
+        if (_archetypes!.TryGetValue(poolId, out var archetype))
         {
-            var entity = entities[entityIds[i]];
-            world.Remove<T1, T2>(entity);
+            for (var i = 0; i < entityIds.Length; i++)
+            {
+                var entity = _entities![entityIds[i]];
+                _world!.AddRange(entity, archetype);
+            }
+        }
+        else
+        {
+            for (var i = 0; i < entityIds.Length; i++)
+            {
+                var entity = _entities![entityIds[i]];
+                _world!.Add<T1>(entity);
+            }
         }
     }
 
-    public override void RemoveComponent<T1, T2, T3>(in int[] entityIds, in int poolId = -1)
+    public override void AddComponent<T1, T2>(in Span<int> entityIds, in int poolId = -1)
     {
-        for (var i = 0; i < entityIds.Length; i++)
+        if (_archetypes!.TryGetValue(poolId, out var archetype))
         {
-            var entity = entities[entityIds[i]];
-            world.Remove<T1, T2, T3>(entity);
+            for (var i = 0; i < entityIds.Length; i++)
+            {
+                var entity = _entities![entityIds[i]];
+                _world!.AddRange(entity, archetype);
+            }
+        }
+        else
+        {
+            for (var i = 0; i < entityIds.Length; i++)
+            {
+                var entity = _entities![entityIds[i]];
+                _world!.Add<T1, T2>(entity);
+            }
         }
     }
 
-    public override void RemoveComponent<T1, T2, T3, T4>(in int[] entityIds, in int poolId = -1)
+    public override void AddComponent<T1, T2, T3>(in Span<int> entityIds, in int poolId = -1)
     {
-        for (var i = 0; i < entityIds.Length; i++)
+        if (_archetypes!.TryGetValue(poolId, out var archetype))
         {
-            var entity = entities[entityIds[i]];
-            world.Remove<T1, T2, T3, T4>(entity);
+            for (var i = 0; i < entityIds.Length; i++)
+            {
+                var entity = _entities![entityIds[i]];
+                _world!.AddRange(entity, archetype);
+            }
+        }
+        else
+        {
+            for (var i = 0; i < entityIds.Length; i++)
+            {
+                var entity = _entities![entityIds[i]];
+                _world!.Add<T1, T2, T3>(entity);
+            }
+        }
+    }
+
+    public override void AddComponent<T1, T2, T3, T4>(in Span<int> entityIds, in int poolId = -1)
+    {
+        if (_archetypes!.TryGetValue(poolId, out var archetype))
+        {
+            for (var i = 0; i < entityIds.Length; i++)
+            {
+                var entity = _entities![entityIds[i]];
+                _world!.AddRange(entity, archetype);
+            }
+        }
+        else
+        {
+            for (var i = 0; i < entityIds.Length; i++)
+            {
+                var entity = _entities![entityIds[i]];
+                _world!.Add<T1, T2, T3, T4>(entity);
+            }
+        }
+    }
+
+    public override void RemoveComponent<T1>(in Span<int> entityIds, in int poolId = -1)
+    {
+        if (_archetypes!.TryGetValue(poolId, out var archetype))
+        {
+            for (var i = 0; i < entityIds.Length; i++)
+            {
+                var entity = _entities![entityIds[i]];
+                _world!.RemoveRange(entity, archetype);
+            }
+        }
+        else
+        {
+            for (var i = 0; i < entityIds.Length; i++)
+            {
+                var entity = _entities![entityIds[i]];
+                _world!.Remove<T1>(entity);
+            }
+        }
+    }
+
+    public override void RemoveComponent<T1, T2>(in Span<int> entityIds, in int poolId = -1)
+    {
+        if (_archetypes!.TryGetValue(poolId, out var archetype))
+        {
+            for (var i = 0; i < entityIds.Length; i++)
+            {
+                var entity = _entities![entityIds[i]];
+                _world!.RemoveRange(entity, archetype);
+            }
+        }
+        else
+        {
+            for (var i = 0; i < entityIds.Length; i++)
+            {
+                var entity = _entities![entityIds[i]];
+                _world!.Remove<T1, T2>(entity);
+            }
+        }
+    }
+
+    public override void RemoveComponent<T1, T2, T3>(in Span<int> entityIds, in int poolId = -1)
+    {
+        if (_archetypes!.TryGetValue(poolId, out var archetype))
+        {
+            for (var i = 0; i < entityIds.Length; i++)
+            {
+                var entity = _entities![entityIds[i]];
+                _world!.RemoveRange(entity, archetype);
+            }
+        }
+        else
+        {
+            for (var i = 0; i < entityIds.Length; i++)
+            {
+                var entity = _entities![entityIds[i]];
+                _world!.Remove<T1, T2, T3>(entity);
+            }
+        }
+    }
+
+    public override void RemoveComponent<T1, T2, T3, T4>(in Span<int> entityIds, in int poolId = -1)
+    {
+        if (_archetypes!.TryGetValue(poolId, out var archetype))
+        {
+            for (var i = 0; i < entityIds.Length; i++)
+            {
+                var entity = _entities![entityIds[i]];
+                _world!.RemoveRange(entity, archetype);
+            }
+        }
+        else
+        {
+            for (var i = 0; i < entityIds.Length; i++)
+            {
+                var entity = _entities![entityIds[i]];
+                _world!.Remove<T1, T2, T3, T4>(entity);
+            }
         }
     }
 }

@@ -6,33 +6,28 @@
         <ImplicitUsings>disable</ImplicitUsings>
         <Nullable>disable</Nullable>
         <DefineConstants Condition="'$(CheckCacheMisses)' == 'true'">CHECK_CACHE_MISSES</DefineConstants>
-    </PropertyGroup>
-
-    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-        <DebugType>pdbonly</DebugType>
-    </PropertyGroup>
-
-    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
         <DebugSymbols>true</DebugSymbols>
         <DebugType>pdbonly</DebugType>
     </PropertyGroup>
 
+    <!-- NUGET REFERENCES -->
     <ItemGroup>
         <PackageReference Include="BenchmarkDotNet" Version="0.13.12"/>
-        <PackageReference Include="BenchmarkDotNet.Diagnostics.Windows" Version="0.13.12"/>
     </ItemGroup>
 
+    <!-- SUPPORT REFERENCES -->
     <ItemGroup>
         <ProjectReference Include="..\Benchmark._Context\Benchmark._Context.csproj"/>
     </ItemGroup>
-    
+
+    <!-- REFERENCES TO ECS IMPLEMENTATIONS -->
     <ItemGroup>
         <ProjectReference Include="..\Benchmark.Arch\Benchmark.Arch.csproj"/>
         <ProjectReference Include="..\Benchmark.Morpeh\Benchmark.Morpeh.csproj"/>
+        <ProjectReference Include="..\Benchmark.Fennecs\Benchmark.Fennecs.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Utils\ArrayExtensions\"/>
     </ItemGroup>
 
 </Project>

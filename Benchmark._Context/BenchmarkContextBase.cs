@@ -14,20 +14,20 @@ public abstract class BenchmarkContextBase : IDisposable
     /// <summary>
     /// Place where you can set up your stashes, caches, etc.
     /// </summary>
-    /// <param name="poolId"> Id of cache - will be passed to <see cref="CreateEntity{T1}"/>, <see cref="AddComponent{T1}"/>, <see cref="RemoveComponent{T1}"/>. </param>
+    /// <param name="poolId"> Id of cache - will be passed to <see cref="CreateEntities{T1}"/>, <see cref="AddComponent{T1}"/>, <see cref="RemoveComponent{T1}"/>. </param>
     public abstract void Warmup<T1>(int poolId) where T1 : struct, MorpehComponent;
 
     /// <summary>
     /// Place where you can set up your stashes, caches, etc.
     /// </summary>
-    /// <param name="poolId"> Id of cache - will be passed to <see cref="CreateEntity{T1, T2}"/>, <see cref="AddComponent{T1, T2}"/>, <see cref="RemoveComponent{T1, T2}"/>. </param>
+    /// <param name="poolId"> Id of cache - will be passed to <see cref="CreateEntities{T1,T2}"/>, <see cref="AddComponent{T1, T2}"/>, <see cref="RemoveComponent{T1, T2}"/>. </param>
     public abstract void Warmup<T1, T2>(int poolId)
         where T1 : struct, MorpehComponent where T2 : struct, MorpehComponent;
 
     /// <summary>
     /// Place where you can set up your stashes, caches, etc.
     /// </summary>
-    /// <param name="poolId"> Id of cache - will be passed to <see cref="CreateEntity{T1, T2, T3}"/>, <see cref="AddComponent{T1, T2, T3}"/>, <see cref="RemoveComponent{T1, T2, T3}"/>. </param>
+    /// <param name="poolId"> Id of cache - will be passed to <see cref="CreateEntities{T1,T2,T3}"/>, <see cref="AddComponent{T1, T2, T3}"/>, <see cref="RemoveComponent{T1, T2, T3}"/>. </param>
     public abstract void Warmup<T1, T2, T3>(int poolId) where T1 : struct, MorpehComponent
         where T2 : struct, MorpehComponent
         where T3 : struct, MorpehComponent;
@@ -35,7 +35,7 @@ public abstract class BenchmarkContextBase : IDisposable
     /// <summary>
     /// Place where you can set up your stashes, caches, etc.
     /// </summary>
-    /// <param name="poolId"> Id of cache - will be passed to <see cref="CreateEntity{T1, T2, T3, T4}"/>, <see cref="AddComponent{T1, T2, T3, T4}"/>, <see cref="RemoveComponent{T1, T2, T3, T4}"/>. </param>
+    /// <param name="poolId"> Id of cache - will be passed to <see cref="CreateEntities{T1,T2,T3,T4}"/>, <see cref="AddComponent{T1, T2, T3, T4}"/>, <see cref="RemoveComponent{T1, T2, T3, T4}"/>. </param>
     public abstract void Warmup<T1, T2, T3, T4>(int poolId) where T1 : struct, MorpehComponent
         where T2 : struct, MorpehComponent
         where T3 : struct, MorpehComponent
@@ -66,39 +66,44 @@ public abstract class BenchmarkContextBase : IDisposable
     /// <summary>
     /// Create empty entity.
     /// </summary>
+    /// <param name="entityIds"> Span of entity ids to fill.</param>
     /// <returns> Sequence number of created entity - this will be used as argument in entity manipulation. </returns>
-    public abstract int CreateEntity();
+    public abstract void CreateEntities(in Span<int> entityIds);
 
     /// <summary>
     /// Create entity with components.
     /// </summary>
+    /// <param name="entityIds"> Span of entity ids to fill.</param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1}"/></param>
     /// <returns> Sequence number of created entity - this will be used as argument in entity manipulation. </returns>
-    public abstract int CreateEntity<T1>(in int poolId = -1) where T1 : struct, MorpehComponent;
+    public abstract void CreateEntities<T1>(in Span<int> entityIds, in int poolId = -1) where T1 : struct, MorpehComponent;
 
     /// <summary>
     /// Create entity with components.
     /// </summary>
+    /// <param name="entityIds"> Span of entity ids to fill.</param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1, T2}"/></param>
     /// <returns> Sequence number of created entity - this will be used as argument in entity manipulation. </returns>
-    public abstract int CreateEntity<T1, T2>(in int poolId = -1) where T1 : struct, MorpehComponent
+    public abstract void CreateEntities<T1, T2>(in Span<int> entityIds, in int poolId = -1) where T1 : struct, MorpehComponent
         where T2 : struct, MorpehComponent;
 
     /// <summary>
     /// Create entity with components.
     /// </summary>
+    /// <param name="entityIds"> Span of entity ids to fill.</param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1, T2, T3}"/></param>
     /// <returns> Sequence number of created entity - this will be used as argument in entity manipulation. </returns>
-    public abstract int CreateEntity<T1, T2, T3>(in int poolId = -1) where T1 : struct, MorpehComponent
+    public abstract void CreateEntities<T1, T2, T3>(in Span<int> entityIds, in int poolId = -1) where T1 : struct, MorpehComponent
         where T2 : struct, MorpehComponent
         where T3 : struct, MorpehComponent;
 
     /// <summary>
     /// Create entity with components.
     /// </summary>
+    /// <param name="entityIds"> Span of entity ids to fill.</param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1, T2, T3, T4}"/></param>
     /// <returns> Sequence number of created entity - this will be used as argument in entity manipulation. </returns>
-    public abstract int CreateEntity<T1, T2, T3, T4>(in int poolId = -1) where T1 : struct, MorpehComponent
+    public abstract void CreateEntities<T1, T2, T3, T4>(in Span<int> entityIds, in int poolId = -1) where T1 : struct, MorpehComponent
         where T2 : struct, MorpehComponent
         where T3 : struct, MorpehComponent
         where T4 : struct, MorpehComponent;
@@ -106,32 +111,32 @@ public abstract class BenchmarkContextBase : IDisposable
     /// <summary>
     /// Add component to entity.
     /// </summary>
-    /// <param name="entityIds"> Sequence identifier returned by <see cref="CreateEntity"/> </param>
+    /// <param name="entityIds"> Sequence identifier returned by <see cref="CreateEntities"/> </param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1}"/></param>
-    public abstract void AddComponent<T1>(in int[] entityIds, in int poolId = -1) where T1 : struct, MorpehComponent;
+    public abstract void AddComponent<T1>(in Span<int> entityIds, in int poolId = -1) where T1 : struct, MorpehComponent;
 
     /// <summary>
     /// Add components to entity.
     /// </summary>
-    /// <param name="entityIds"> Sequence identifier returned by <see cref="CreateEntity"/> </param>
+    /// <param name="entityIds"> Sequence identifier returned by <see cref="CreateEntities"/> </param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1, T2}"/></param>
-    public abstract void AddComponent<T1, T2>(in int[] entityIds, in int poolId = -1) where T1 : struct, MorpehComponent
+    public abstract void AddComponent<T1, T2>(in Span<int> entityIds, in int poolId = -1) where T1 : struct, MorpehComponent
         where T2 : struct, MorpehComponent;
 
     /// <summary>
     /// Add components to entity.
     /// </summary>
-    /// <param name="entityIds"> Sequence identifier returned by <see cref="CreateEntity"/> </param>
+    /// <param name="entityIds"> Sequence identifier returned by <see cref="CreateEntities"/> </param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1, T2, T3}"/></param>
-    public abstract void AddComponent<T1, T2, T3>(in int[] entityIds, in int poolId = -1)
+    public abstract void AddComponent<T1, T2, T3>(in Span<int> entityIds, in int poolId = -1)
         where T1 : struct, MorpehComponent where T2 : struct, MorpehComponent where T3 : struct, MorpehComponent;
 
     /// <summary>
     /// Add components to entity.
     /// </summary>
-    /// <param name="entityIds"> Sequence identifier returned by <see cref="CreateEntity"/> </param>
+    /// <param name="entityIds"> Sequence identifier returned by <see cref="CreateEntities"/> </param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1, T2, T3, T4}"/></param>
-    public abstract void AddComponent<T1, T2, T3, T4>(in int[] entityIds, in int poolId = -1)
+    public abstract void AddComponent<T1, T2, T3, T4>(in Span<int> entityIds, in int poolId = -1)
         where T1 : struct, MorpehComponent
         where T2 : struct, MorpehComponent
         where T3 : struct, MorpehComponent
@@ -140,32 +145,32 @@ public abstract class BenchmarkContextBase : IDisposable
     /// <summary>
     /// Removes component to entity.
     /// </summary>
-    /// <param name="entityIds"> Sequence identifier returned by <see cref="CreateEntity"/> </param>
+    /// <param name="entityIds"> Sequence identifier returned by <see cref="CreateEntities"/> </param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1}"/></param>
-    public abstract void RemoveComponent<T1>(in int[] entityIds, in int poolId = -1) where T1 : struct, MorpehComponent;
+    public abstract void RemoveComponent<T1>(in Span<int> entityIds, in int poolId = -1) where T1 : struct, MorpehComponent;
 
     /// <summary>
     /// Removes component to entity.
     /// </summary>
-    /// <param name="entityIds"> Sequence identifier returned by <see cref="CreateEntity"/> </param>
+    /// <param name="entityIds"> Sequence identifier returned by <see cref="CreateEntities"/> </param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1, T2}"/></param>
-    public abstract void RemoveComponent<T1, T2>(in int[] entityIds, in int poolId = -1)
+    public abstract void RemoveComponent<T1, T2>(in Span<int> entityIds, in int poolId = -1)
         where T1 : struct, MorpehComponent where T2 : struct, MorpehComponent;
 
     /// <summary>
     /// Removes component to entity.
     /// </summary>
-    /// <param name="entityIds"> Sequence identifier returned by <see cref="CreateEntity"/> </param>
+    /// <param name="entityIds"> Sequence identifier returned by <see cref="CreateEntities"/> </param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1, T2, T3}"/></param>
-    public abstract void RemoveComponent<T1, T2, T3>(in int[] entityIds, in int poolId = -1)
+    public abstract void RemoveComponent<T1, T2, T3>(in Span<int> entityIds, in int poolId = -1)
         where T1 : struct, MorpehComponent where T2 : struct, MorpehComponent where T3 : struct, MorpehComponent;
 
     /// <summary>
     /// Removes component to entity.
     /// </summary>
-    /// <param name="entityIds"> Sequence identifier returned by <see cref="CreateEntity"/> </param>
+    /// <param name="entityIds"> Sequence identifier returned by <see cref="CreateEntities"/> </param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1, T2, T3, T4}"/></param>
-    public abstract void RemoveComponent<T1, T2, T3, T4>(in int[] entityIds, in int poolId = -1)
+    public abstract void RemoveComponent<T1, T2, T3, T4>(in Span<int> entityIds, in int poolId = -1)
         where T1 : struct, MorpehComponent
         where T2 : struct, MorpehComponent
         where T3 : struct, MorpehComponent

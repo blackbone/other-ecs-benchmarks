@@ -14,13 +14,13 @@ using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Engines;
 using BenchmarkDotNet.Exporters;
 using BenchmarkDotNet.Jobs;
-using BenchmarkDotNet.Order;
 using BenchmarkDotNet.Running;
 
 PreloadAssemblies();
 
 // configure runner
 IConfig configuration = DefaultConfig.Instance
+        // .AddJob(Job.ShortRun)
         .AddJob(Job.Default
             .WithUnrollFactor(16)
             .WithStrategy(RunStrategy.Throughput)
@@ -29,8 +29,8 @@ IConfig configuration = DefaultConfig.Instance
         .AddExporter(MarkdownExporter.GitHub)
         .WithOptions(ConfigOptions.DisableOptimizationsValidator)
         .WithOption(ConfigOptions.JoinSummary, true)
-        .WithOrderer(new DefaultOrderer(SummaryOrderPolicy.FastestToSlowest))
-        .HideColumns(Column.Gen0, Column.Gen1, Column.Gen2, Column.Error, Column.StdDev, Column.Method)
+        .HideColumns(Column.Gen0, Column.Gen1, Column.Gen2, Column.Error, Column.Type)
+        .AddColumn(new ContextColumn())
     ;
 
 var contextTypes = GetNestedTypes(typeof(BenchmarkContextBase),
@@ -55,12 +55,17 @@ var contents = Directory.GetFiles("./.benchmark_results", "*.md", SearchOption.A
     .ToArray();
 
 var content = new List<string>();
-content.AddRange(contents[0].Item2[..11]);
+var i = 1;
+while (!contents[0].Item2[i].StartsWith("```")) i++;
+
+i++;
+content.AddRange(contents[0].Item2[..i]);
 content.Add(string.Empty);
+
 foreach (var (benchmark, reportContent) in contents)
 {
     content.Add($"# {benchmark}");
-    content.AddRange(reportContent[11..]);
+    content.AddRange(reportContent[i..]);
     content.Add(string.Empty);
 }
 

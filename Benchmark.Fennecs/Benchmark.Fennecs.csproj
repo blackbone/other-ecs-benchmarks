@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <LangVersion>12</LangVersion>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Benchmark._Context\Benchmark._Context.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="fennecs" Version="0.3.5-beta" />
+    </ItemGroup>
+
+</Project>

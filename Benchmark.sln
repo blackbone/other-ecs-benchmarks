@@ -11,9 +11,13 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{A9BEBE75-A6D9-4FFB-8FC4-CF42FB6D10F9}"
 	ProjectSection(SolutionItems) = preProject
 		Benchmark.sh = Benchmark.sh
+		report.md = report.md
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Benchmark.LeoEcs", "Benchmark.LeoEcs\Benchmark.LeoEcs.csproj", "{5D7B894E-121B-42EA-A724-146F6517FEFB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Benchmark.Fennecs", "Benchmark.Fennecs\Benchmark.Fennecs.csproj", "{8C27D810-8307-4EB8-8F97-47D8D3493074}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,5 +45,9 @@ Global
 		{5D7B894E-121B-42EA-A724-146F6517FEFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5D7B894E-121B-42EA-A724-146F6517FEFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5D7B894E-121B-42EA-A724-146F6517FEFB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C27D810-8307-4EB8-8F97-47D8D3493074}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C27D810-8307-4EB8-8F97-47D8D3493074}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C27D810-8307-4EB8-8F97-47D8D3493074}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C27D810-8307-4EB8-8F97-47D8D3493074}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
