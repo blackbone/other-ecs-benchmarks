@@ -27,11 +27,11 @@ General flow of any benchmark execution is divided into 3 steps:
 
 # Implemented contexts
 
-|      ECS | Version                                                              |     Implemented     |      Verified       |
-|---------:|:---------------------------------------------------------------------|:-------------------:|:-------------------:|
-|     Arch | [1.2.8](https://www.nuget.org/packages/Arch/1.2.8)                   | :heavy_check_mark:  | :white_check_mark:  |
-|  fennecs | [0.3.5-beta](https://www.nuget.org/packages/fennecs/0.3.5-beta)      | :heavy_check_mark:  | :white_check_mark:  |
-|   Morpeh | [2023.1.0](https://www.nuget.org/packages/Scellecs.Morpeh/2023.1.0)  | :heavy_check_mark:  | :white_check_mark:  |
+|      ECS | Version                                                              | Implemented | Verified |
+|---------:|:---------------------------------------------------------------------|-------------|----------|
+|     Arch | [1.2.8](https://www.nuget.org/packages/Arch/1.2.8)                   | ✅           | ❌        |
+|  fennecs | [0.3.5-beta](https://www.nuget.org/packages/fennecs/0.3.5-beta)      | ✅           | ❌        |
+|   Morpeh | [2023.1.0](https://www.nuget.org/packages/Scellecs.Morpeh/2023.1.0)  | ✅           | ❌        |
 
 # Implemented benchmarks
 
