@@ -1,23 +1,18 @@
 using Benchmark._Context;
-using Benchmark.Utils;
 using BenchmarkDotNet.Attributes;
 
-namespace Benchmark.Benchmarks;
+namespace Benchmark.Benchmarks.AddComponent;
 
 public abstract class AddComponentBase<T> : BenchmarkBase<T> where T : BenchmarkContextBase, new()
 {
-    protected int[] EntityIds;
-
+    protected object EntitySet { get; private set; }
+    
     [Params(true, false)] public bool Random { get; set; }
 
     protected override void OnSetup()
     {
-        EntityIds = new int[EntityCount];
-        Context.CreateEntities(EntityIds);
-        if (Random) EntityIds.Shuffle();
-    }
-
-    protected sealed override void OnCleanup()
-    {
+        EntitySet = Context.PrepareSet(EntityCount);
+        Context.CreateEntities(EntitySet);
+        if (Random) EntitySet = Context.Shuffle(EntitySet);
     }
 }

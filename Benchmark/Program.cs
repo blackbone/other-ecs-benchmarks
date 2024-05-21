@@ -9,6 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Benchmark;
 using Benchmark._Context;
+using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Columns;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Engines;
@@ -16,35 +17,58 @@ using BenchmarkDotNet.Exporters;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
 
+// parse cmd args
+var options = ParseCommandLineArgs(args);
+
+// preload assemblies
 PreloadAssemblies();
+
+// configure jobs
+var clearEachInvocationJob = Job.Dry
+    .WithInvocationCount(1)
+    .WithIterationCount(1)
+    .WithStrategy(RunStrategy.Throughput)
+    .WithAnalyzeLaunchVariance(true)
+    .Apply();
+var precisionJob = Job.Default
+    .WithUnrollFactor(16)
+    .WithStrategy(RunStrategy.Throughput)
+    .WithAnalyzeLaunchVariance(true)
+    .Apply();
 
 // configure runner
 IConfig configuration = DefaultConfig.Instance
-        // .AddJob(Job.ShortRun)
-        .AddJob(Job.Default
-            .WithUnrollFactor(16)
-            .WithStrategy(RunStrategy.Throughput)
-            .WithAnalyzeLaunchVariance(true)
-            .Apply())
-        .AddExporter(MarkdownExporter.GitHub)
-        .WithOptions(ConfigOptions.DisableOptimizationsValidator)
-        .WithOption(ConfigOptions.JoinSummary, true)
-        .HideColumns(Column.Gen0, Column.Gen1, Column.Gen2, Column.Error, Column.Type)
-        .AddColumn(new ContextColumn())
+    .AddExporter(MarkdownExporter.GitHub)
+    .WithOptions(ConfigOptions.DisableOptimizationsValidator)
+    .WithOption(ConfigOptions.JoinSummary, true)
+    .HideColumns(Column.Gen0, Column.Gen1, Column.Gen2, Column.Type)
+    .AddColumn(new ContextColumn())
     ;
 
-var contextTypes = GetNestedTypes(typeof(BenchmarkContextBase),
-    static t => t is { IsAbstract: false, IsGenericType: false });
-var baseBenchmarkTypes =
-    GetNestedTypes(typeof(BenchmarkBase), static t => t is { IsAbstract: false, IsGenericType: true });
+var contextTypes = GetNestedTypes(typeof(BenchmarkContextBase), static t => t is { IsAbstract: false, IsGenericType: false });
+if (options.Contexts is { Length: > 0 }) contextTypes = contextTypes.Where(ctx => options.Contexts.Any(c => ctx.Name.Contains(c))).ToArray();
+
+var baseBenchmarkTypes = GetNestedTypes(typeof(BenchmarkBase), static t => t is { IsAbstract: false, IsGenericType: true });
+if (options.Benchmarks is { Length: > 0 }) baseBenchmarkTypes = baseBenchmarkTypes.Where(ctx => options.Benchmarks.Any(c => ctx.Name.Contains(c))).ToArray();
+
+Console.WriteLine("Benchmarks:");
+Console.WriteLine(string.Join("\n", baseBenchmarkTypes.Select(b => $"\t{b.Name}")));
+Console.WriteLine();
+
+Console.WriteLine("Contexts:");
+Console.WriteLine(string.Join("\n", contextTypes.Select(b => $"\t{b.Name}")));
+Console.WriteLine();
 
 // run benchmarks
 foreach (var baseBenchmarkType in baseBenchmarkTypes)
 {
     var benchmarkTypes = contextTypes.Select(contextType => baseBenchmarkType.MakeGenericType(contextType)).ToArray();
     var benchmarkSwitcher = BenchmarkSwitcher.FromTypes(benchmarkTypes.ToArray());
-    if (args.Length > 0) benchmarkSwitcher.Run(args, configuration);
-    else benchmarkSwitcher.RunAll(configuration);
+    
+    if (baseBenchmarkType.GetCustomAttribute<BenchmarkCategoryAttribute>()?.Categories.Contains(Categories.PerInvocationSetup) ?? false)
+        benchmarkSwitcher.RunAll(configuration.AddJob(clearEachInvocationJob));
+    else
+        benchmarkSwitcher.RunAll(configuration.AddJob(precisionJob));
 }
 
 // join reports
@@ -54,17 +78,21 @@ var contents = Directory.GetFiles("./.benchmark_results", "*.md", SearchOption.A
         File.ReadLines(file).ToArray()))
     .ToArray();
 
+// find and add header
 var content = new List<string>();
 var i = 1;
 while (!contents[0].Item2[i].StartsWith("```")) i++;
-
 i++;
 content.AddRange(contents[0].Item2[..i]);
 content.Add(string.Empty);
 
+// add benchmark contents
 foreach (var (benchmark, reportContent) in contents)
 {
     content.Add($"# {benchmark}");
+    i = 1;
+    while (!contents[0].Item2[i].StartsWith("```")) i++;
+    i++;
     content.AddRange(reportContent[i..]);
     content.Add(string.Empty);
 }
@@ -73,7 +101,7 @@ File.WriteAllText("./report.md", string.Join("\r\n", content), Encoding.UTF8);
 
 return 0;
 
-void PreloadAssemblies()
+static void PreloadAssemblies()
 {
     var loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies().ToList();
     if (loadedAssemblies.Count == 0) return;
@@ -87,8 +115,22 @@ void PreloadAssemblies()
     toLoad.ForEach(path => loadedAssemblies.Add(AppDomain.CurrentDomain.Load(AssemblyName.GetAssemblyName(path))));
 }
 
-Type[] GetNestedTypes(Type baseType, Predicate<Type> filter)
+static Type[] GetNestedTypes(Type baseType, Predicate<Type> filter)
 {
     return AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.GetTypes())
         .Where(t => t.IsSubclassOf(baseType) && filter(t)).ToArray();
+}
+
+static Options ParseCommandLineArgs(in string[] args)
+{
+    var result = new Options();
+
+    var i = 0;
+    while (i < args.Length)
+    {
+        if (args[i].StartsWith("contexts=")) result.Contexts = args[i].Split("=")[1].Split(",");
+        if (args[i].StartsWith("benchmarks=")) result.Benchmarks = args[i].Split("=")[1].Split(",");
+        i++;
+    }
+    return result;
 }

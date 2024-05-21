@@ -1,10 +1,10 @@
 using Benchmark._Context;
 using BenchmarkDotNet.Attributes;
 
-namespace Benchmark.Benchmarks;
+namespace Benchmark.Benchmarks.AddComponent;
 
 [ArtifactsPath(".benchmark_results/" + nameof(Add2Components<T>))]
-[BenchmarkCategory(Categories.StructuralChanges)]
+[BenchmarkCategory(Categories.PerInvocationSetup)]
 [MemoryDiagnoser]
 #if CHECK_CACHE_MISSES
 [HardwareCounters(BenchmarkDotNet.Diagnosers.HardwareCounter.CacheMisses)]
@@ -17,11 +17,17 @@ public class Add2Components<T> : AddComponentBase<T> where T : BenchmarkContextB
         Context.Warmup<Component1, Component2>(0);
     }
 
+    protected override void OnCleanup()
+    {
+        base.OnCleanup();
+        Context.RemoveComponent<Component1, Component2>(EntitySet, 0);
+    }
+
     [Benchmark]
     public void UseCache()
     {
         Context.Lock();
-        Context.AddComponent<Component1, Component2>(EntityIds, 0);
+        Context.AddComponent<Component1, Component2>(EntitySet, 0);
         Context.Commit();
     }
 
@@ -29,7 +35,7 @@ public class Add2Components<T> : AddComponentBase<T> where T : BenchmarkContextB
     public void NoCache()
     {
         Context.Lock();
-        Context.AddComponent<Component1, Component2>(EntityIds);
+        Context.AddComponent<Component1, Component2>(EntitySet);
         Context.Commit();
     }
 }

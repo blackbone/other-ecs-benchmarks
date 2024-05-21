@@ -1,6 +1,5 @@
 using MorpehComponent = Scellecs.Morpeh.IComponent;
 
-
 namespace Benchmark._Context;
 
 public abstract class BenchmarkContextBase : IDisposable
@@ -10,7 +9,7 @@ public abstract class BenchmarkContextBase : IDisposable
     /// </summary>
     /// <param name="entityCount"> Amount of entities will be used in benchmark. </param>
     public abstract void Setup(int entityCount);
-
+    
     /// <summary>
     /// Place where you can set up your stashes, caches, etc.
     /// </summary>
@@ -66,44 +65,43 @@ public abstract class BenchmarkContextBase : IDisposable
     /// <summary>
     /// Create empty entity.
     /// </summary>
-    /// <param name="entityIds"> Span of entity ids to fill.</param>
-    /// <returns> Sequence number of created entity - this will be used as argument in entity manipulation. </returns>
-    public abstract void CreateEntities(in Span<int> entityIds);
+    /// <param name="entitySet"> Entity set object returned by <see cref="CreateEntities"/> </param>
+    public abstract void CreateEntities(in object entitySet);
 
     /// <summary>
     /// Create entity with components.
     /// </summary>
-    /// <param name="entityIds"> Span of entity ids to fill.</param>
+    /// <param name="entitySet"> Entity set object returned by <see cref="CreateEntities"/> </param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1}"/></param>
-    /// <returns> Sequence number of created entity - this will be used as argument in entity manipulation. </returns>
-    public abstract void CreateEntities<T1>(in Span<int> entityIds, in int poolId = -1) where T1 : struct, MorpehComponent;
+    /// <returns> Entity set identifier. Literally it can be anything, filter, query ids array, whatever. Will be used as argument in <see cref="AddComponent{T1}"/>, <see cref="RemoveComponent{T1}"/>, <see cref="DeleteEntities{T1}"/> </returns>
+    public abstract void CreateEntities<T1>(in object entitySet, in int poolId = -1) where T1 : struct, MorpehComponent;
 
     /// <summary>
     /// Create entity with components.
     /// </summary>
-    /// <param name="entityIds"> Span of entity ids to fill.</param>
+    /// <param name="entitySet"> Entity set object returned by <see cref="CreateEntities"/> </param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1, T2}"/></param>
-    /// <returns> Sequence number of created entity - this will be used as argument in entity manipulation. </returns>
-    public abstract void CreateEntities<T1, T2>(in Span<int> entityIds, in int poolId = -1) where T1 : struct, MorpehComponent
+    /// <returns> Entity set identifier. Literally it can be anything, filter, query ids array, whatever. Will be used as argument in <see cref="AddComponent{T1}"/>, <see cref="RemoveComponent{T1}"/>, <see cref="DeleteEntities{T1}"/> </returns>
+    public abstract void CreateEntities<T1, T2>(in object entitySet, in int poolId = -1) where T1 : struct, MorpehComponent
         where T2 : struct, MorpehComponent;
 
     /// <summary>
     /// Create entity with components.
     /// </summary>
-    /// <param name="entityIds"> Span of entity ids to fill.</param>
+    /// <param name="entitySet"> Entity set object returned by <see cref="CreateEntities"/> </param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1, T2, T3}"/></param>
-    /// <returns> Sequence number of created entity - this will be used as argument in entity manipulation. </returns>
-    public abstract void CreateEntities<T1, T2, T3>(in Span<int> entityIds, in int poolId = -1) where T1 : struct, MorpehComponent
+    /// <returns> Entity set identifier. Literally it can be anything, filter, query ids array, whatever. Will be used as argument in <see cref="AddComponent{T1}"/>, <see cref="RemoveComponent{T1}"/>, <see cref="DeleteEntities{T1}"/> </returns>
+    public abstract void CreateEntities<T1, T2, T3>(in object entitySet, in int poolId = -1) where T1 : struct, MorpehComponent
         where T2 : struct, MorpehComponent
         where T3 : struct, MorpehComponent;
 
     /// <summary>
     /// Create entity with components.
     /// </summary>
-    /// <param name="entityIds"> Span of entity ids to fill.</param>
+    /// <param name="entitySet"> Entity set object returned by <see cref="CreateEntities"/> </param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1, T2, T3, T4}"/></param>
-    /// <returns> Sequence number of created entity - this will be used as argument in entity manipulation. </returns>
-    public abstract void CreateEntities<T1, T2, T3, T4>(in Span<int> entityIds, in int poolId = -1) where T1 : struct, MorpehComponent
+    /// <returns> Entity set identifier. Literally it can be anything, filter, query ids array, whatever. Will be used as argument in <see cref="AddComponent{T1}"/>, <see cref="RemoveComponent{T1}"/>, <see cref="DeleteEntities{T1}"/> </returns>
+    public abstract void CreateEntities<T1, T2, T3, T4>(in object entitySet, in int poolId = -1) where T1 : struct, MorpehComponent
         where T2 : struct, MorpehComponent
         where T3 : struct, MorpehComponent
         where T4 : struct, MorpehComponent;
@@ -111,32 +109,32 @@ public abstract class BenchmarkContextBase : IDisposable
     /// <summary>
     /// Add component to entity.
     /// </summary>
-    /// <param name="entityIds"> Sequence identifier returned by <see cref="CreateEntities"/> </param>
+    /// <param name="entitySet"> Entity set object returned by <see cref="CreateEntities"/> </param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1}"/></param>
-    public abstract void AddComponent<T1>(in Span<int> entityIds, in int poolId = -1) where T1 : struct, MorpehComponent;
+    public abstract void AddComponent<T1>(in object entitySet, in int poolId = -1) where T1 : struct, MorpehComponent;
 
     /// <summary>
     /// Add components to entity.
     /// </summary>
-    /// <param name="entityIds"> Sequence identifier returned by <see cref="CreateEntities"/> </param>
+    /// <param name="entitySet"> Entity set object returned by <see cref="CreateEntities"/> </param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1, T2}"/></param>
-    public abstract void AddComponent<T1, T2>(in Span<int> entityIds, in int poolId = -1) where T1 : struct, MorpehComponent
+    public abstract void AddComponent<T1, T2>(in object entitySet, in int poolId = -1) where T1 : struct, MorpehComponent
         where T2 : struct, MorpehComponent;
 
     /// <summary>
     /// Add components to entity.
     /// </summary>
-    /// <param name="entityIds"> Sequence identifier returned by <see cref="CreateEntities"/> </param>
+    /// <param name="entitySet"> Entity set object returned by <see cref="CreateEntities"/> </param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1, T2, T3}"/></param>
-    public abstract void AddComponent<T1, T2, T3>(in Span<int> entityIds, in int poolId = -1)
+    public abstract void AddComponent<T1, T2, T3>(in object entitySet, in int poolId = -1)
         where T1 : struct, MorpehComponent where T2 : struct, MorpehComponent where T3 : struct, MorpehComponent;
 
     /// <summary>
     /// Add components to entity.
     /// </summary>
-    /// <param name="entityIds"> Sequence identifier returned by <see cref="CreateEntities"/> </param>
+    /// <param name="entitySet"> Entity set object returned by <see cref="CreateEntities"/> </param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1, T2, T3, T4}"/></param>
-    public abstract void AddComponent<T1, T2, T3, T4>(in Span<int> entityIds, in int poolId = -1)
+    public abstract void AddComponent<T1, T2, T3, T4>(in object entitySet, in int poolId = -1)
         where T1 : struct, MorpehComponent
         where T2 : struct, MorpehComponent
         where T3 : struct, MorpehComponent
@@ -145,34 +143,48 @@ public abstract class BenchmarkContextBase : IDisposable
     /// <summary>
     /// Removes component to entity.
     /// </summary>
-    /// <param name="entityIds"> Sequence identifier returned by <see cref="CreateEntities"/> </param>
+    /// <param name="entitySet"> Entity set object returned by <see cref="CreateEntities"/> </param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1}"/></param>
-    public abstract void RemoveComponent<T1>(in Span<int> entityIds, in int poolId = -1) where T1 : struct, MorpehComponent;
+    public abstract void RemoveComponent<T1>(in object entitySet, in int poolId = -1) where T1 : struct, MorpehComponent;
 
     /// <summary>
     /// Removes component to entity.
     /// </summary>
-    /// <param name="entityIds"> Sequence identifier returned by <see cref="CreateEntities"/> </param>
+    /// <param name="entitySet"> Entity set object returned by <see cref="CreateEntities"/> </param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1, T2}"/></param>
-    public abstract void RemoveComponent<T1, T2>(in Span<int> entityIds, in int poolId = -1)
+    public abstract void RemoveComponent<T1, T2>(in object entitySet, in int poolId = -1)
         where T1 : struct, MorpehComponent where T2 : struct, MorpehComponent;
 
     /// <summary>
     /// Removes component to entity.
     /// </summary>
-    /// <param name="entityIds"> Sequence identifier returned by <see cref="CreateEntities"/> </param>
+    /// <param name="entitySet"> Entity set object returned by <see cref="CreateEntities"/> </param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1, T2, T3}"/></param>
-    public abstract void RemoveComponent<T1, T2, T3>(in Span<int> entityIds, in int poolId = -1)
+    public abstract void RemoveComponent<T1, T2, T3>(in object entitySet, in int poolId = -1)
         where T1 : struct, MorpehComponent where T2 : struct, MorpehComponent where T3 : struct, MorpehComponent;
 
     /// <summary>
     /// Removes component to entity.
     /// </summary>
-    /// <param name="entityIds"> Sequence identifier returned by <see cref="CreateEntities"/> </param>
+    /// <param name="entitySet"> Entity set object returned by <see cref="CreateEntities"/> </param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1, T2, T3, T4}"/></param>
-    public abstract void RemoveComponent<T1, T2, T3, T4>(in Span<int> entityIds, in int poolId = -1)
+    public abstract void RemoveComponent<T1, T2, T3, T4>(in object entitySet, in int poolId = -1)
         where T1 : struct, MorpehComponent
         where T2 : struct, MorpehComponent
         where T3 : struct, MorpehComponent
         where T4 : struct, MorpehComponent;
+
+    /// <summary>
+    /// Shuffles entities in set.
+    /// </summary>
+    /// <param name="entitySet"> Entity set object returned by <see cref="CreateEntities"/> </param>
+    /// <returns> New or existing shuffled set. </returns>
+    public abstract object Shuffle(in object entitySet);
+
+    /// <summary>
+    /// Prepares entity set.
+    /// </summary>
+    /// <param name="count"> Count of entities to be stored. </param>
+    /// <returns> New or existing shuffled set. </returns>
+    public abstract object PrepareSet(in int count);
 }

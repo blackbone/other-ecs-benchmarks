@@ -25,6 +25,8 @@ General flow of any benchmark execution is divided into 3 steps:
   * Commiting changes
 * Cleanup - mostly omited
 
+> Don't search truth here. There won't be any.
+
 # Implemented contexts
 
 |      ECS | Version                                                              | Implemented | Verified |
@@ -42,8 +44,31 @@ General flow of any benchmark execution is divided into 3 steps:
 | Add N Components                | Adds N components to [EntityCount] entities       |
 | Remove N Components             | Adds N components to [EntityCount] entities       |
 
+# Running
+
+Just call `Benchmark.sh` from terminal.
+
+Command line args:
+
+| arg       |            description             | sample                                        |
+|-----------|:----------------------------------:|-----------------------------------------------|
+| benchmark | allow to specify benchmarks to run | `benchmarks=CreateEmtyEntities,Add1Component` |
+| contexts  |  allow to specify contexts to run  | `contexts=Morpeh,Fennecs,...`                 |
+
+> Since all comparisons is made by string contains you can simply write something like `contexts=Morpeh` instead of `context=MorpehContext`
+> and `benchmarks=With1,With2` to launch subset of benchmarks.
+> Selected benchmarks and contexts will be logged to console.
+
 # Contribution
 
 - Fork
 - Implement
 - Create PR
+
+# Problems
+
+1. Because of nature of BenchmarkDotNet there's sequential iteration of creating entities happening.
+This leads to case where, for example we creating 100k entities in benchmark, it's properly cleared
+in Setup and Cleanup but benchmark itself will be called multiple times which will lead to creating 100k entities,
+then another 100k and in some cases lead to millions of entities in the world which can affect perfomance of creation
+and deletion on certain ECS implementations.
