@@ -41,7 +41,7 @@ IConfig configuration = DefaultConfig.Instance
     .AddExporter(MarkdownExporter.GitHub)
     .WithOptions(ConfigOptions.DisableOptimizationsValidator)
     .WithOption(ConfigOptions.JoinSummary, true)
-    .HideColumns(Column.Gen0, Column.Gen1, Column.Gen2, Column.Type)
+    .HideColumns(Column.Gen0, Column.Gen1, Column.Gen2, Column.Type, Column.Error)
     .AddColumn(new ContextColumn())
     ;
 
