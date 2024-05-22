@@ -7,12 +7,12 @@ public abstract class AddComponentBase<T> : BenchmarkBase<T> where T : Benchmark
 {
     protected object EntitySet { get; private set; }
     
-    [Params(true, false)] public bool Random { get; set; }
+    [Params(true, false)] public bool RandomOrder { get; set; }
 
     protected override void OnSetup()
     {
         EntitySet = Context.PrepareSet(EntityCount);
         Context.CreateEntities(EntitySet);
-        if (Random) EntitySet = Context.Shuffle(EntitySet);
+        if (RandomOrder) EntitySet = Context.Shuffle(EntitySet);
     }
 }
