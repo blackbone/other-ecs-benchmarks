@@ -19,6 +19,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Benchmark.LeoEcs", "Benchma
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Benchmark.Fennecs", "Benchmark.Fennecs\Benchmark.Fennecs.csproj", "{8C27D810-8307-4EB8-8F97-47D8D3493074}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Benchmark.DragonECS", "Benchmark.DragonECS\Benchmark.DragonECS.csproj", "{DCCDB98A-6ACD-4C04-B9CD-4337ADBC038B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Frameworks from submodules", "Frameworks from submodules", "{64C65D00-EC65-44E7-9D84-CD077BB23E45}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DragonECS", "DragonECS\DragonECS.csproj", "{42D7C2F0-9CF0-4938-999B-1DFF25E4CDF3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,5 +55,16 @@ Global
 		{8C27D810-8307-4EB8-8F97-47D8D3493074}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8C27D810-8307-4EB8-8F97-47D8D3493074}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8C27D810-8307-4EB8-8F97-47D8D3493074}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DCCDB98A-6ACD-4C04-B9CD-4337ADBC038B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DCCDB98A-6ACD-4C04-B9CD-4337ADBC038B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DCCDB98A-6ACD-4C04-B9CD-4337ADBC038B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DCCDB98A-6ACD-4C04-B9CD-4337ADBC038B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42D7C2F0-9CF0-4938-999B-1DFF25E4CDF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42D7C2F0-9CF0-4938-999B-1DFF25E4CDF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42D7C2F0-9CF0-4938-999B-1DFF25E4CDF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42D7C2F0-9CF0-4938-999B-1DFF25E4CDF3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{42D7C2F0-9CF0-4938-999B-1DFF25E4CDF3} = {64C65D00-EC65-44E7-9D84-CD077BB23E45}
 	EndGlobalSection
 EndGlobal

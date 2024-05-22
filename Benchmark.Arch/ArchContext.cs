@@ -2,6 +2,7 @@
 using Arch.Core.Extensions;
 using Arch.Core.Utils;
 using Benchmark._Context;
+// ReSharper disable ForCanBeConvertedToForeach
 
 namespace Benchmark.Arch;
 
@@ -62,7 +63,7 @@ public class ArchContext : BenchmarkContextBase
     public override void CreateEntities(in object entitySet)
     {
         var entities = (Entity[])entitySet;
-        for (int i = 0; i < entities.Length; i++)
+        for (var i = 0; i < entities.Length; i++)
             entities[i] = _world!.Create();
     }
 
@@ -71,12 +72,12 @@ public class ArchContext : BenchmarkContextBase
         var entities = (Entity[])entitySet;
         if (_archetypes!.TryGetValue(poolId, out var archetype))
         {
-            for (int i = 0; i < entities.Length; i++)
+            for (var i = 0; i < entities.Length; i++)
                 entities[i] = _world!.Create(archetype);
         }
         else
         {
-            for (int i = 0; i < entities.Length; i++)
+            for (var i = 0; i < entities.Length; i++)
                 entities[i] = _world!.Create<T1>();
         }
     }
@@ -86,12 +87,12 @@ public class ArchContext : BenchmarkContextBase
         var entities = (Entity[])entitySet;
         if (_archetypes!.TryGetValue(poolId, out var archetype))
         {
-            for (int i = 0; i < entities.Length; i++)
+            for (var i = 0; i < entities.Length; i++)
                 entities[i] = _world!.Create(archetype);
         }
         else
         {
-            for (int i = 0; i < entities.Length; i++)
+            for (var i = 0; i < entities.Length; i++)
                 entities[i] = _world!.Create<T1, T2>();
         }
     }
@@ -101,12 +102,12 @@ public class ArchContext : BenchmarkContextBase
         var entities = (Entity[])entitySet;
         if (_archetypes!.TryGetValue(poolId, out var archetype))
         {
-            for (int i = 0; i < entities.Length; i++)
+            for (var i = 0; i < entities.Length; i++)
                 entities[i] = _world!.Create(archetype);
         }
         else
         {
-            for (int i = 0; i < entities.Length; i++)
+            for (var i = 0; i < entities.Length; i++)
                 entities[i] = _world!.Create<T1, T2, T3>();
         }
     }
@@ -116,14 +117,21 @@ public class ArchContext : BenchmarkContextBase
         var entities = (Entity[])entitySet;
         if (_archetypes!.TryGetValue(poolId, out var archetype))
         {
-            for (int i = 0; i < entities.Length; i++)
+            for (var i = 0; i < entities.Length; i++)
                 entities[i] = _world!.Create(archetype);
         }
         else
         {
-            for (int i = 0; i < entities.Length; i++)
+            for (var i = 0; i < entities.Length; i++)
                 entities[i] = _world!.Create<T1, T2, T3, T4>();
         }
+    }
+
+    public override void DeleteEntities(in object entitySet)
+    {
+        var entities = (Entity[])entitySet;
+        for (var i = 0; i < entities.Length; i++)
+            _world!.Destroy(entities[i]);
     }
 
     public override void AddComponent<T1>(in object entitySet, in int poolId = -1)

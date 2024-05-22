@@ -17,6 +17,8 @@
 
     <!-- SUPPORT REFERENCES -->
     <ItemGroup>
+        <ProjectReference Include="..\Benchmark.DragonECS\Benchmark.DragonECS.csproj" />
+        <ProjectReference Include="..\Benchmark.LeoEcs\Benchmark.LeoEcs.csproj" />
         <ProjectReference Include="..\Benchmark._Context\Benchmark._Context.csproj"/>
     </ItemGroup>
 

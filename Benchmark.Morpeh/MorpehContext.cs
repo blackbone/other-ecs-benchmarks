@@ -1,5 +1,6 @@
 ﻿using Benchmark._Context;
 using Scellecs.Morpeh;
+// ReSharper disable ForCanBeConvertedToForeach
 
 namespace Benchmark.Morpeh;
 
@@ -18,6 +19,8 @@ public class MorpehContext : BenchmarkContextBase
     {
         _world?.Dispose();
         _world = null;
+        
+        _stashes!.Clear();
     }
 
     public override void Lock()
@@ -27,36 +30,35 @@ public class MorpehContext : BenchmarkContextBase
 
     public override void Commit()
     {
-        _world.Commit();
+        _world!.Commit();
     }
 
     public override void Warmup<T1>(int poolId)
     {
-        _stashes![poolId] = [_world.GetStash<T1>()];
+        _stashes![poolId] = [_world!.GetStash<T1>()];
     }
 
     public override void Warmup<T1, T2>(int poolId)
     {
-        _stashes![poolId] = [_world.GetStash<T1>(), _world.GetStash<T2>()];
+        _stashes![poolId] = [_world!.GetStash<T1>(), _world!.GetStash<T2>()];
     }
 
     public override void Warmup<T1, T2, T3>(int poolId)
     {
-        _stashes![poolId] = [_world.GetStash<T1>(), _world.GetStash<T2>(), _world.GetStash<T3>()];
+        _stashes![poolId] = [_world!.GetStash<T1>(), _world!.GetStash<T2>(), _world!.GetStash<T3>()];
     }
 
     public override void Warmup<T1, T2, T3, T4>(int poolId)
     {
-        _stashes![poolId] = [_world.GetStash<T1>(), _world.GetStash<T2>(), _world.GetStash<T3>(), _world.GetStash<T4>()];
+        _stashes![poolId] = [_world!.GetStash<T1>(), _world!.GetStash<T2>(), _world!.GetStash<T3>(), _world!.GetStash<T4>()];
     }
 
     public override void CreateEntities(in object entitySet)
     {
         var entities = (Entity[])entitySet;
         for (int i = 0; i < entities.Length; i++)
-            entities[i] = _world.CreateEntity();
+            entities[i] = _world!.CreateEntity();
     }
-
 
     public override void CreateEntities<T1>(in object entitySet, in int poolId = -1)
     {
@@ -66,7 +68,7 @@ public class MorpehContext : BenchmarkContextBase
             var c1 = (Stash<T1>)pool[0];
             for (int i = 0; i < entities.Length; i++)
             {
-                entities[i] = _world.CreateEntity();
+                entities[i] = _world!.CreateEntity();
                 c1.Add(entities[i]);
             }
         }
@@ -74,7 +76,7 @@ public class MorpehContext : BenchmarkContextBase
         {
             for (int i = 0; i < entities.Length; i++)
             {
-                entities[i] = _world.CreateEntity();
+                entities[i] = _world!.CreateEntity();
                 entities[i] .AddComponent<T1>();
             }
         }
@@ -89,7 +91,7 @@ public class MorpehContext : BenchmarkContextBase
             var c2 = (Stash<T2>)pool[1];
             for (int i = 0; i < entities.Length; i++)
             {
-                entities[i] = _world.CreateEntity();
+                entities[i] = _world!.CreateEntity();
                 c1.Add(entities[i]);
                 c2.Add(entities[i]);
             }
@@ -98,7 +100,7 @@ public class MorpehContext : BenchmarkContextBase
         {
             for (int i = 0; i < entities.Length; i++)
             {
-                entities[i] = _world.CreateEntity();
+                entities[i] = _world!.CreateEntity();
                 entities[i].AddComponent<T1>();
                 entities[i].AddComponent<T2>();
             }
@@ -115,7 +117,7 @@ public class MorpehContext : BenchmarkContextBase
             var c3 = (Stash<T3>)pool[2];
             for (int i = 0; i < entities.Length; i++)
             {
-                entities[i] = _world.CreateEntity();
+                entities[i] = _world!.CreateEntity();
                 c1.Add(entities[i]);
                 c2.Add(entities[i]);
                 c3.Add(entities[i]);
@@ -125,7 +127,7 @@ public class MorpehContext : BenchmarkContextBase
         {
             for (int i = 0; i < entities.Length; i++)
             {
-                entities[i] = _world.CreateEntity();
+                entities[i] = _world!.CreateEntity();
                 entities[i].AddComponent<T1>();
                 entities[i].AddComponent<T2>();
                 entities[i].AddComponent<T3>();
@@ -144,7 +146,7 @@ public class MorpehContext : BenchmarkContextBase
             var c4 = (Stash<T4>)pool[3];
             for (int i = 0; i < entities.Length; i++)
             {
-                entities[i] = _world.CreateEntity();
+                entities[i] = _world!.CreateEntity();
                 c1.Add(entities[i]);
                 c2.Add(entities[i]);
                 c3.Add(entities[i]);
@@ -155,13 +157,20 @@ public class MorpehContext : BenchmarkContextBase
         {
             for (int i = 0; i < entities.Length; i++)
             {
-                entities[i] = _world.CreateEntity();
+                entities[i] = _world!.CreateEntity();
                 entities[i].AddComponent<T1>();
                 entities[i].AddComponent<T2>();
                 entities[i].AddComponent<T3>();
                 entities[i].AddComponent<T4>();
             }
         }
+    }
+
+    public override void DeleteEntities(in object entitySet)
+    {
+        var entities = (Entity[])entitySet;
+        for (var i = 0; i < entities.Length; i++)
+            _world!.RemoveEntity(entities[i]);
     }
 
     public override void AddComponent<T1>(in object entitySet, in int poolId = -1)

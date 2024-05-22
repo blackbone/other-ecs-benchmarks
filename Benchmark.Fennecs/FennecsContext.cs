@@ -11,6 +11,7 @@ public class FennecsContext : BenchmarkContextBase
     public override void Setup(int entityCount)
     {
         _world = new World(entityCount);
+        var e = new Entity[1];
     }
 
     public override void Warmup<T1>(int poolId) => _world!.Query<T1>().Build().Warmup();
@@ -35,7 +36,7 @@ public class FennecsContext : BenchmarkContextBase
     public override void CreateEntities(in object entitySet)
     {
         var entities = (Entity[])entitySet;
-        for (int i = 0; i < entities.Length; i++)
+        for (var i = 0; i < entities.Length; i++)
             entities[i] = _world!.Spawn();
     }
 
@@ -43,7 +44,7 @@ public class FennecsContext : BenchmarkContextBase
     {
         // TODO no cache perf API
         var entities = (Entity[])entitySet;
-        for (int i = 0; i < entities.Length; i++)
+        for (var i = 0; i < entities.Length; i++)
             entities[i] = _world!.Spawn().Add<T1>();
     }
 
@@ -51,7 +52,7 @@ public class FennecsContext : BenchmarkContextBase
     {
         // TODO no cache perf API
         var entities = (Entity[])entitySet;
-        for (int i = 0; i < entities.Length; i++)
+        for (var i = 0; i < entities.Length; i++)
             entities[i] = _world!.Spawn().Add<T1>().Add<T2>();
     }
 
@@ -59,7 +60,7 @@ public class FennecsContext : BenchmarkContextBase
     {
         // TODO no cache perf API
         var entities = (Entity[])entitySet;
-        for (int i = 0; i < entities.Length; i++)
+        for (var i = 0; i < entities.Length; i++)
             entities[i] = _world!.Spawn().Add<T1>().Add<T2>().Add<T3>();
     }
 
@@ -67,15 +68,23 @@ public class FennecsContext : BenchmarkContextBase
     {
         // TODO no cache perf API
         var entities = (Entity[])entitySet;
-        for (int i = 0; i < entities.Length; i++)
+        for (var i = 0; i < entities.Length; i++)
             entities[i] = _world!.Spawn().Add<T1>().Add<T2>().Add<T3>().Add<T4>();
+    }
+
+    public override void DeleteEntities(in object entitySet)
+    {
+        var entities = (Entity[])entitySet;
+        // TODO perform use overload which utilizes ReadOnlySpan<Identity>
+        for (var i = 0; i < entities.Length; i++)
+            _world!.Despawn(entities[i].Id);
     }
 
     public override void AddComponent<T1>(in object entitySet, in int poolId = -1)
     {
         // TODO no cache perf API
         var entities = (Entity[])entitySet;
-        for (int i = 0; i < entities.Length; i++)
+        for (var i = 0; i < entities.Length; i++)
             entities[i].Add<T1>();
     }
 
@@ -83,7 +92,7 @@ public class FennecsContext : BenchmarkContextBase
     {
         // TODO no cache perf API
         var entities = (Entity[])entitySet;
-        for (int i = 0; i < entities.Length; i++)
+        for (var i = 0; i < entities.Length; i++)
             entities[i].Add<T1>().Add<T2>();
     }
 
@@ -91,7 +100,7 @@ public class FennecsContext : BenchmarkContextBase
     {
         // TODO no cache perf API
         var entities = (Entity[])entitySet;
-        for (int i = 0; i < entities.Length; i++)
+        for (var i = 0; i < entities.Length; i++)
             entities[i].Add<T1>().Add<T2>().Add<T3>();
     }
 
@@ -99,7 +108,7 @@ public class FennecsContext : BenchmarkContextBase
     {
         // TODO no cache perf API
         var entities = (Entity[])entitySet;
-        for (int i = 0; i < entities.Length; i++)
+        for (var i = 0; i < entities.Length; i++)
             entities[i].Add<T1>().Add<T2>().Add<T3>().Add<T4>();
     }
 
@@ -107,7 +116,7 @@ public class FennecsContext : BenchmarkContextBase
     {
         // TODO no cache perf API
         var entities = (Entity[])entitySet;
-        for (int i = 0; i < entities.Length; i++)
+        for (var i = 0; i < entities.Length; i++)
             entities[i].Remove<T1>();
     }
 
@@ -115,7 +124,7 @@ public class FennecsContext : BenchmarkContextBase
     {
         // TODO no cache perf API
         var entities = (Entity[])entitySet;
-        for (int i = 0; i < entities.Length; i++)
+        for (var i = 0; i < entities.Length; i++)
             entities[i].Remove<T1>().Remove<T2>();
     }
 
@@ -123,7 +132,7 @@ public class FennecsContext : BenchmarkContextBase
     {
         // TODO no cache perf API
         var entities = (Entity[])entitySet;
-        for (int i = 0; i < entities.Length; i++)
+        for (var i = 0; i < entities.Length; i++)
             entities[i].Remove<T1>().Remove<T2>().Remove<T3>();
     }
 
@@ -131,7 +140,7 @@ public class FennecsContext : BenchmarkContextBase
     {
         // TODO no cache perf API
         var entities = (Entity[])entitySet;
-        for (int i = 0; i < entities.Length; i++)
+        for (var i = 0; i < entities.Length; i++)
             entities[i].Remove<T1>().Remove<T2>().Remove<T3>().Remove<T4>();
     }
 
