@@ -15,21 +15,8 @@ public class DragonECSContext : BenchmarkContextBase
             entitiesCapacity: entityCount,
             poolComponentsCapacity: entityCount));
         _pipeline = EcsPipeline.New()
-            // Добавление систем.
-            // .Add(new SomeSystem1())
-            // .Add(new SomeSystem2())
-            // .Add(new SomeSystem3())
-
-            // Внедрение мира в системы.
             .Inject(_world)
-            // Прочие внедрения.
-            // .Inject(SomeData)
-
-            // Завершение построения пайплайна.
             .Build();
-        
-        // Иницивлизация пайплайна и запуск IEcsPreInit.PreInit
-        // и IEcsInit.Init у всех добавленных систем.
         _pipeline.Init();
 
         _pools = new Dictionary<int, object[]>();
@@ -74,116 +61,60 @@ public class DragonECSContext : BenchmarkContextBase
     public override void CreateEntities<T1>(in object entitySet, in int poolId = -1)
     {
         var entities = (int[])entitySet;
-        if (_pools!.TryGetValue(poolId, out var pool))
+        var pool = _pools![poolId];
+        var ecsPool = (EcsPool<T1>)pool[0];
+        for (int i = 0; i < entities.Length; i++)
         {
-            var ecsPool = (EcsPool<T1>)pool[0];
-            for (int i = 0; i < entities.Length; i++)
-            {
-                entities[i] = _world!.NewEntity();
-                ecsPool.Add(entities[i]);
-            }
-        }
-        else
-        {
-            var ecsPool = _world!.GetPool<T1>();
-            for (int i = 0; i < entities.Length; i++)
-            {
-                entities[i] = _world!.NewEntity();
-                ecsPool.Add(entities[i]);
-            }
+            entities[i] = _world!.NewEntity();
+            ecsPool.Add(entities[i]);
         }
     }
 
     public override void CreateEntities<T1, T2>(in object entitySet, in int poolId = -1)
     {
         var entities = (int[])entitySet;
-        if (_pools!.TryGetValue(poolId, out var pool))
+        var pool = _pools![poolId];
+        var ecsPool1 = (EcsPool<T1>)pool[0];
+        var ecsPool2 = (EcsPool<T2>)pool[1];
+        for (int i = 0; i < entities.Length; i++)
         {
-            var ecsPool1 = (EcsPool<T1>)pool[0];
-            var ecsPool2 = (EcsPool<T2>)pool[1];
-            for (int i = 0; i < entities.Length; i++)
-            {
-                entities[i] = _world!.NewEntity();
-                ecsPool1.Add(entities[i]);
-                ecsPool2.Add(entities[i]);
-            }
-        }
-        else
-        {
-            var ecsPool1 = _world!.GetPool<T1>();
-            var ecsPool2 = _world!.GetPool<T2>();
-            for (int i = 0; i < entities.Length; i++)
-            {
-                entities[i] = _world!.NewEntity();
-                ecsPool1.Add(entities[i]);
-                ecsPool2.Add(entities[i]);
-            }
+            entities[i] = _world!.NewEntity();
+            ecsPool1.Add(entities[i]);
+            ecsPool2.Add(entities[i]);
         }
     }
 
     public override void CreateEntities<T1, T2, T3>(in object entitySet, in int poolId = -1)
     {
         var entities = (int[])entitySet;
-        if (_pools!.TryGetValue(poolId, out var pool))
+        var pool = _pools![poolId];
+        var ecsPool1 = (EcsPool<T1>)pool[0];
+        var ecsPool2 = (EcsPool<T2>)pool[1];
+        var ecsPool3 = (EcsPool<T3>)pool[2];
+        for (int i = 0; i < entities.Length; i++)
         {
-            var ecsPool1 = (EcsPool<T1>)pool[0];
-            var ecsPool2 = (EcsPool<T2>)pool[1];
-            var ecsPool3 = (EcsPool<T3>)pool[2];
-            for (int i = 0; i < entities.Length; i++)
-            {
-                entities[i] = _world!.NewEntity();
-                ecsPool1.Add(entities[i]);
-                ecsPool2.Add(entities[i]);
-                ecsPool3.Add(entities[i]);
-            }
-        }
-        else
-        {
-            var ecsPool1 = _world!.GetPool<T1>();
-            var ecsPool2 = _world!.GetPool<T2>();
-            var ecsPool3 = _world!.GetPool<T3>();
-            for (int i = 0; i < entities.Length; i++)
-            {
-                entities[i] = _world!.NewEntity();
-                ecsPool1.Add(entities[i]);
-                ecsPool2.Add(entities[i]);
-                ecsPool3.Add(entities[i]);
-            }
+            entities[i] = _world!.NewEntity();
+            ecsPool1.Add(entities[i]);
+            ecsPool2.Add(entities[i]);
+            ecsPool3.Add(entities[i]);
         }
     }
 
     public override void CreateEntities<T1, T2, T3, T4>(in object entitySet, in int poolId = -1)
     {
         var entities = (int[])entitySet;
-        if (_pools!.TryGetValue(poolId, out var pool))
+        var pool = _pools![poolId];
+        var ecsPool1 = (EcsPool<T1>)pool[0];
+        var ecsPool2 = (EcsPool<T2>)pool[1];
+        var ecsPool3 = (EcsPool<T3>)pool[2];
+        var ecsPool4 = (EcsPool<T4>)pool[3];
+        for (int i = 0; i < entities.Length; i++)
         {
-            var ecsPool1 = (EcsPool<T1>)pool[0];
-            var ecsPool2 = (EcsPool<T2>)pool[1];
-            var ecsPool3 = (EcsPool<T3>)pool[2];
-            var ecsPool4 = (EcsPool<T4>)pool[3];
-            for (int i = 0; i < entities.Length; i++)
-            {
-                entities[i] = _world!.NewEntity();
-                ecsPool1.Add(entities[i]);
-                ecsPool2.Add(entities[i]);
-                ecsPool3.Add(entities[i]);
-                ecsPool4.Add(entities[i]);
-            }
-        }
-        else
-        {
-            var ecsPool1 = _world!.GetPool<T1>();
-            var ecsPool2 = _world!.GetPool<T2>();
-            var ecsPool3 = _world!.GetPool<T3>();
-            var ecsPool4 = _world!.GetPool<T4>();
-            for (int i = 0; i < entities.Length; i++)
-            {
-                entities[i] = _world!.NewEntity();
-                ecsPool1.Add(entities[i]);
-                ecsPool2.Add(entities[i]);
-                ecsPool3.Add(entities[i]);
-                ecsPool4.Add(entities[i]);
-            }
+            entities[i] = _world!.NewEntity();
+            ecsPool1.Add(entities[i]);
+            ecsPool2.Add(entities[i]);
+            ecsPool3.Add(entities[i]);
+            ecsPool4.Add(entities[i]);
         }
     }
 
@@ -197,208 +128,108 @@ public class DragonECSContext : BenchmarkContextBase
     public override void AddComponent<T1>(in object entitySet, in int poolId = -1)
     {
         var entities = (int[])entitySet;
-        if (_pools!.TryGetValue(poolId, out var pool))
-        {
-            var ecsPool1 = (EcsPool<T1>)pool[0];
-            for (int i = 0; i < entities.Length; i++)
-                ecsPool1.Add(entities[i]);
-        }
-        else
-        {
-            var ecsPool1 = _world!.GetPool<T1>();
-            for (int i = 0; i < entities.Length; i++)
-                ecsPool1.Add(entities[i]);
-        }
+        var pool = _pools![poolId];
+        var ecsPool1 = (EcsPool<T1>)pool[0];
+        for (int i = 0; i < entities.Length; i++)
+            ecsPool1.Add(entities[i]);
     }
 
     public override void AddComponent<T1, T2>(in object entitySet, in int poolId = -1)
     {
         var entities = (int[])entitySet;
-        if (_pools!.TryGetValue(poolId, out var pool))
+        var pool = _pools![poolId];
+        var ecsPool1 = (EcsPool<T1>)pool[0];
+        var ecsPool2 = (EcsPool<T2>)pool[1];
+        for (int i = 0; i < entities.Length; i++)
         {
-            var ecsPool1 = (EcsPool<T1>)pool[0];
-            var ecsPool2 = (EcsPool<T2>)pool[1];
-            for (int i = 0; i < entities.Length; i++)
-            {
-                ecsPool1.Add(entities[i]);
-                ecsPool2.Add(entities[i]);
-            }
-        }
-        else
-        {
-            var ecsPool1 = _world!.GetPool<T1>();
-            var ecsPool2 = _world!.GetPool<T2>();
-            for (int i = 0; i < entities.Length; i++)
-            {
-                ecsPool1.Add(entities[i]);
-                ecsPool2.Add(entities[i]);
-            }
+            ecsPool1.Add(entities[i]);
+            ecsPool2.Add(entities[i]);
         }
     }
 
     public override void AddComponent<T1, T2, T3>(in object entitySet, in int poolId = -1)
     {
         var entities = (int[])entitySet;
-        if (_pools!.TryGetValue(poolId, out var pool))
+        var pool = _pools![poolId];
+        var ecsPool1 = (EcsPool<T1>)pool[0];
+        var ecsPool2 = (EcsPool<T2>)pool[1];
+        var ecsPool3 = (EcsPool<T3>)pool[2];
+        for (int i = 0; i < entities.Length; i++)
         {
-            var ecsPool1 = (EcsPool<T1>)pool[0];
-            var ecsPool2 = (EcsPool<T2>)pool[1];
-            var ecsPool3 = (EcsPool<T3>)pool[2];
-            for (int i = 0; i < entities.Length; i++)
-            {
-                ecsPool1.Add(entities[i]);
-                ecsPool2.Add(entities[i]);
-                ecsPool3.Add(entities[i]);
-            }
-        }
-        else
-        {
-            var ecsPool1 = _world!.GetPool<T1>();
-            var ecsPool2 = _world!.GetPool<T2>();
-            var ecsPool3 = _world!.GetPool<T3>();
-            for (int i = 0; i < entities.Length; i++)
-            {
-                ecsPool1.Add(entities[i]);
-                ecsPool2.Add(entities[i]);
-                ecsPool3.Add(entities[i]);
-            }
+            ecsPool1.Add(entities[i]);
+            ecsPool2.Add(entities[i]);
+            ecsPool3.Add(entities[i]);
         }
     }
 
     public override void AddComponent<T1, T2, T3, T4>(in object entitySet, in int poolId = -1)
     {
         var entities = (int[])entitySet;
-        if (_pools!.TryGetValue(poolId, out var pool))
+        var pool = _pools![poolId];
+        var ecsPool1 = (EcsPool<T1>)pool[0];
+        var ecsPool2 = (EcsPool<T2>)pool[1];
+        var ecsPool3 = (EcsPool<T3>)pool[2];
+        var ecsPool4 = (EcsPool<T4>)pool[3];
+        for (int i = 0; i < entities.Length; i++)
         {
-            var ecsPool1 = (EcsPool<T1>)pool[0];
-            var ecsPool2 = (EcsPool<T2>)pool[1];
-            var ecsPool3 = (EcsPool<T3>)pool[2];
-            var ecsPool4 = (EcsPool<T4>)pool[3];
-            for (int i = 0; i < entities.Length; i++)
-            {
-                ecsPool1.Add(entities[i]);
-                ecsPool2.Add(entities[i]);
-                ecsPool3.Add(entities[i]);
-                ecsPool4.Add(entities[i]);
-            }
-        }
-        else
-        {
-            var ecsPool1 = _world!.GetPool<T1>();
-            var ecsPool2 = _world!.GetPool<T2>();
-            var ecsPool3 = _world!.GetPool<T3>();
-            var ecsPool4 = _world!.GetPool<T4>();
-            for (int i = 0; i < entities.Length; i++)
-            {
-                ecsPool1.Add(entities[i]);
-                ecsPool2.Add(entities[i]);
-                ecsPool3.Add(entities[i]);
-                ecsPool4.Add(entities[i]);
-            }
+            ecsPool1.Add(entities[i]);
+            ecsPool2.Add(entities[i]);
+            ecsPool3.Add(entities[i]);
+            ecsPool4.Add(entities[i]);
         }
     }
 
     public override void RemoveComponent<T1>(in object entitySet, in int poolId = -1)
     {
         var entities = (int[])entitySet;
-        if (_pools!.TryGetValue(poolId, out var pool))
-        {
-            var ecsPool1 = (EcsPool<T1>)pool[0];
-            for (int i = 0; i < entities.Length; i++)
-                ecsPool1.Del(entities[i]);
-        }
-        else
-        {
-            var ecsPool1 = _world!.GetPool<T1>();
-            for (int i = 0; i < entities.Length; i++)
-                ecsPool1.Del(entities[i]);
-        }
+        var pool = _pools![poolId];
+        var ecsPool1 = (EcsPool<T1>)pool[0];
+        for (int i = 0; i < entities.Length; i++)
+            ecsPool1.Del(entities[i]);
     }
 
     public override void RemoveComponent<T1, T2>(in object entitySet, in int poolId = -1)
     {
         var entities = (int[])entitySet;
-        if (_pools!.TryGetValue(poolId, out var pool))
+        var pool = _pools![poolId];
+        var ecsPool1 = (EcsPool<T1>)pool[0];
+        var ecsPool2 = (EcsPool<T2>)pool[1];
+        for (int i = 0; i < entities.Length; i++)
         {
-            var ecsPool1 = (EcsPool<T1>)pool[0];
-            var ecsPool2 = (EcsPool<T2>)pool[1];
-            for (int i = 0; i < entities.Length; i++)
-            {
-                ecsPool1.Del(entities[i]);
-                ecsPool2.Del(entities[i]);
-            }
-        }
-        else
-        {
-            var ecsPool1 = _world!.GetPool<T1>();
-            var ecsPool2 = _world!.GetPool<T2>();
-            for (int i = 0; i < entities.Length; i++)
-            {
-                ecsPool1.Del(entities[i]);
-                ecsPool2.Del(entities[i]);
-            }
+            ecsPool1.Del(entities[i]);
+            ecsPool2.Del(entities[i]);
         }
     }
 
     public override void RemoveComponent<T1, T2, T3>(in object entitySet, in int poolId = -1)
     {
         var entities = (int[])entitySet;
-        if (_pools!.TryGetValue(poolId, out var pool))
+        var pool = _pools![poolId];
+        var ecsPool1 = (EcsPool<T1>)pool[0];
+        var ecsPool2 = (EcsPool<T2>)pool[1];
+        var ecsPool3 = (EcsPool<T3>)pool[2];
+        for (int i = 0; i < entities.Length; i++)
         {
-            var ecsPool1 = (EcsPool<T1>)pool[0];
-            var ecsPool2 = (EcsPool<T2>)pool[1];
-            var ecsPool3 = (EcsPool<T3>)pool[2];
-            for (int i = 0; i < entities.Length; i++)
-            {
-                ecsPool1.Del(entities[i]);
-                ecsPool2.Del(entities[i]);
-                ecsPool3.Del(entities[i]);
-            }
-        }
-        else
-        {
-            var ecsPool1 = _world!.GetPool<T1>();
-            var ecsPool2 = _world!.GetPool<T2>();
-            var ecsPool3 = _world!.GetPool<T3>();
-            for (int i = 0; i < entities.Length; i++)
-            {
-                ecsPool1.Del(entities[i]);
-                ecsPool2.Del(entities[i]);
-                ecsPool3.Del(entities[i]);
-            }
+            ecsPool1.Del(entities[i]);
+            ecsPool2.Del(entities[i]);
+            ecsPool3.Del(entities[i]);
         }
     }
 
     public override void RemoveComponent<T1, T2, T3, T4>(in object entitySet, in int poolId = -1)
     {
         var entities = (int[])entitySet;
-        if (_pools!.TryGetValue(poolId, out var pool))
+        var pool = _pools![poolId];
+        var ecsPool1 = (EcsPool<T1>)pool[0];
+        var ecsPool2 = (EcsPool<T2>)pool[1];
+        var ecsPool3 = (EcsPool<T3>)pool[2];
+        var ecsPool4 = (EcsPool<T4>)pool[3];
+        for (int i = 0; i < entities.Length; i++)
         {
-            var ecsPool1 = (EcsPool<T1>)pool[0];
-            var ecsPool2 = (EcsPool<T2>)pool[1];
-            var ecsPool3 = (EcsPool<T3>)pool[2];
-            var ecsPool4 = (EcsPool<T4>)pool[3];
-            for (int i = 0; i < entities.Length; i++)
-            {
-                ecsPool1.Del(entities[i]);
-                ecsPool2.Del(entities[i]);
-                ecsPool3.Del(entities[i]);
-                ecsPool4.Del(entities[i]);
-            }
-        }
-        else
-        {
-            var ecsPool1 = _world!.GetPool<T1>();
-            var ecsPool2 = _world!.GetPool<T2>();
-            var ecsPool3 = _world!.GetPool<T3>();
-            var ecsPool4 = _world!.GetPool<T4>();
-            for (int i = 0; i < entities.Length; i++)
-            {
-                ecsPool1.Del(entities[i]);
-                ecsPool2.Del(entities[i]);
-                ecsPool3.Del(entities[i]);
-                ecsPool4.Del(entities[i]);
-            }
+            ecsPool1.Del(entities[i]);
+            ecsPool2.Del(entities[i]);
+            ecsPool3.Del(entities[i]);
+            ecsPool4.Del(entities[i]);
         }
     }
 

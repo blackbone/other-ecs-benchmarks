@@ -24,6 +24,10 @@ var options = ParseCommandLineArgs(args);
 PreloadAssemblies();
 
 // configure jobs
+var shortJob = Job.ShortRun
+    .WithStrategy(RunStrategy.Monitoring)
+    .Apply();
+
 var clearEachInvocationJob = Job.Dry
     .WithInvocationCount(1)
     .WithIterationCount(1)
@@ -41,7 +45,7 @@ IConfig configuration = DefaultConfig.Instance
     .AddExporter(MarkdownExporter.GitHub)
     .WithOptions(ConfigOptions.DisableOptimizationsValidator)
     .WithOption(ConfigOptions.JoinSummary, true)
-    .HideColumns(Column.Gen0, Column.Gen1, Column.Gen2, Column.Type, Column.Error)
+    .HideColumns(Column.Gen0, Column.Gen1, Column.Gen2, Column.Type, Column.Error, Column.Method)
     .AddColumn(new ContextColumn())
     ;
 
@@ -64,11 +68,13 @@ foreach (var baseBenchmarkType in baseBenchmarkTypes)
 {
     var benchmarkTypes = contextTypes.Select(contextType => baseBenchmarkType.MakeGenericType(contextType)).ToArray();
     var benchmarkSwitcher = BenchmarkSwitcher.FromTypes(benchmarkTypes.ToArray());
+    var perInvocationSetup = baseBenchmarkType.GetCustomAttribute<BenchmarkCategoryAttribute>()?.Categories.Contains(Categories.PerInvocationSetup) ?? false;
     
-    if (baseBenchmarkType.GetCustomAttribute<BenchmarkCategoryAttribute>()?.Categories.Contains(Categories.PerInvocationSetup) ?? false)
-        benchmarkSwitcher.RunAll(configuration.AddJob(clearEachInvocationJob));
-    else
-        benchmarkSwitcher.RunAll(configuration.AddJob(precisionJob));
+    #if SHORT_RUN
+    benchmarkSwitcher.RunAll(configuration.AddJob(shortJob));
+    #else
+    benchmarkSwitcher.RunAll(configuration.AddJob(perInvocationSetup ? clearEachInvocationJob : precisionJob));
+    #endif
 }
 
 // join reports

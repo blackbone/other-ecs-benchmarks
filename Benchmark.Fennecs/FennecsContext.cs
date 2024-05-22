@@ -42,7 +42,6 @@ public class FennecsContext : BenchmarkContextBase
 
     public override void CreateEntities<T1>(in object entitySet, in int poolId = -1)
     {
-        // TODO no cache perf API
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i] = _world!.Spawn().Add<T1>();
@@ -50,7 +49,6 @@ public class FennecsContext : BenchmarkContextBase
 
     public override void CreateEntities<T1, T2>(in object entitySet, in int poolId = -1)
     {
-        // TODO no cache perf API
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i] = _world!.Spawn().Add<T1>().Add<T2>();
@@ -58,7 +56,6 @@ public class FennecsContext : BenchmarkContextBase
 
     public override void CreateEntities<T1, T2, T3>(in object entitySet, in int poolId = -1)
     {
-        // TODO no cache perf API
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i] = _world!.Spawn().Add<T1>().Add<T2>().Add<T3>();
@@ -66,7 +63,6 @@ public class FennecsContext : BenchmarkContextBase
 
     public override void CreateEntities<T1, T2, T3, T4>(in object entitySet, in int poolId = -1)
     {
-        // TODO no cache perf API
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i] = _world!.Spawn().Add<T1>().Add<T2>().Add<T3>().Add<T4>();
@@ -82,7 +78,6 @@ public class FennecsContext : BenchmarkContextBase
 
     public override void AddComponent<T1>(in object entitySet, in int poolId = -1)
     {
-        // TODO no cache perf API
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i].Add<T1>();
@@ -90,7 +85,6 @@ public class FennecsContext : BenchmarkContextBase
 
     public override void AddComponent<T1, T2>(in object entitySet, in int poolId = -1)
     {
-        // TODO no cache perf API
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i].Add<T1>().Add<T2>();
@@ -98,7 +92,6 @@ public class FennecsContext : BenchmarkContextBase
 
     public override void AddComponent<T1, T2, T3>(in object entitySet, in int poolId = -1)
     {
-        // TODO no cache perf API
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i].Add<T1>().Add<T2>().Add<T3>();
@@ -106,7 +99,6 @@ public class FennecsContext : BenchmarkContextBase
 
     public override void AddComponent<T1, T2, T3, T4>(in object entitySet, in int poolId = -1)
     {
-        // TODO no cache perf API
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i].Add<T1>().Add<T2>().Add<T3>().Add<T4>();
@@ -114,7 +106,6 @@ public class FennecsContext : BenchmarkContextBase
 
     public override void RemoveComponent<T1>(in object entitySet, in int poolId = -1)
     {
-        // TODO no cache perf API
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i].Remove<T1>();
@@ -122,7 +113,6 @@ public class FennecsContext : BenchmarkContextBase
 
     public override void RemoveComponent<T1, T2>(in object entitySet, in int poolId = -1)
     {
-        // TODO no cache perf API
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i].Remove<T1>().Remove<T2>();
@@ -130,7 +120,6 @@ public class FennecsContext : BenchmarkContextBase
 
     public override void RemoveComponent<T1, T2, T3>(in object entitySet, in int poolId = -1)
     {
-        // TODO no cache perf API
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i].Remove<T1>().Remove<T2>().Remove<T3>();
@@ -138,7 +127,6 @@ public class FennecsContext : BenchmarkContextBase
 
     public override void RemoveComponent<T1, T2, T3, T4>(in object entitySet, in int poolId = -1)
     {
-        // TODO no cache perf API
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i].Remove<T1>().Remove<T2>().Remove<T3>().Remove<T4>();

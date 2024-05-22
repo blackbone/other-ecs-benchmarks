@@ -6,8 +6,13 @@
         <ImplicitUsings>disable</ImplicitUsings>
         <Nullable>disable</Nullable>
         <DefineConstants Condition="'$(CheckCacheMisses)' == 'true'">CHECK_CACHE_MISSES</DefineConstants>
+        <DefineConstants Condition="'$(ShortRun)' == 'true'">SHORT_RUN</DefineConstants>
         <DebugSymbols>true</DebugSymbols>
         <DebugType>pdbonly</DebugType>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <DefineConstants>TRACE;SHORT_RUN</DefineConstants>
     </PropertyGroup>
 
     <!-- NUGET REFERENCES -->

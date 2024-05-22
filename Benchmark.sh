@@ -1,9 +1,11 @@
 #!/bin/sh
+CONFIGURATION=Debug
 
 # pre-clean
 rm -rf ./.benchmark_results
 dotnet clean Benchmark/Benchmark.csproj -c Release
-dotnet build Benchmark/Benchmark.csproj -c Release /p:CheckCacheMisses=false
+dotnet restore Benchmark/Benchmark.csproj -c Release
+dotnet build Benchmark/Benchmark.csproj -c Release /p:CheckCacheMisses=false /p:ShortRun=true
 if (($? > 0))
 then
     exit $?;

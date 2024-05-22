@@ -20,23 +20,15 @@ public class Remove1Component<T> : RemoveComponentBase<T> where T : BenchmarkCon
         base.OnSetup();
         Context.Warmup<Component1>(0);
         _entitySet = Context.PrepareSet(EntityCount);
-        Context.CreateEntities<Component1>(_entitySet);
+        Context.CreateEntities<Component1>(_entitySet, 0);
         if (Random) _entitySet = Context.Shuffle(_entitySet);
     }
 
     [Benchmark]
-    public void UseCache()
+    public void _()
     {
         Context.Lock();
         Context.RemoveComponent<Component1>(_entitySet, 0);
-        Context.Commit();
-    }
-
-    [Benchmark]
-    public void NoCache()
-    {
-        Context.Lock();
-        Context.RemoveComponent<Component1>(_entitySet);
         Context.Commit();
     }
 }

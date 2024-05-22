@@ -18,6 +18,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 1
+        submodules: true
     
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
@@ -26,6 +29,9 @@ jobs:
         
     - name: Clean Benchmark
       run: dotnet clean Benchmark/Benchmark.csproj -c Release
+    
+    - name: Restore Benchmark
+      run: dotnet restore Benchmark/Benchmark.csproj -c Release
       
     - name: Build Benchmark
       run: dotnet build Benchmark/Benchmark.csproj -c Release /p:CheckCacheMisses=false

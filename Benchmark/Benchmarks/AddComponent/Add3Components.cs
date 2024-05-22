@@ -24,18 +24,10 @@ public class Add3Components<T> : AddComponentBase<T> where T : BenchmarkContextB
     }
 
     [Benchmark]
-    public void UseCache()
+    public void _()
     {
         Context.Lock();
         Context.AddComponent<Component1, Component2, Component3>(EntitySet, 0);
-        Context.Commit();
-    }
-
-    [Benchmark]
-    public void NoCache()
-    {
-        Context.Lock();
-        Context.AddComponent<Component1, Component2, Component3>(EntitySet);
         Context.Commit();
     }
 }

@@ -21,18 +21,10 @@ public class CreateEntityWith1Component<T> : BenchmarkBase<T> where T : Benchmar
     }
 
     [Benchmark]
-    public void UseCache()
+    public void _()
     {
         Context.Lock();
         Context.CreateEntities<Component1>(_entitySet, 0);
-        Context.Commit();
-    }
-
-    [Benchmark]
-    public void NoCache()
-    {
-        Context.Lock();
-        Context.CreateEntities<Component1>(_entitySet);
         Context.Commit();
     }
 }
