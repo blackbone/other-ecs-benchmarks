@@ -11,11 +11,7 @@ public class LeoEcsContext : BenchmarkContextBase
     
     public override void Setup(int entityCount)
     {
-        _world = new EcsWorld(new EcsWorldConfig
-        {
-            EntityComponentsCacheSize = entityCount,
-            WorldEntitiesCacheSize = entityCount
-        });
+        _world = new EcsWorld();
     }
 
     public override void Warmup<T1>(int poolId) { }
