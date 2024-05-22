@@ -31,7 +31,7 @@ jobs:
       run: dotnet clean Benchmark/Benchmark.csproj -c Release
     
     - name: Restore Benchmark
-      run: dotnet restore Benchmark/Benchmark.csproj -c Release
+      run: dotnet restore Benchmark/Benchmark.csproj
       
     - name: Build Benchmark
       run: dotnet build Benchmark/Benchmark.csproj -c Release /p:CheckCacheMisses=false
