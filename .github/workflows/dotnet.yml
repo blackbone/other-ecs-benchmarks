@@ -8,9 +8,10 @@ on:
   push:
     branches: [ "main" ]
     paths:
-    - '**.cs'
-    - '**.csproj'
-    - '**.sln'
+      - './github/workflows/dotnet.yml'
+      - '**.cs'
+      - '**.csproj'
+      - '**.sln'
 
 jobs:
   benchmark:
@@ -37,7 +38,7 @@ jobs:
       run: dotnet build -c Release /p:CheckCacheMisses=false
       
     - name: Run Tests
-      run: dotnet test --no-build
+      run: dotnet test
 
     - name: Run Benchmark
       run: dotnet run --project Benchmark/Benchmark.csproj -c Release --no-build
