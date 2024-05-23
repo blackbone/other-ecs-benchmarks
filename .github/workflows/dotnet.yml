@@ -28,14 +28,17 @@ jobs:
         dotnet-version: 8.0.x
         
     - name: Clean Benchmark
-      run: dotnet clean Benchmark/Benchmark.csproj -c Release
+      run: dotnet clean -c Release
     
     - name: Restore Benchmark
-      run: dotnet restore Benchmark/Benchmark.csproj
+      run: dotnet restore
       
     - name: Build Benchmark
-      run: dotnet build Benchmark/Benchmark.csproj -c Release /p:CheckCacheMisses=false
+      run: dotnet build -c Release /p:CheckCacheMisses=false
       
+    - name: Run Tests
+      run: dotnet test --no-build
+
     - name: Run Benchmark
       run: dotnet run --project Benchmark/Benchmark.csproj -c Release --no-build
       

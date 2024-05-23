@@ -9,6 +9,8 @@ public class DragonECSContext : BenchmarkContextBase
     private EcsPipeline? _pipeline;
     private Dictionary<int, object[]>? _pools;
     
+    public override int EntityCount => _world!.Count;
+    
     public override void Setup(int entityCount)
     {
         _world = new EcsWorld(new EcsWorldConfig(
@@ -232,6 +234,11 @@ public class DragonECSContext : BenchmarkContextBase
             ecsPool4.Del(entities[i]);
         }
     }
+
+    public override int CountWith<T1>(int poolId) => _world!.Where(out Aspect<T1> _).Count;
+    public override int CountWith<T1, T2>(int poolId) => _world!.Where(out Aspect<T1, T2> _).Count;
+    public override int CountWith<T1, T2, T3>(int poolId) => _world!.Where(out Aspect<T1, T2, T3> _).Count;
+    public override int CountWith<T1, T2, T3, T4>(int poolId) => _world!.Where(out Aspect<T1, T2, T3, T4> _).Count;
 
     public override object Shuffle(in object entitySet)
     {

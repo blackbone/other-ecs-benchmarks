@@ -1,5 +1,7 @@
 ﻿using Benchmark._Context;
 using Scellecs.Morpeh;
+using Scellecs.Morpeh.Workaround;
+
 // ReSharper disable ForCanBeConvertedToForeach
 
 namespace Benchmark.Morpeh;
@@ -7,6 +9,8 @@ namespace Benchmark.Morpeh;
 public class MorpehDirectContext : BenchmarkContextBase
 {
     private World? _world;
+    
+    public override int EntityCount => _world!.EntityCount();
 
     public override void Setup(int entityCount)
     {
@@ -185,6 +189,11 @@ public class MorpehDirectContext : BenchmarkContextBase
             entities[i].RemoveComponent<T4>();
         }
     }
+
+    public override int CountWith<T1>(int poolId) => _world!.Filter.With<T1>().Build().GetLengthSlow();
+    public override int CountWith<T1, T2>(int poolId) => _world!.Filter.With<T1>().With<T2>().Build().GetLengthSlow();
+    public override int CountWith<T1, T2, T3>(int poolId) => _world!.Filter.With<T1>().With<T2>().With<T3>().Build().GetLengthSlow();
+    public override int CountWith<T1, T2, T3, T4>(int poolId) => _world!.Filter.With<T1>().With<T2>().With<T3>().With<T4>().Build().GetLengthSlow();
 
     public override object Shuffle(in object entitySet)
     {

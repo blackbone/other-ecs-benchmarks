@@ -23,7 +23,7 @@ public class Remove2Components<T> : RemoveComponentBase<T> where T : BenchmarkCo
     }
 
     [Benchmark]
-    public void _()
+    public override void Run()
     {
         Context.Lock();
         Context.RemoveComponent<Component1, Component2>(_entitySet, 0);

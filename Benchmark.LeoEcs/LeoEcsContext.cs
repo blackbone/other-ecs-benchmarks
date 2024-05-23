@@ -7,6 +7,8 @@ namespace Benchmark.LeoEcs;
 public class LeoEcsContext : BenchmarkContextBase
 {
     private EcsWorld? _world;
+
+    public override int EntityCount => _world!.GetStats().ActiveEntities;
     
     public override void Setup(int entityCount)
     {
@@ -176,6 +178,14 @@ public class LeoEcsContext : BenchmarkContextBase
             entities[i].Del<T4>();
         }
     }
+
+    public override int CountWith<T1>(int poolId) => _world!.GetFilter(typeof(EcsFilter<T1>)).GetEntitiesCount();
+
+    public override int CountWith<T1, T2>(int poolId) => _world!.GetFilter(typeof(EcsFilter<T1, T2>)).GetEntitiesCount();
+
+    public override int CountWith<T1, T2, T3>(int poolId) => _world!.GetFilter(typeof(EcsFilter<T1, T2, T3>)).GetEntitiesCount();
+
+    public override int CountWith<T1, T2, T3, T4>(int poolId) => _world!.GetFilter(typeof(EcsFilter<T1, T2, T3, T4>)).GetEntitiesCount();
 
     public override object Shuffle(in object entitySet)
     {

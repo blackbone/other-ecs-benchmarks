@@ -21,7 +21,7 @@ public class CreateEntityWith1Component<T> : BenchmarkBase<T> where T : Benchmar
     }
 
     [Benchmark]
-    public void _()
+    public override void Run()
     {
         Context.Lock();
         Context.CreateEntities<Component1>(_entitySet, 0);

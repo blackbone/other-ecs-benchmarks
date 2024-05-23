@@ -6,11 +6,16 @@ namespace Benchmark._Context;
 public abstract class BenchmarkContextBase : IDisposable
 {
     /// <summary>
+    /// Current count of entities in ECS.
+    /// </summary>
+    public abstract int EntityCount { get; }
+
+    /// <summary>
     /// Initialize world for test.
     /// </summary>
     /// <param name="entityCount"> Amount of entities will be used in benchmark. </param>
     public abstract void Setup(int entityCount);
-    
+
     /// <summary>
     /// Place where you can set up your stashes, caches, etc.
     /// </summary>
@@ -115,7 +120,7 @@ public abstract class BenchmarkContextBase : IDisposable
 
     #endregion
 
-    #region Delete
+    #region Entity - Delete
 
     /// <summary>
     /// Deletes set of entities.
@@ -124,7 +129,9 @@ public abstract class BenchmarkContextBase : IDisposable
     public abstract void DeleteEntities(in object entitySet);
 
     #endregion
-    
+
+    #region Entity - Add Component
+
     /// <summary>
     /// Add component to entity.
     /// </summary>
@@ -162,6 +169,10 @@ public abstract class BenchmarkContextBase : IDisposable
         where T2 : struct, MorpehComponent, DragonComponent
         where T3 : struct, MorpehComponent, DragonComponent
         where T4 : struct, MorpehComponent, DragonComponent;
+
+    #endregion
+
+    #region Entity - Remove Component
 
     /// <summary>
     /// Removes component to entity.
@@ -201,6 +212,30 @@ public abstract class BenchmarkContextBase : IDisposable
         where T3 : struct, MorpehComponent, DragonComponent
         where T4 : struct, MorpehComponent, DragonComponent;
 
+    #endregion
+
+    #region Entity - Count
+
+    public abstract int CountWith<T1>(int poolId)
+        where T1 : struct, MorpehComponent, DragonComponent;
+    
+    public abstract int CountWith<T1, T2>(int poolId)
+        where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent;
+    
+    public abstract int CountWith<T1, T2, T3>(int poolId)
+        where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent
+        where T3 : struct, MorpehComponent, DragonComponent;
+    
+    public abstract int CountWith<T1, T2, T3, T4>(int poolId)
+        where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent
+        where T3 : struct, MorpehComponent, DragonComponent
+        where T4 : struct, MorpehComponent, DragonComponent;
+
+    #endregion
+
     /// <summary>
     /// Shuffles entities in set.
     /// </summary>
@@ -214,4 +249,6 @@ public abstract class BenchmarkContextBase : IDisposable
     /// <param name="count"> Count of entities to be stored. </param>
     /// <returns> New or existing shuffled set. </returns>
     public abstract object PrepareSet(in int count);
+
+    public override string ToString() => GetType().Name;
 }

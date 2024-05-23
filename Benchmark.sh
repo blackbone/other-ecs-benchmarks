@@ -1,11 +1,20 @@
 #!/bin/sh
-CONFIGURATION=Debug
+$SHORT_RUN=false 
 
 # pre-clean
 rm -rf ./.benchmark_results
-dotnet clean Benchmark/Benchmark.csproj -c Release
-dotnet restore Benchmark/Benchmark.csproj -c Release
-dotnet build Benchmark/Benchmark.csproj -c Release /p:CheckCacheMisses=false /p:ShortRun=true
+dotnet clean -c Release
+
+# restore and build
+dotnet restore -c Release
+dotnet build -c Release /p:CheckCacheMisses=false /p:ShortRun=$SHORT_RUN
+if (($? > 0))
+then
+    exit $?;
+fi
+
+# tests
+dotnet test
 if (($? > 0))
 then
     exit $?;
@@ -15,4 +24,4 @@ dotnet run --project Benchmark/Benchmark.csproj -c Release --no-build
 
 # post-clean
 rm -rf ./.benchmark_results
-dotnet clean Benchmark/Benchmark.csproj -c Release
+dotnet clean -c Release

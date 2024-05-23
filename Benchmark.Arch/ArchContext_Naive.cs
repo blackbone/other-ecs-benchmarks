@@ -1,5 +1,4 @@
 ﻿using Arch.Core;
-using Arch.Core.Extensions;
 using Arch.Core.Utils;
 using Benchmark._Context;
 // ReSharper disable ForCanBeConvertedToForeach
@@ -11,6 +10,8 @@ public class ArchContext_Naive : BenchmarkContextBase
     private int _entityCount;
     private World? _world;
     private Dictionary<int, ComponentType[]>? _archetypes;
+    
+    public override int EntityCount => _world!.Size;
 
     public override void Setup(int entityCount)
     {
@@ -176,6 +177,14 @@ public class ArchContext_Naive : BenchmarkContextBase
         for (var i = 0; i < entities.Length; i++)
             _world!.Remove<T1, T2, T3, T4>(entities[i]);
     }
+
+    public override int CountWith<T1>(int poolId) => _world!.CountEntities(new QueryDescription().WithAll<T1>());
+
+    public override int CountWith<T1, T2>(int poolId) => _world!.CountEntities(new QueryDescription().WithAll<T1, T2>());
+
+    public override int CountWith<T1, T2, T3>(int poolId) => _world!.CountEntities(new QueryDescription().WithAll<T1, T2, T3>());
+
+    public override int CountWith<T1, T2, T3, T4>(int poolId) => _world!.CountEntities(new QueryDescription().WithAll<T1, T2, T3, T4>());
 
     public override object Shuffle(in object entitySet)
     {

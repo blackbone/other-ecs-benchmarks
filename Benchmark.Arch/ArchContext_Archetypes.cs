@@ -11,12 +11,16 @@ public class ArchContext_Archetypes : BenchmarkContextBase
     private int _entityCount;
     private World? _world;
     private Dictionary<int, ComponentType[]>? _archetypes;
+    private Dictionary<int, QueryDescription>? _queries;
+    
+    public override int EntityCount => _world!.Size;
 
     public override void Setup(int entityCount)
     {
         _entityCount = entityCount;
         _world = World.Create();
         _archetypes = new Dictionary<int, ComponentType[]>();
+        _queries = new Dictionary<int, QueryDescription>();
     }
 
     public override void Cleanup()
@@ -39,24 +43,28 @@ public class ArchContext_Archetypes : BenchmarkContextBase
     public override void Warmup<T1>(int poolId)
     {
         _archetypes![poolId] = [typeof(T1)];
+        _queries![poolId] = new QueryDescription().WithAll<T1>();
         _world!.Reserve(_archetypes[poolId], _entityCount);
     }
 
     public override void Warmup<T1, T2>(int poolId)
     {
         _archetypes![poolId] = [typeof(T1), typeof(T2)];
+        _queries![poolId] = new QueryDescription().WithAll<T1, T2>();
         _world!.Reserve(_archetypes[poolId], _entityCount);
     }
 
     public override void Warmup<T1, T2, T3>(int poolId)
     {
         _archetypes![poolId] = [typeof(T1), typeof(T2), typeof(T3)];
+        _queries![poolId] = new QueryDescription().WithAll<T1, T2, T3>();
         _world!.Reserve(_archetypes[poolId], _entityCount);
     }
 
     public override void Warmup<T1, T2, T3, T4>(int poolId)
     {
         _archetypes![poolId] = [typeof(T1), typeof(T2), typeof(T3), typeof(T4)];
+        _queries![poolId] = new QueryDescription().WithAll<T1, T2, T3, T4>();
         _world!.Reserve(_archetypes[poolId], _entityCount);
     }
 
@@ -173,6 +181,11 @@ public class ArchContext_Archetypes : BenchmarkContextBase
         for (var i = 0; i < entities.Length; i++)
             _world!.RemoveRange(entities[i], archetype);
     }
+
+    public override int CountWith<T1>(int poolId) => _world!.CountEntities(_queries![poolId]);
+    public override int CountWith<T1, T2>(int poolId) => _world!.CountEntities(_queries![poolId]);
+    public override int CountWith<T1, T2, T3>(int poolId) => _world!.CountEntities(_queries![poolId]);
+    public override int CountWith<T1, T2, T3, T4>(int poolId) => _world!.CountEntities(_queries![poolId]);
 
     public override object Shuffle(in object entitySet)
     {

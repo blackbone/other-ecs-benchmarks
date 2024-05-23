@@ -24,7 +24,7 @@ public class DeleteEntityBenchmark<T> : BenchmarkBase<T> where T : BenchmarkCont
     }
 
     [Benchmark]
-    public void _()
+    public override void Run()
     {
         Context.Lock();
         Context.DeleteEntities(_entitySet);

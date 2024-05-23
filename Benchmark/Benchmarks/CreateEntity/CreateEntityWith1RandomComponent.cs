@@ -29,7 +29,7 @@ public class CreateEntityWith1RandomComponent<T> : BenchmarkBase<T> where T : Be
     }
 
     [Benchmark]
-    public void _()
+    public override void Run()
     {
         Context.Lock();
         for (int i = 0; i < EntityCount; i += ChunkSize)

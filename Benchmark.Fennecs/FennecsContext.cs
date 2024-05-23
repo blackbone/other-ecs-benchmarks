@@ -7,6 +7,8 @@ public class FennecsContext : BenchmarkContextBase
 {
     private World? _world;
     private World.WorldLock _lock;
+    
+    public override int EntityCount => _world!.Count;
 
     public override void Setup(int entityCount)
     {
@@ -130,6 +132,14 @@ public class FennecsContext : BenchmarkContextBase
         for (var i = 0; i < entities.Length; i++)
             entities[i].Remove<T1>().Remove<T2>().Remove<T3>().Remove<T4>();
     }
+
+    public override int CountWith<T1>(int poolId) => _world!.Query<T1>().Build().Count;
+
+    public override int CountWith<T1, T2>(int poolId) => _world!.Query<T1, T2>().Build().Count;
+
+    public override int CountWith<T1, T2, T3>(int poolId) => _world!.Query<T1, T2, T3>().Build().Count;
+
+    public override int CountWith<T1, T2, T3, T4>(int poolId) => _world!.Query<T1, T2, T3, T4>().Build().Count;
 
     public override object Shuffle(in object entitySet)
     {

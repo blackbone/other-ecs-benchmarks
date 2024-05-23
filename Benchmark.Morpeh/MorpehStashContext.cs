@@ -1,5 +1,7 @@
 ﻿using Benchmark._Context;
 using Scellecs.Morpeh;
+using Scellecs.Morpeh.Workaround;
+
 // ReSharper disable ForCanBeConvertedToForeach
 
 namespace Benchmark.Morpeh;
@@ -8,11 +10,15 @@ public class MorpehStashContext : BenchmarkContextBase
 {
     private World? _world;
     private Dictionary<int, Stash[]>? _stashes;
+    private Dictionary<int, Filter>? _filters;
+    
+    public override int EntityCount => _world!.EntityCount();
 
     public override void Setup(int entityCount)
     {
         _world = World.Create();
         _stashes = new Dictionary<int, Stash[]>();
+        _filters = new Dictionary<int, Filter>();
     }
 
     public override void Cleanup()
@@ -36,22 +42,31 @@ public class MorpehStashContext : BenchmarkContextBase
     public override void Warmup<T1>(int poolId)
     {
         _stashes![poolId] = [_world!.GetStash<T1>()];
+        _filters![poolId] = _world!.Filter.With<T1>().Build();
     }
 
     public override void Warmup<T1, T2>(int poolId)
     {
         _stashes![poolId] = [_world!.GetStash<T1>(), _world!.GetStash<T2>()];
+        _filters![poolId] = _world!.Filter.With<T1>().With<T2>().Build();
     }
 
     public override void Warmup<T1, T2, T3>(int poolId)
     {
         _stashes![poolId] = [_world!.GetStash<T1>(), _world!.GetStash<T2>(), _world!.GetStash<T3>()];
+        _filters![poolId] = _world!.Filter.With<T1>().With<T2>().With<T3>().Build();
     }
 
     public override void Warmup<T1, T2, T3, T4>(int poolId)
     {
         _stashes![poolId] = [_world!.GetStash<T1>(), _world!.GetStash<T2>(), _world!.GetStash<T3>(), _world!.GetStash<T4>()];
+        _filters![poolId] = _world!.Filter.With<T1>().With<T2>().With<T3>().With<T4>().Build();
     }
+
+    public override int CountWith<T1>(int poolId) => _filters![poolId].GetLengthSlow(); 
+    public override int CountWith<T1, T2>(int poolId) => _filters![poolId].GetLengthSlow(); 
+    public override int CountWith<T1, T2, T3>(int poolId) => _filters![poolId].GetLengthSlow(); 
+    public override int CountWith<T1, T2, T3, T4>(int poolId) => _filters![poolId].GetLengthSlow(); 
 
     public override void CreateEntities(in object entitySet)
     {

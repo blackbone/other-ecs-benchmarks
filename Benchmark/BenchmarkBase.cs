@@ -3,17 +3,22 @@ using BenchmarkDotNet.Attributes;
 
 namespace Benchmark;
 
-public abstract class BenchmarkBase;
+public abstract class BenchmarkBase
+{
+    [Params(Constants.EntityCount)] public int EntityCount { get; set; }
+
+    public abstract void Setup();
+    public abstract void Cleanup();
+    public abstract void Run();
+}
 
 [MemoryDiagnoser]
 public abstract class BenchmarkBase<T> : BenchmarkBase where T : BenchmarkContextBase, new()
 {
     protected T Context;
 
-    [Params(Constants.EntityCount)] public int EntityCount { get; set; }
-
     [IterationSetup]
-    public void Setup()
+    public override void Setup()
     {
         Context = new T();
         Context.Setup(Constants.EntityCount);
@@ -21,7 +26,7 @@ public abstract class BenchmarkBase<T> : BenchmarkBase where T : BenchmarkContex
     }
 
     [IterationCleanup]
-    public void Cleanup()
+    public override void Cleanup()
     {
         OnCleanup();
         Context.Cleanup();
@@ -36,4 +41,6 @@ public abstract class BenchmarkBase<T> : BenchmarkBase where T : BenchmarkContex
     protected virtual void OnSetup()
     {
     }
+
+    public override string ToString() => $"{GetType().Name}<{typeof(T).Name}>";
 }

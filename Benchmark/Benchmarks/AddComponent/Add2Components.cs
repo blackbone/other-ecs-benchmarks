@@ -24,7 +24,7 @@ public class Add2Components<T> : AddComponentBase<T> where T : BenchmarkContextB
     }
 
     [Benchmark]
-    public void _()
+    public override void Run()
     {
         Context.Lock();
         Context.AddComponent<Component1, Component2>(EntitySet, 0);

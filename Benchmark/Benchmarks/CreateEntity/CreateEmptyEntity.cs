@@ -20,7 +20,7 @@ public class CreateEmptyEntity<T> : BenchmarkBase<T> where T : BenchmarkContextB
     }
 
     [Benchmark]
-    public void _()
+    public override void Run()
     {
         Context.Lock();
         Context.CreateEntities(_entitySet);

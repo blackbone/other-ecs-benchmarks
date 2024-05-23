@@ -25,7 +25,7 @@ public class Add1RandomComponent<T> : AddRandomComponentBase<T> where T : Benchm
     }
 
     [Benchmark]
-    public void _()
+    public override void Run()
     {
         Context.Lock();
         for (int i = 0; i < EntitySets.Length; i += ChunkSize)
