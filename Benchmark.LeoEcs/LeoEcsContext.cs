@@ -1,7 +1,6 @@
 using Benchmark._Context;
 using Leopotam.Ecs;
 using EcsWorld = Leopotam.Ecs.EcsWorld;
-using EcsWorldConfig = Leopotam.Ecs.EcsWorldConfig;
 
 namespace Benchmark.LeoEcs;
 
@@ -93,7 +92,9 @@ public class LeoEcsContext : BenchmarkContextBase
 
     public override void DeleteEntities(in object entitySet)
     {
-        throw new NotImplementedException();
+        var entities = (EcsEntity[])entitySet;
+        for (var i = 0; i < entities.Length; i++)
+            entities[i].Destroy();
     }
 
     public override void AddComponent<T1>(in object entitySet, in int poolId = -1)
