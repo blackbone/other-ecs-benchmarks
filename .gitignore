@@ -2,3 +2,5 @@
 [Bb]in/
 [Oo]bj/
 .DS_Store
+.benchmark_bin
+benchmarks.txt

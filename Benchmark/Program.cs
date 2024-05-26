@@ -47,15 +47,22 @@ IConfig configuration = DefaultConfig.Instance
     .AddColumn(new ContextColumn())
     ;
 
-var contextTypes = GetNestedTypes(typeof(BenchmarkContextBase), static t => t is { IsAbstract: false, IsGenericType: false });
-if (options.Contexts is { Length: > 0 }) contextTypes = contextTypes.Where(ctx => options.Contexts.Any(c => ctx.Name.Contains(c))).ToArray();
-
 var baseBenchmarkTypes = GetNestedTypes(typeof(BenchmarkBase), static t => t is { IsAbstract: false, IsGenericType: true });
-if (options.Benchmarks is { Length: > 0 }) baseBenchmarkTypes = baseBenchmarkTypes.Where(ctx => options.Benchmarks.Any(c => ctx.Name.Contains(c))).ToArray();
+if (!string.IsNullOrEmpty(options.Benchmark)) baseBenchmarkTypes = [baseBenchmarkTypes.FirstOrDefault(ctx => ctx.Name[..^2] == options.Benchmark)];
+else if (options.Benchmarks is { Length: > 0 }) baseBenchmarkTypes = baseBenchmarkTypes.Where(ctx => options.Benchmarks.Any(c => ctx.Name.Contains(c))).ToArray();
+
+if (options.PrintList)
+{
+    File.WriteAllLines("benchmarks.txt", baseBenchmarkTypes.Select(b => b.Name[..^2]));
+    return 0;
+}
 
 Console.WriteLine("Benchmarks:");
 Console.WriteLine(string.Join("\n", baseBenchmarkTypes.Select(b => $"\t{b.Name}")));
 Console.WriteLine();
+
+var contextTypes = GetNestedTypes(typeof(BenchmarkContextBase), static t => t is { IsAbstract: false, IsGenericType: false });
+if (options.Contexts is { Length: > 0 }) contextTypes = contextTypes.Where(ctx => options.Contexts.Any(c => ctx.Name.Contains(c))).ToArray();
 
 Console.WriteLine("Contexts:");
 Console.WriteLine(string.Join("\n", contextTypes.Select(b => $"\t{b.Name}")));
@@ -132,8 +139,15 @@ static Options ParseCommandLineArgs(in string[] args)
     var i = 0;
     while (i < args.Length)
     {
+
+        if (args[i] == "--list")
+        {
+            result.PrintList = true;
+            break;
+        }
         if (args[i].StartsWith("contexts=")) result.Contexts = args[i].Split("=")[1].Split(",");
         if (args[i].StartsWith("benchmarks=")) result.Benchmarks = args[i].Split("=")[1].Split(",");
+        if (args[i].StartsWith("benchmark=")) result.Benchmark = args[i].Split("=")[1];
         i++;
     }
     return result;
