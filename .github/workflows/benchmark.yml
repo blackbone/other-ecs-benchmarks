@@ -5,13 +5,13 @@ name: Run parallel benchmarks
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ "main" ]
-    paths:
-      - './github/workflows/dotnet.yml'
-      - '**.cs'
-      - '**.csproj'
-      - '**.sln'
+#  push:
+#    branches: [ "main" ]
+#    paths:
+#      - './github/workflows/dotnet.yml'
+#      - '**.cs'
+#      - '**.csproj'
+#      - '**.sln'
 
 jobs:
   test:
