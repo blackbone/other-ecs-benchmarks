@@ -3,7 +3,7 @@ using Leopotam.Ecs;
 
 namespace Benchmark.LeoEcs;
 
-public unsafe class System<T1>(delegate*<ref T1, void> method) : IEcsSystem
+public unsafe class System<T1>(delegate*<ref T1, void> method) : IEcsRunSystem
     where T1 : struct
 {
     private readonly EcsFilter<T1>? _filter;
@@ -14,7 +14,7 @@ public unsafe class System<T1>(delegate*<ref T1, void> method) : IEcsSystem
     }
 }
 
-public unsafe class System<T1, T2>(delegate*<ref T1, ref T2, void> method) : IEcsSystem
+public unsafe class System<T1, T2>(delegate*<ref T1, ref T2, void> method) : IEcsRunSystem
     where T1 : struct
     where T2 : struct
 {
@@ -26,7 +26,7 @@ public unsafe class System<T1, T2>(delegate*<ref T1, ref T2, void> method) : IEc
     }
 }
 
-public unsafe class System<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> method) : IEcsSystem
+public unsafe class System<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> method) : IEcsRunSystem
     where T1 : struct
     where T2 : struct
     where T3 : struct
@@ -39,7 +39,7 @@ public unsafe class System<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> m
     }
 }
 
-public unsafe class System<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> method) : IEcsSystem
+public unsafe class System<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> method) : IEcsRunSystem
     where T1 : struct
     where T2 : struct
     where T3 : struct
