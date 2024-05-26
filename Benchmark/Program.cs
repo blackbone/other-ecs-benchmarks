@@ -28,7 +28,7 @@ var shortJob = Job.ShortRun
     .WithStrategy(RunStrategy.Monitoring)
     .Apply();
 
-var clearEachInvocationJob = Job.Default
+var clearEachInvocationJob = Job.Dry
     .WithInvocationCount(1)
     .WithIterationCount(1)
     .WithStrategy(RunStrategy.Throughput)
