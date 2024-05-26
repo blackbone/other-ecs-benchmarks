@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using Benchmark;
 using Benchmark._Context;
@@ -33,7 +34,7 @@ var clearEachInvocationJob = Job.Dry
     .WithIterationCount(1)
     .WithStrategy(RunStrategy.Throughput)
     .Apply();
-var precisionJob = Job.Default
+var precisionJob = Job.Dry
     .WithUnrollFactor(16)
     .WithStrategy(RunStrategy.Throughput)
     .Apply();
@@ -81,6 +82,9 @@ foreach (var baseBenchmarkType in baseBenchmarkTypes)
     benchmarkSwitcher.RunAll(configuration.AddJob(perInvocationSetup ? clearEachInvocationJob : precisionJob));
     #endif
 }
+
+// if single run - do nothing
+if (!string.IsNullOrEmpty(options.Benchmark)) return 0;
 
 // join reports
 var contents = Directory.GetFiles("./.benchmark_results", "*.md", SearchOption.AllDirectories)
@@ -139,7 +143,6 @@ static Options ParseCommandLineArgs(in string[] args)
     var i = 0;
     while (i < args.Length)
     {
-
         if (args[i] == "--list")
         {
             result.PrintList = true;
@@ -150,5 +153,8 @@ static Options ParseCommandLineArgs(in string[] args)
         if (args[i].StartsWith("benchmark=")) result.Benchmark = args[i].Split("=")[1];
         i++;
     }
+    
+    Console.WriteLine("Using Options:");
+    Console.WriteLine(JsonSerializer.Serialize(result, JsonSerializerOptions.Default));
     return result;
 }
