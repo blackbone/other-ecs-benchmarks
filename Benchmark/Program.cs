@@ -53,7 +53,7 @@ else if (options.Benchmarks is { Length: > 0 }) baseBenchmarkTypes = baseBenchma
 
 if (options.PrintList)
 {
-    File.WriteAllLines("benchmarks.txt", baseBenchmarkTypes.Select(b => b.Name[..^2]));
+    File.WriteAllText("benchmarks.txt", string.Join("\n", baseBenchmarkTypes.Select(b => b.Name[..^2])));
     return 0;
 }
 
