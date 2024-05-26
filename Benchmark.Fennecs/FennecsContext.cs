@@ -19,13 +19,13 @@ public class FennecsContext : BenchmarkContextBase
         _systems = new List<Action<float>>();
     }
 
-    public override void Warmup<T1>(int poolId) => _queries![poolId] = _world!.Query<T1>().Build().Warmup();
+    public override void Warmup<T1>(int poolId) => _queries![poolId] = _world!.Query<T1>().Compile().Warmup();
 
-    public override void Warmup<T1, T2>(int poolId) => _queries![poolId] = _world!.Query<T1, T2>().Build().Warmup();
+    public override void Warmup<T1, T2>(int poolId) => _queries![poolId] = _world!.Query<T1, T2>().Compile().Warmup();
 
-    public override void Warmup<T1, T2, T3>(int poolId) => _queries![poolId] = _world!.Query<T1, T2, T3>().Build().Warmup();
+    public override void Warmup<T1, T2, T3>(int poolId) => _queries![poolId] = _world!.Query<T1, T2, T3>().Compile().Warmup();
 
-    public override void Warmup<T1, T2, T3, T4>(int poolId) => _queries![poolId] = _world!.Query<T1, T2, T3, T4>().Build().Warmup();
+    public override void Warmup<T1, T2, T3, T4>(int poolId) => _queries![poolId] = _world!.Query<T1, T2, T3, T4>().Compile().Warmup();
 
     public override void Cleanup()
     {
@@ -40,7 +40,7 @@ public class FennecsContext : BenchmarkContextBase
         _world = null;
     }
 
-    public override void Lock() => _lock = _world!.Lock;
+    public override void Lock() => _lock = _world!.Lock();
 
     public override void Commit() => _lock.Dispose();
 
@@ -143,13 +143,13 @@ public class FennecsContext : BenchmarkContextBase
             entities[i].Remove<T1>().Remove<T2>().Remove<T3>().Remove<T4>();
     }
 
-    public override int CountWith<T1>(int poolId) => _world!.Query<T1>().Build().Count;
+    public override int CountWith<T1>(int poolId) => _world!.Query<T1>().Unique().Count;
 
-    public override int CountWith<T1, T2>(int poolId) => _world!.Query<T1, T2>().Build().Count;
+    public override int CountWith<T1, T2>(int poolId) => _world!.Query<T1, T2>().Unique().Count;
 
-    public override int CountWith<T1, T2, T3>(int poolId) => _world!.Query<T1, T2, T3>().Build().Count;
+    public override int CountWith<T1, T2, T3>(int poolId) => _world!.Query<T1, T2, T3>().Unique().Count;
 
-    public override int CountWith<T1, T2, T3, T4>(int poolId) => _world!.Query<T1, T2, T3, T4>().Build().Count;
+    public override int CountWith<T1, T2, T3, T4>(int poolId) => _world!.Query<T1, T2, T3, T4>().Unique().Count;
 
     public override void Tick(float delta)
     {
@@ -159,7 +159,7 @@ public class FennecsContext : BenchmarkContextBase
     
     public override unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId)
     {
-        _systems!.Add(f => ((Query<T1>)_queries![poolId]).For(Invoke));
+        _systems!.Add(_ => ((Query<T1>)_queries![poolId]).For(Invoke));
         return;
 
         void Invoke(ref T1 c0) => method(ref c0);
@@ -167,7 +167,7 @@ public class FennecsContext : BenchmarkContextBase
 
     public override unsafe void AddSystem<T1, T2>(delegate*<ref T1, ref T2, void> method, int poolId)
     {
-        _systems!.Add(f => ((Query<T1, T2>)_queries![poolId]).For(Invoke));
+        _systems!.Add(_ => ((Query<T1, T2>)_queries![poolId]).For(Invoke));
         return;
 
         void Invoke(ref T1 c0, ref T2 c1) => method(ref c0, ref c1);
@@ -175,7 +175,7 @@ public class FennecsContext : BenchmarkContextBase
 
     public override unsafe void AddSystem<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> method, int poolId)
     {
-        _systems!.Add(f => ((Query<T1, T2, T3>)_queries![poolId]).For(Invoke));
+        _systems!.Add(_ => ((Query<T1, T2, T3>)_queries![poolId]).For(Invoke));
         return;
 
         void Invoke(ref T1 c0, ref T2 c1, ref T3 c2) => method(ref c0, ref c1, ref c2);
@@ -183,7 +183,7 @@ public class FennecsContext : BenchmarkContextBase
 
     public override unsafe void AddSystem<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> method, int poolId)
     {
-        _systems!.Add(f => ((Query<T1, T2, T3, T4>)_queries![poolId]).For(Invoke));
+        _systems!.Add(_ => ((Query<T1, T2, T3, T4>)_queries![poolId]).For(Invoke));
         return;
 
         void Invoke(ref T1 c0, ref T2 c1, ref T3 c2, ref T4 c3) => method(ref c0, ref c1, ref c2, ref c3);
