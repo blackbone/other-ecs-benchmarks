@@ -1,15 +1,15 @@
 using Benchmark._Context;
 using BenchmarkDotNet.Attributes;
 
-namespace Benchmark.Benchmarks.DeleteEntity;
+namespace Benchmark.Benchmarks.CreateEntity;
 
-[ArtifactsPath(".benchmark_results/" + nameof(DeleteEntityBenchmark<T>))]
+[ArtifactsPath(".benchmark_results/" + nameof(CreateEmptyEntity<T>))]
 [BenchmarkCategory(Categories.PerInvocationSetup)]
 [MemoryDiagnoser]
 #if CHECK_CACHE_MISSES
 [HardwareCounters(BenchmarkDotNet.Diagnosers.HardwareCounter.CacheMisses)]
 #endif
-public class DeleteEntityBenchmark<T> : BenchmarkBase<T> where T : BenchmarkContextBase, new()
+public class CreateEmptyEntity<T> : EntitiesBenchmarkBase<T> where T : BenchmarkContextBase, new()
 {
     private object _entitySet;
 
@@ -17,17 +17,13 @@ public class DeleteEntityBenchmark<T> : BenchmarkBase<T> where T : BenchmarkCont
     {
         base.OnSetup();
         _entitySet = Context.PrepareSet(EntityCount);
-        
-        Context.Lock();
-        Context.CreateEntities(_entitySet);
-        Context.Commit();
     }
 
     [Benchmark]
     public override void Run()
     {
         Context.Lock();
-        Context.DeleteEntities(_entitySet);
+        Context.CreateEntities(_entitySet);
         Context.Commit();
     }
 }

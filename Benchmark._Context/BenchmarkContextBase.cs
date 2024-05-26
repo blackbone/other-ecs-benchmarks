@@ -17,6 +17,11 @@ public abstract class BenchmarkContextBase : IDisposable
     public abstract void Setup(int entityCount);
 
     /// <summary>
+    /// Indicates setup has been finished.
+    /// </summary>
+    public virtual void FinishSetup() { }
+
+    /// <summary>
     /// Place where you can set up your stashes, caches, etc.
     /// </summary>
     /// <param name="poolId"> Id of cache - will be passed to <see cref="CreateEntities{T1}"/>, <see cref="AddComponent{T1}"/>, <see cref="RemoveComponent{T1}"/>. </param>
@@ -82,7 +87,7 @@ public abstract class BenchmarkContextBase : IDisposable
     /// <param name="entitySet"> Entity set object returned by <see cref="CreateEntities"/> </param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1}"/></param>
     /// <returns> Entity set identifier. Literally it can be anything, filter, query ids array, whatever. Will be used as argument in <see cref="AddComponent{T1}"/>, <see cref="RemoveComponent{T1}"/>, <see cref="DeleteEntities"/> </returns>
-    public abstract void CreateEntities<T1>(in object entitySet, in int poolId = -1)
+    public abstract void CreateEntities<T1>(in object entitySet, in int poolId = -1, in T1 c1 = default)
         where T1 : struct, MorpehComponent, DragonComponent;
 
     /// <summary>
@@ -91,7 +96,7 @@ public abstract class BenchmarkContextBase : IDisposable
     /// <param name="entitySet"> Entity set object returned by <see cref="CreateEntities"/> </param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1, T2}"/></param>
     /// <returns> Entity set identifier. Literally it can be anything, filter, query ids array, whatever. Will be used as argument in <see cref="AddComponent{T1}"/>, <see cref="RemoveComponent{T1}"/>, <see cref="DeleteEntities"/> </returns>
-    public abstract void CreateEntities<T1, T2>(in object entitySet, in int poolId = -1)
+    public abstract void CreateEntities<T1, T2>(in object entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default)
         where T1 : struct, MorpehComponent, DragonComponent
         where T2 : struct, MorpehComponent, DragonComponent;
 
@@ -101,7 +106,7 @@ public abstract class BenchmarkContextBase : IDisposable
     /// <param name="entitySet"> Entity set object returned by <see cref="CreateEntities"/> </param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1, T2, T3}"/></param>
     /// <returns> Entity set identifier. Literally it can be anything, filter, query ids array, whatever. Will be used as argument in <see cref="AddComponent{T1}"/>, <see cref="RemoveComponent{T1}"/>, <see cref="DeleteEntities"/> </returns>
-    public abstract void CreateEntities<T1, T2, T3>(in object entitySet, in int poolId = -1)
+    public abstract void CreateEntities<T1, T2, T3>(in object entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default, in T3 c3 = default)
         where T1 : struct, MorpehComponent, DragonComponent
         where T2 : struct, MorpehComponent, DragonComponent
         where T3 : struct, MorpehComponent, DragonComponent;
@@ -112,7 +117,7 @@ public abstract class BenchmarkContextBase : IDisposable
     /// <param name="entitySet"> Entity set object returned by <see cref="CreateEntities"/> </param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1, T2, T3, T4}"/></param>
     /// <returns> Entity set identifier. Literally it can be anything, filter, query ids array, whatever. Will be used as argument in <see cref="AddComponent{T1}"/>, <see cref="RemoveComponent{T1}"/>, <see cref="DeleteEntities"/> </returns>
-    public abstract void CreateEntities<T1, T2, T3, T4>(in object entitySet, in int poolId = -1)
+    public abstract void CreateEntities<T1, T2, T3, T4>(in object entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default, in T3 c3 = default, in T4 c4 = default)
         where T1 : struct, MorpehComponent, DragonComponent
         where T2 : struct, MorpehComponent, DragonComponent
         where T3 : struct, MorpehComponent, DragonComponent
@@ -137,7 +142,7 @@ public abstract class BenchmarkContextBase : IDisposable
     /// </summary>
     /// <param name="entitySet"> Entity set object returned by <see cref="CreateEntities"/> </param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1}"/></param>
-    public abstract void AddComponent<T1>(in object entitySet, in int poolId = -1)
+    public abstract void AddComponent<T1>(in object entitySet, in int poolId = -1, in T1 c1 = default)
         where T1 : struct, MorpehComponent, DragonComponent;
 
     /// <summary>
@@ -145,7 +150,7 @@ public abstract class BenchmarkContextBase : IDisposable
     /// </summary>
     /// <param name="entitySet"> Entity set object returned by <see cref="CreateEntities"/> </param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1, T2}"/></param>
-    public abstract void AddComponent<T1, T2>(in object entitySet, in int poolId = -1)
+    public abstract void AddComponent<T1, T2>(in object entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default)
         where T1 : struct, MorpehComponent, DragonComponent
         where T2 : struct, MorpehComponent, DragonComponent;
 
@@ -154,7 +159,7 @@ public abstract class BenchmarkContextBase : IDisposable
     /// </summary>
     /// <param name="entitySet"> Entity set object returned by <see cref="CreateEntities"/> </param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1, T2, T3}"/></param>
-    public abstract void AddComponent<T1, T2, T3>(in object entitySet, in int poolId = -1)
+    public abstract void AddComponent<T1, T2, T3>(in object entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default, in T3 c3 = default)
         where T1 : struct, MorpehComponent, DragonComponent
         where T2 : struct, MorpehComponent, DragonComponent
         where T3 : struct, MorpehComponent, DragonComponent;
@@ -164,7 +169,7 @@ public abstract class BenchmarkContextBase : IDisposable
     /// </summary>
     /// <param name="entitySet"> Entity set object returned by <see cref="CreateEntities"/> </param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1, T2, T3, T4}"/></param>
-    public abstract void AddComponent<T1, T2, T3, T4>(in object entitySet, in int poolId = -1)
+    public abstract void AddComponent<T1, T2, T3, T4>(in object entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default, in T3 c3 = default, in T4 c4 = default)
         where T1 : struct, MorpehComponent, DragonComponent
         where T2 : struct, MorpehComponent, DragonComponent
         where T3 : struct, MorpehComponent, DragonComponent
@@ -236,6 +241,34 @@ public abstract class BenchmarkContextBase : IDisposable
 
     #endregion
 
+    #region Systems
+
+    /// <summary>
+    /// Iterates world once.
+    /// </summary>
+    /// <param name="delta"> Delta time argument. </param>
+    public abstract void Tick(float delta);
+
+    public abstract unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId)
+        where T1 : struct, MorpehComponent, DragonComponent;
+    
+    public abstract unsafe void AddSystem<T1, T2>(delegate*<ref T1, ref T2, void> method, int poolId)
+        where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent;
+    
+    public abstract unsafe void AddSystem<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> method, int poolId)
+        where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent
+        where T3 : struct, MorpehComponent, DragonComponent;
+    
+    public abstract unsafe void AddSystem<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> method, int poolId)
+        where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent
+        where T3 : struct, MorpehComponent, DragonComponent
+        where T4 : struct, MorpehComponent, DragonComponent;
+
+    #endregion
+    
     /// <summary>
     /// Shuffles entities in set.
     /// </summary>

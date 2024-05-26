@@ -25,7 +25,7 @@ public struct Component4 : MorpehComponent, DragonComponent
 }
 
 // for compatibility all components are unmanaged structs
-public struct Outliner1 : MorpehComponent, DragonComponent
+public struct Padding1 : MorpehComponent, DragonComponent
 {
     public long Value1;
     public long Value2;
@@ -33,7 +33,7 @@ public struct Outliner1 : MorpehComponent, DragonComponent
     public long Value4;
 }
 
-public struct Outliner2 : MorpehComponent, DragonComponent
+public struct Padding2 : MorpehComponent, DragonComponent
 {
     public long Value1;
     public long Value2;
@@ -41,7 +41,7 @@ public struct Outliner2 : MorpehComponent, DragonComponent
     public long Value4;
 }
 
-public struct Outliner3 : MorpehComponent, DragonComponent
+public struct Padding3 : MorpehComponent, DragonComponent
 {
     public long Value1;
     public long Value2;
@@ -49,7 +49,7 @@ public struct Outliner3 : MorpehComponent, DragonComponent
     public long Value4;
 }
 
-public struct Outliner4 : MorpehComponent, DragonComponent
+public struct Padding4 : MorpehComponent, DragonComponent
 {
     public long Value1;
     public long Value2;

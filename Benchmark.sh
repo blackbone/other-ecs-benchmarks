@@ -13,14 +13,13 @@ then
     exit $?;
 fi
 
-# tests
-dotnet test
-if (($? > 0))
-then
-    exit $?;
-fi
+#dotnet test -c Release --no-build
+#if (($? > 0))
+#then
+#    exit $?;
+#fi
 
-dotnet run --project Benchmark/Benchmark.csproj -c Release --no-build
+dotnet run --project Benchmark/Benchmark.csproj -c Release --no-build benchmarks=System
 
 # post-clean
 rm -rf ./.benchmark_results

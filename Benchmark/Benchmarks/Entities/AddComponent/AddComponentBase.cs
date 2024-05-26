@@ -3,7 +3,7 @@ using BenchmarkDotNet.Attributes;
 
 namespace Benchmark.Benchmarks.AddComponent;
 
-public abstract class AddComponentBase<T> : BenchmarkBase<T> where T : BenchmarkContextBase, new()
+public abstract class AddComponentBase<T> : EntitiesBenchmarkBase<T> where T : BenchmarkContextBase, new()
 {
     protected object EntitySet { get; private set; }
     

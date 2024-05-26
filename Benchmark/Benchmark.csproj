@@ -9,6 +9,7 @@
         <DefineConstants Condition="'$(ShortRun)' == 'true'">SHORT_RUN</DefineConstants>
         <DebugSymbols>true</DebugSymbols>
         <DebugType>pdbonly</DebugType>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -17,7 +18,7 @@
 
     <!-- NUGET REFERENCES -->
     <ItemGroup>
-        <PackageReference Include="BenchmarkDotNet" Version="0.13.12"/>
+        <PackageReference Include="BenchmarkDotNet" Version="0.13.12" />
     </ItemGroup>
 
     <!-- SUPPORT REFERENCES -->
@@ -32,6 +33,9 @@
         <ProjectReference Include="..\Benchmark.Arch\Benchmark.Arch.csproj"/>
         <ProjectReference Include="..\Benchmark.Morpeh\Benchmark.Morpeh.csproj"/>
         <ProjectReference Include="..\Benchmark.Fennecs\Benchmark.Fennecs.csproj"/>
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Benchmarks\Entities\" />
     </ItemGroup>
 
 </Project>

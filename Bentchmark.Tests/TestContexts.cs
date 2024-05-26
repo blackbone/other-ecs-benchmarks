@@ -11,6 +11,7 @@ public class TestContexts
     {
         Assert.NotNull(context);
         context.Setup(1);
+        context.FinishSetup();
         
         context.Lock();
         context.CreateEntities(context.PrepareSet(1));
@@ -30,6 +31,7 @@ public class TestContexts
         
         context.Setup(1);
         context.Warmup<Component1>(0);
+        context.FinishSetup();
         
         context.Lock();
         var set = context.PrepareSet(1);
@@ -53,6 +55,7 @@ public class TestContexts
         context.Warmup<Component1>(0);
         context.Warmup<Component2>(1);
         context.Warmup<Component1, Component2>(2);
+        context.FinishSetup();
         
         context.Lock();
         var set = context.PrepareSet(1);
@@ -82,6 +85,7 @@ public class TestContexts
         context.Warmup<Component2, Component3>(4);
         context.Warmup<Component3, Component1>(5);
         context.Warmup<Component1, Component2, Component3>(6);
+        context.FinishSetup();
         
         context.Lock();
         var set = context.PrepareSet(1);
@@ -123,6 +127,7 @@ public class TestContexts
         context.Warmup<Component1, Component3, Component4>(12);
         context.Warmup<Component2, Component3, Component4>(13);
         context.Warmup<Component1, Component2, Component3, Component4>(14);
+        context.FinishSetup();
         
         context.Lock();
         var set = context.PrepareSet(1);
@@ -158,6 +163,7 @@ public class TestContexts
         
         context.Setup(1);
         context.Warmup<Component1>(0);
+        context.FinishSetup();
         
         context.Lock();
         var set = context.PrepareSet(1);
@@ -181,6 +187,7 @@ public class TestContexts
         context.Warmup<Component1>(0);
         context.Warmup<Component2>(1);
         context.Warmup<Component1, Component2>(2);
+        context.FinishSetup();
         
         context.Lock();
         var set = context.PrepareSet(1);
@@ -211,6 +218,7 @@ public class TestContexts
         context.Warmup<Component2, Component3>(4);
         context.Warmup<Component3, Component1>(5);
         context.Warmup<Component1, Component2, Component3>(6);
+        context.FinishSetup();
         
         context.Lock();
         var set = context.PrepareSet(1);
@@ -253,6 +261,7 @@ public class TestContexts
         context.Warmup<Component1, Component3, Component4>(12);
         context.Warmup<Component2, Component3, Component4>(13);
         context.Warmup<Component1, Component2, Component3, Component4>(14);
+        context.FinishSetup();
         
         context.Lock();
         var set = context.PrepareSet(1);

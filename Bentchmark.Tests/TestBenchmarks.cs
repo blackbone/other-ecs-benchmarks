@@ -9,10 +9,14 @@ public class TestBenchmarks
     public void CheckBenchmark<T>(T benchmark) where T : BenchmarkBase, new()
     {
         Assert.NotNull(benchmark);
-        
-        benchmark.Setup();
-        benchmark.Run();
-        benchmark.Cleanup();
+
+        var i = 1000;
+        while (i-- > 0)
+        {
+            benchmark.Setup();
+            benchmark.Run();
+            benchmark.Cleanup();
+        }
     }
 
     public static IEnumerable<BenchmarkBase?> GetBenchmarks()

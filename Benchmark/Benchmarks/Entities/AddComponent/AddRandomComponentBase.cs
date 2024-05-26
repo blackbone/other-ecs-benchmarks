@@ -4,7 +4,7 @@ using BenchmarkDotNet.Attributes;
 
 namespace Benchmark.Benchmarks.AddComponent;
 
-public abstract class AddRandomComponentBase<T> : BenchmarkBase<T> where T : BenchmarkContextBase, new()
+public abstract class AddRandomComponentBase<T> : EntitiesBenchmarkBase<T> where T : BenchmarkContextBase, new()
 {
     protected object[] EntitySets { get; private set; }
     
@@ -15,7 +15,7 @@ public abstract class AddRandomComponentBase<T> : BenchmarkBase<T> where T : Ben
     {
         var setsCount = EntityCount / ChunkSize + 1;
         EntitySets = new object[setsCount];
-        for (int i = 0; i < setsCount; i++)
+        for (var i = 0; i < setsCount; i++)
         {
             EntitySets[i] = Context.PrepareSet(ChunkSize);
             Context.CreateEntities(EntitySets[i]);

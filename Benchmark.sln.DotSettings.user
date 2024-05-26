@@ -2,11 +2,13 @@
 	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer&gt;
   &lt;Assembly Path="/Users/scabr/.nuget/packages/scellecs.morpeh/2023.1.0/lib/netstandard2.1/Scellecs.Morpeh.dll" /&gt;
 &lt;/AssemblyExplorer&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=7afd6a01_002Db580_002D4261_002D9f82_002Db842209482e5/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="TestContexts" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=3f9a7fac_002D4278_002D4c63_002D9558_002D28acd733a17d/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="TestBenchmarks" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;TestAncestor&gt;
-    &lt;TestId&gt;NUnit3x::36A677FA-8326-495A-85F0-AE43B1D3F00A::net8.0::Bentchmark.Tests.TestContexts&lt;/TestId&gt;
+    &lt;TestId&gt;NUnit3x::36A677FA-8326-495A-85F0-AE43B1D3F00A::net8.0::Bentchmark.Tests.TestBenchmarks&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String>
+	
+	
 	
 	
 	

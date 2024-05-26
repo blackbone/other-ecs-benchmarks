@@ -10,7 +10,7 @@ namespace Benchmark.Benchmarks.CreateEntity;
 #if CHECK_CACHE_MISSES
 [HardwareCounters(BenchmarkDotNet.Diagnosers.HardwareCounter.CacheMisses)]
 #endif
-public class CreateEntityWith1RandomComponent<T> : BenchmarkBase<T> where T : BenchmarkContextBase, new()
+public class CreateEntityWith1RandomComponent<T> : EntitiesBenchmarkBase<T> where T : BenchmarkContextBase, new()
 {
     private object _entitySet;
     private Random _rnd;
@@ -31,8 +31,9 @@ public class CreateEntityWith1RandomComponent<T> : BenchmarkBase<T> where T : Be
     [Benchmark]
     public override void Run()
     {
-        Context.Lock();
-        for (int i = 0; i < EntityCount; i += ChunkSize)
+        for (var i = 0; i < EntityCount; i += ChunkSize)
+        {
+            Context.Lock();
             switch (_rnd.Next() % 4)
             {
                 case 0: Context.CreateEntities<Component1>(_entitySet, 0); break;
@@ -40,7 +41,7 @@ public class CreateEntityWith1RandomComponent<T> : BenchmarkBase<T> where T : Be
                 case 2: Context.CreateEntities<Component3>(_entitySet, 2); break;
                 case 3: Context.CreateEntities<Component4>(_entitySet, 3); break;
             }
-            
-        Context.Commit();
+            Context.Commit();
+        }
     }
 }

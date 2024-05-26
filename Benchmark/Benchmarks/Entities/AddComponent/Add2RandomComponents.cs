@@ -27,8 +27,9 @@ public class Add2RandomComponents<T> : AddRandomComponentBase<T> where T : Bench
     [Benchmark]
     public override void Run()
     {
-        Context.Lock();
-        for (int i = 0; i < EntitySets.Length; i += ChunkSize)
+        for (var i = 0; i < EntitySets.Length; i += ChunkSize)
+        {
+            Context.Lock();
             switch (_rnd.Next() % 4)
             {
                 case 0: Context.AddComponent<Component1, Component2>(EntitySets[i], 0); break;
@@ -36,7 +37,7 @@ public class Add2RandomComponents<T> : AddRandomComponentBase<T> where T : Bench
                 case 2: Context.AddComponent<Component3, Component4>(EntitySets[i], 2); break;
                 case 3: Context.AddComponent<Component4, Component1>(EntitySets[i], 3); break;
             }
-            
-        Context.Commit();
+            Context.Commit();
+        }
     }
 }

@@ -3,13 +3,13 @@ using BenchmarkDotNet.Attributes;
 
 namespace Benchmark.Benchmarks.CreateEntity;
 
-[ArtifactsPath(".benchmark_results/" + nameof(CreateEntityWith2Components<T>))]
+[ArtifactsPath(".benchmark_results/" + nameof(CreateEntityWith4Components<T>))]
 [BenchmarkCategory(Categories.PerInvocationSetup)]
 [MemoryDiagnoser]
 #if CHECK_CACHE_MISSES
 [HardwareCounters(BenchmarkDotNet.Diagnosers.HardwareCounter.CacheMisses)]
 #endif
-public class CreateEntityWith2Components<T> : BenchmarkBase<T> where T : BenchmarkContextBase, new()
+public class CreateEntityWith4Components<T> : EntitiesBenchmarkBase<T> where T : BenchmarkContextBase, new()
 {
     private object _entitySet;
 
@@ -17,14 +17,14 @@ public class CreateEntityWith2Components<T> : BenchmarkBase<T> where T : Benchma
     {
         base.OnSetup();
         _entitySet = Context.PrepareSet(EntityCount);
-        Context.Warmup<Component1, Component2>(0);
+        Context.Warmup<Component1, Component2, Component3, Component4>(0);
     }
 
     [Benchmark]
     public override void Run()
     {
         Context.Lock();
-        Context.CreateEntities<Component1, Component2>(_entitySet, 0);
+        Context.CreateEntities<Component1, Component2, Component3, Component4>(_entitySet, 0);
         Context.Commit();
     }
 }

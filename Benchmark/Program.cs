@@ -28,16 +28,14 @@ var shortJob = Job.ShortRun
     .WithStrategy(RunStrategy.Monitoring)
     .Apply();
 
-var clearEachInvocationJob = Job.Dry
+var clearEachInvocationJob = Job.Default
     .WithInvocationCount(1)
     .WithIterationCount(1)
     .WithStrategy(RunStrategy.Throughput)
-    .WithAnalyzeLaunchVariance(true)
     .Apply();
 var precisionJob = Job.Default
     .WithUnrollFactor(16)
     .WithStrategy(RunStrategy.Throughput)
-    .WithAnalyzeLaunchVariance(true)
     .Apply();
 
 // configure runner
@@ -45,7 +43,7 @@ IConfig configuration = DefaultConfig.Instance
     .AddExporter(MarkdownExporter.GitHub)
     .WithOptions(ConfigOptions.DisableOptimizationsValidator)
     .WithOption(ConfigOptions.JoinSummary, true)
-    .HideColumns(Column.Gen0, Column.Gen1, Column.Gen2, Column.Type, Column.Error, Column.Method)
+    .HideColumns(Column.Gen0, Column.Gen1, Column.Gen2, Column.Type, Column.Error, Column.Method, Column.StdDev)
     .AddColumn(new ContextColumn())
     ;
 
