@@ -44,7 +44,7 @@ jobs:
     needs: build
     strategy:
       matrix:
-        csproj: ${{ fromJson(needs.build.outputs.matrix) }}
+        benchmark: ${{ fromJson(needs.build.outputs.matrix) }}
     steps:
       - name: ECHO
         run: echo ${{ matrix.benchmark }}
