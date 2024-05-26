@@ -39,7 +39,7 @@ public class SystemWith2ComponentsMultipleComposition<T> : SystemBenchmarkBase<T
                 }
             }
 
-            Context.CreateEntities(set, 1, default(Component1), new Component2 { Value = 1 });
+            Context.CreateEntities(set, 2, default(Component1), new Component2 { Value = 1 });
             
             switch (i % 4)
             {
@@ -61,8 +61,5 @@ public class SystemWith2ComponentsMultipleComposition<T> : SystemBenchmarkBase<T
     private static void Update(ref Component1 c1, ref Component2 c2) => c1.Value += c2.Value;
 
     [Benchmark]
-    public override void Run()
-    {
-        Context.Tick(0.1f);
-    }
+    public override void Run() => Context.Tick(0.1f);
 }

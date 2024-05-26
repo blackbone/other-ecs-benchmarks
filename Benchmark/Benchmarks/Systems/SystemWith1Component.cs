@@ -25,9 +25,8 @@ public class SystemWith1Component<T> : SystemBenchmarkBase<T> where T : Benchmar
         for (var i = 0; i < EntityCount; ++i)
         {
             for (var j = 0; j < Padding; ++j)
-            {
                 Context.CreateEntities(set);
-            }
+            
             Context.CreateEntities(set, 0, new Component1 { Value = 0 });
         }
         Context.Commit();
@@ -42,8 +41,5 @@ public class SystemWith1Component<T> : SystemBenchmarkBase<T> where T : Benchmar
     private static void Update(ref Component1 c1) => c1.Value++;
 
     [Benchmark]
-    public override void Run()
-    {
-        Context.Tick(0.1f);
-    }
+    public override void Run() => Context.Tick(0.1f);
 }

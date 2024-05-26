@@ -53,8 +53,5 @@ public class SystemWith1ComponentMultipleComposition<T> : SystemBenchmarkBase<T>
     private static void Update(ref Component1 c1) => c1.Value++;
 
     [Benchmark]
-    public override void Run()
-    {
-        Context.Tick(0.1f);
-    }
+    public override void Run() => Context.Tick(0.1f);
 }

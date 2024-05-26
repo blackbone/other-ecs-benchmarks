@@ -30,13 +30,8 @@ public class SystemWith2Components<T> : SystemBenchmarkBase<T> where T : Benchma
             {
                 switch (j % 2)
                 {
-                    case 0:
-                        Context.CreateEntities<Component1>(set, 0);
-                        break;
-
-                    case 1:
-                        Context.CreateEntities<Component2>(set, 1);
-                        break;
+                    case 0: Context.CreateEntities<Component1>(set, 0); break;
+                    case 1: Context.CreateEntities<Component2>(set, 1); break;
                 }
             }
             Context.CreateEntities(set, 2, default(Component1), new Component2 { Value = 1 });
@@ -53,8 +48,5 @@ public class SystemWith2Components<T> : SystemBenchmarkBase<T> where T : Benchma
     private static void Update(ref Component1 c1, ref Component2 c2) => c1.Value += c2.Value;
 
     [Benchmark]
-    public override void Run()
-    {
-        Context.Tick(0.1f);
-    }
+    public override void Run() => Context.Tick(0.1f);
 }

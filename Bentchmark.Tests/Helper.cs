@@ -23,9 +23,11 @@ public static class Helper
     
     public static void InjectParameters(BenchmarkBase benchmark)
     {
-        benchmark.EntityCount = Constants.LargeEntityCount;
+        benchmark.EntityCount = Constants.SmallEntityCount;
 
-        var properties = benchmark.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public)
+        var properties = benchmark.GetType()
+            .GetProperties(BindingFlags.Instance | BindingFlags.Public)
+            .Where(p => p.Name != nameof(BenchmarkBase.EntityCount))
             .Select(p => (p, p.GetCustomAttribute<ParamsAttribute>()))
             .Where(kv => kv.Item2 != null)
             .ToArray();

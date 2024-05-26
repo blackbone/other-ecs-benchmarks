@@ -31,15 +31,9 @@ public class SystemWith3Components<T> : SystemBenchmarkBase<T> where T : Benchma
             {
                 switch (j % 2)
                 {
-                    case 0:
-                        Context.CreateEntities<Component1>(set, 0);
-                        break;
-                    case 1:
-                        Context.CreateEntities<Component2>(set, 1);
-                        break;
-                    case 2:
-                        Context.CreateEntities<Component3>(set, 2);
-                        break;
+                    case 0: Context.CreateEntities<Component1>(set, 0); break;
+                    case 1: Context.CreateEntities<Component2>(set, 1); break;
+                    case 2: Context.CreateEntities<Component3>(set, 2); break;
                 }
             }
             Context.CreateEntities(set, 3, default(Component1), new Component2 { Value = 1 }, new Component3 { Value = 1 });
