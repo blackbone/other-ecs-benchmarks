@@ -252,16 +252,16 @@ public class DragonECSContext : BenchmarkContextBase
     public override void Tick(float delta) => _pipeline!.Run();
 
     public override unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId)
-        => _systems?.Add(new PointerInvocationSystem<T1>(method));
+        => _systems?.Add(new PointerInvocationSystem<T1>(_world!, method));
 
     public override unsafe void AddSystem<T1, T2>(delegate*<ref T1, ref T2, void> method, int poolId)
-        => _systems?.Add(new PointerInvocationSystem<T1, T2>(method));
+        => _systems?.Add(new PointerInvocationSystem<T1, T2>(_world!, method));
 
     public override unsafe void AddSystem<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> method, int poolId)
-        => _systems?.Add(new PointerInvocationSystem<T1, T2, T3>(method));
+        => _systems?.Add(new PointerInvocationSystem<T1, T2, T3>(_world!, method));
     
     public override unsafe void AddSystem<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> method, int poolId)
-        => _systems?.Add(new PointerInvocationSystem<T1, T2, T3, T4>(method));
+        => _systems?.Add(new PointerInvocationSystem<T1, T2, T3, T4>(_world!, method));
 
     public override object Shuffle(in object entitySet)
     {

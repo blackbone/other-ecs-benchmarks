@@ -50,8 +50,5 @@ public class SystemWith3Components<T> : SystemBenchmarkBase<T> where T : Benchma
     private static void Update(ref Component1 c1, ref Component2 c2, ref Component3 c3) => c1.Value += c2.Value + c3.Value;
 
     [Benchmark]
-    public override void Run()
-    {
-        Context.Tick(0.1f);
-    }
+    public override void Run() => Context.Tick(0.1f);
 }
