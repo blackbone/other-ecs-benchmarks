@@ -8,7 +8,8 @@ updated with actions and can be found [here](https://gist.github.com/blackbone/6
 
 # What is all about?
 
-General idea is to hide implementation of each ECS under context abstraction and work with it from benchmark implementations.
+General idea is to hide implementation of each ECS under context abstraction and work with it from benchmark
+implementations.
 
 Benchmarks design follow 2 rules which I try to balance with:
 * **Strict usage** - to ensure all benchmarks are running with same flow to avoid cheating.
@@ -58,7 +59,8 @@ Command line args:
 | benchmark | allow to specify benchmarks to run | `benchmarks=CreateEmtyEntities,Add1Component` |
 | contexts  |  allow to specify contexts to run  | `contexts=Morpeh,Fennecs,...`                 |
 
-> Since all comparisons is made by string contains you can simply write something like `contexts=Morpeh` instead of `context=MorpehContext`
+> Since all comparisons is made by string contains you can simply write something like `contexts=Morpeh`
+> instead of `context=MorpehContext`
 > and `benchmarks=With1,With2` to launch subset of benchmarks.
 > Selected benchmarks and contexts will be logged to console.
 
@@ -72,6 +74,11 @@ Command line args:
 
 1. Because of nature of BenchmarkDotNet there's sequential iteration of creating entities happening.
 This leads to case where, for example we creating 100k entities in benchmark, it's properly cleared
-in Setup and Cleanup but benchmark itself will be called multiple times which will lead to creating 100k entities,
+in Setup and Cleanup but benchmark itself will be called multiple times which will lead to creating
+2. 100k entities,
 then another 100k and in some cases lead to millions of entities in the world which can affect perfomance of creation
 and deletion on certain ECS implementations.
+2. System benchmarks which uses *Padding* property produces up to 1.100.000 entities each because of logic of padding
+generation. It affects runs duration but for now i'm not sure about correct way do fix that (maybe keep entire entities
+count up to *EntityCount* so it'll not affect speed but it'll reduce actual entity count to about 9.9k so archetype ecs
+implementation will gain significant boost).
