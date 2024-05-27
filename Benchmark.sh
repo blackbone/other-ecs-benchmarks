@@ -22,11 +22,12 @@ dotnet run --project Benchmark/Benchmark.csproj -c Release --no-build /p:CheckCa
 
 rm report.md
 
-echo "HW Info:\n" >> report.md
+echo -e "HW Info:\n" >> report.md
 cat .benchmark_results/hwinfo >> report.md
-echo '' >> report.md
+echo -e "\n" >> report.md
 find .benchmark_results -name '*.md' -print0 | while IFS= read -r -d '' file; do
   cat "$file" >> report.md
+  echo -e "\n" >> report.md
 done
 
 # post-clean

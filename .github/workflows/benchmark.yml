@@ -92,10 +92,10 @@ jobs:
         run: |
             find .benchmark_results/ | sed -e "s/[^-][^\/]*\// |/g" -e "s/|\([^ ]\)/|-\1/"
             echo -e "# Build from:\n" >> report.md
-            echo "https://github.com/blackbone/other-ecs-benchmarks/commit/$GITHUB_SHA\n" >> report.md
-            echo "HW Info:\n" >> report.md
+            echo -e "https://github.com/blackbone/other-ecs-benchmarks/commit/$GITHUB_SHA\n" >> report.md
+            echo -e "HW Info:\n" >> report.md
             cat .benchmark_results/hwinfo >> report.md
-            echo '' >> report.md
+            echo -e "\n" >> report.md
             find .benchmark_results -name '*.md' -print0 | while IFS= read -r -d '' file; do
             cat "$file" >> report.md
             done
