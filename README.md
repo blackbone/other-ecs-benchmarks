@@ -1,8 +1,13 @@
-# other-ecs-benchmarks
-
-alternative to https://github.com/Doraku/Ecs.CSharp.Benchmark
+> [!WARNING]
+> <details>
+>  <summary><b>Click me</b></summary>
+>
+>  alternative to https://github.com/Doraku/Ecs.CSharp.Benchmark
+></details>
 
 # Latest run
+
+[![Run parallel benchmarks](https://github.com/blackbone/other-ecs-benchmarks/actions/workflows/benchmark.yml/badge.svg)](https://github.com/blackbone/other-ecs-benchmarks/actions/workflows/benchmark.yml)
 
 updated with actions and can be found [here](https://gist.github.com/blackbone/6d254a684cf580441bf58690ad9485c3)
 
