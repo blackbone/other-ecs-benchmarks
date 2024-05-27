@@ -5,7 +5,7 @@ on:
   push:
     branches: [ "main" ]
     paths:
-      - './github/workflows/dotnet.yml'
+      - './github/workflows/benchmark.yml'
       - '**.cs'
       - '**.csproj'
       - '**.sln'
