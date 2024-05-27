@@ -3,13 +3,14 @@ using Scellecs.Morpeh;
 using Scellecs.Morpeh.Workaround;
 
 // ReSharper disable ForCanBeConvertedToForeach
+// ReSharper disable InconsistentNaming
 
-namespace Benchmark.Morpeh;
+namespace Benchmark.Morpeh_2024;
 
-public class MorpehStashContext : BenchmarkContextBase
+public class Morpeh2024_StashContext : BenchmarkContextBase
 {
     private World? _world;
-    private Dictionary<int, Stash[]>? _stashes;
+    private Dictionary<int, IStash[]>? _stashes;
     private Dictionary<int, Filter>? _filters;
     private SystemsGroup? _systems;
     
@@ -20,7 +21,7 @@ public class MorpehStashContext : BenchmarkContextBase
         _world = World.Create();
         _systems = _world.CreateSystemsGroup();
         _world.AddSystemsGroup(0, _systems);
-        _stashes = new Dictionary<int, Stash[]>();
+        _stashes = new Dictionary<int, IStash[]>();
         _filters = new Dictionary<int, Filter>();
     }
 

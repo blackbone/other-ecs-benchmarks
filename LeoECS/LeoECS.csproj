@@ -5,13 +5,14 @@
         <LangVersion>12</LangVersion>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <InvariantGlobalization>true</InvariantGlobalization>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
-
+    
     <ItemGroup>
-        <ProjectReference Include="..\Benchmark._Context\Benchmark._Context.csproj"/>
-        <ProjectReference Include="..\LeoECS\LeoECS.csproj" />
+        <Compile Include="..\submodules\leopotam-ecs\src\**\*.cs">
+            <Link>src\%(RecursiveDir)/%(FileName)%(Extension)</Link>
+        </Compile>
     </ItemGroup>
-
+    
 </Project>

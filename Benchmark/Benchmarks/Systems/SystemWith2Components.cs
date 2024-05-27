@@ -12,6 +12,7 @@ namespace Benchmark.Benchmarks.Systems;
 public class SystemWith2Components<T> : SystemBenchmarkBase<T> where T : BenchmarkContextBase, new()
 {
     [Params(0, 10)] public int Padding { get; set; }
+    [Params(100)] public int Iterations { get; set; }
 
     protected override void OnSetup()
     {
@@ -48,5 +49,9 @@ public class SystemWith2Components<T> : SystemBenchmarkBase<T> where T : Benchma
     private static void Update(ref Component1 c1, ref Component2 c2) => c1.Value += c2.Value;
 
     [Benchmark]
-    public override void Run() => Context.Tick(0.1f);
+    public override void Run()
+    {
+        var i = Iterations;
+        while (i-- > 0) Context.Tick(0.1f);
+    }
 }

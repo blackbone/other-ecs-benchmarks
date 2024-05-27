@@ -24,7 +24,7 @@ rm report.md
 
 echo "HW Info:\n" >> report.md
 cat .benchmark_results/hwinfo >> report.md
-echo "\n" >> report.md
+echo '' >> report.md
 find .benchmark_results -name '*.md' -print0 | while IFS= read -r -d '' file; do
   cat "$file" >> report.md
 done

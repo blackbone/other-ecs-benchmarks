@@ -11,7 +11,8 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Benchmark._Context\Benchmark._Context.csproj"/>
-        <ProjectReference Include="..\LeoECS\LeoECS.csproj" />
+        <ProjectReference Include="..\Scellecs.Morpeh.Workaround\Scellecs.Morpeh.Workaround.csproj" />
+        <ProjectReference Include="..\submodules\morpeh\Scellecs.Morpeh\Scellecs.Morpeh.csproj" />
     </ItemGroup>
 
 </Project>

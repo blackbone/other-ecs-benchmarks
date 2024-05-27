@@ -3,10 +3,11 @@ using Scellecs.Morpeh;
 using Scellecs.Morpeh.Workaround;
 
 // ReSharper disable ForCanBeConvertedToForeach
+// ReSharper disable InconsistentNaming
 
-namespace Benchmark.Morpeh;
+namespace Benchmark.Morpeh_2024;
 
-public class MorpehDirectContext : BenchmarkContextBase
+public class Morpeh2024_DirectContext : BenchmarkContextBase
 {
     private World? _world;
     private SystemsGroup? _systems;
@@ -66,6 +67,7 @@ public class MorpehDirectContext : BenchmarkContextBase
         for (int i = 0; i < entities.Length; i++)
         {
             entities[i] = _world!.CreateEntity();
+            entities[i].AddComponent<T1>() = c1;
             entities[i].AddComponent<T1>() = c1;
         }
     }

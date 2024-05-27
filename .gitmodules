@@ -1,3 +1,9 @@
 [submodule "submodules/DragonECS"]
 	path = submodules/DragonECS
 	url = git@github.com:DCFApixels/DragonECS.git
+[submodule "submodules/morpeh"]
+	path = submodules/morpeh
+	url = git@github.com:scellecs/morpeh.git
+[submodule "submodules/leopotam-ecs"]
+	path = submodules/leopotam-ecs
+	url = git@github.com:Leopotam/ecs.git

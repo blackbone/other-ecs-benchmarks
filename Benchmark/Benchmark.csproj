@@ -28,16 +28,18 @@
 
     <!-- SUPPORT REFERENCES -->
     <ItemGroup>
-        <ProjectReference Include="..\Benchmark.DragonECS\Benchmark.DragonECS.csproj" />
-        <ProjectReference Include="..\Benchmark.LeoEcs\Benchmark.LeoEcs.csproj" />
         <ProjectReference Include="..\Benchmark._Context\Benchmark._Context.csproj"/>
     </ItemGroup>
 
     <!-- REFERENCES TO ECS IMPLEMENTATIONS -->
     <ItemGroup>
         <ProjectReference Include="..\Benchmark.Arch\Benchmark.Arch.csproj"/>
-        <ProjectReference Include="..\Benchmark.Morpeh\Benchmark.Morpeh.csproj"/>
+        <ProjectReference Include="..\Benchmark.DragonECS\Benchmark.DragonECS.csproj" />
+        <ProjectReference Include="..\Benchmark.LeoEcs\Benchmark.LeoEcs.csproj" />
         <ProjectReference Include="..\Benchmark.Fennecs\Benchmark.Fennecs.csproj"/>
+        <!-- Morpehs are conflicting so use one of them at once -->
+        <ProjectReference Include="..\Benchmark.Morpeh_2023\Benchmark.Morpeh_2023.csproj" />
+<!--        <ProjectReference Include="..\Benchmark.Morpeh_2024\Benchmark.Morpeh_2024.csproj" />-->
     </ItemGroup>
     <ItemGroup>
       <Folder Include="Benchmarks\Entities\" />
