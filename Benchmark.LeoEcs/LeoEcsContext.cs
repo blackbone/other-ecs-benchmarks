@@ -17,6 +17,12 @@ public class LeoEcsContext : BenchmarkContextBase
         _systems = new List<EcsSystems>();
     }
 
+    public override void FinishSetup()
+    {
+        foreach (var system in _systems!)
+            system.Init();
+    }
+
     public override void Warmup<T1>(int poolId) { }
 
     public override void Warmup<T1, T2>(int poolId) { }
@@ -195,16 +201,16 @@ public class LeoEcsContext : BenchmarkContextBase
     }
     
     public override unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId)
-        => _systems!.Add(new EcsSystems(_world).Add(new System<T1>(method)).ProcessInjects());
+        => _systems!.Add(new EcsSystems(_world!).Add(new System<T1>(method)).ProcessInjects());
 
     public override unsafe void AddSystem<T1, T2>(delegate*<ref T1, ref T2, void> method, int poolId)
-        => _systems!.Add(new EcsSystems(_world).Add(new System<T1, T2>(method)).ProcessInjects());
+        => _systems!.Add(new EcsSystems(_world!).Add(new System<T1, T2>(method)).ProcessInjects());
 
     public override unsafe void AddSystem<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> method, int poolId)
-        => _systems!.Add(new EcsSystems(_world).Add(new System<T1, T2, T3>(method)).ProcessInjects());
+        => _systems!.Add(new EcsSystems(_world!).Add(new System<T1, T2, T3>(method)).ProcessInjects());
 
     public override unsafe void AddSystem<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> method, int poolId)
-        => _systems!.Add(new EcsSystems(_world).Add(new System<T1, T2, T3, T4>(method)).ProcessInjects());
+        => _systems!.Add(new EcsSystems(_world!).Add(new System<T1, T2, T3, T4>(method)).ProcessInjects());
 
     public override object Shuffle(in object entitySet)
     {

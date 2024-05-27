@@ -9,6 +9,14 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <DefineConstants>TRACE;DISABLE_DEBUG</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <DefineConstants>TRACE;DISABLE_DEBUG</DefineConstants>
+    </PropertyGroup>
+
     <ItemGroup>
         <Compile Include="..\submodules\DragonECS\src\**\*.cs">
             <Link>src\%(RecursiveDir)/%(FileName)%(Extension)</Link>
