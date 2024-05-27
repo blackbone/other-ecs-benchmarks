@@ -38,8 +38,8 @@
         <ProjectReference Include="..\Benchmark.LeoEcs\Benchmark.LeoEcs.csproj" />
         <ProjectReference Include="..\Benchmark.Fennecs\Benchmark.Fennecs.csproj"/>
         <!-- Morpehs are conflicting so use one of them at once -->
-        <ProjectReference Include="..\Benchmark.Morpeh_2023\Benchmark.Morpeh_2023.csproj" />
-<!--        <ProjectReference Include="..\Benchmark.Morpeh_2024\Benchmark.Morpeh_2024.csproj" />-->
+<!--        <ProjectReference Include="..\Benchmark.Morpeh_2023\Benchmark.Morpeh_2023.csproj" />-->
+        <ProjectReference Include="..\Benchmark.Morpeh_2024\Benchmark.Morpeh_2024.csproj" />
     </ItemGroup>
     <ItemGroup>
       <Folder Include="Benchmarks\Entities\" />
