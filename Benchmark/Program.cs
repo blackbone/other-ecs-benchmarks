@@ -5,9 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 using Benchmark;
 using Benchmark._Context;
 using BenchmarkDotNet.Attributes;
@@ -17,6 +15,10 @@ using BenchmarkDotNet.Engines;
 using BenchmarkDotNet.Exporters;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
+
+// clear previous results
+if (Directory.Exists(".benchmark_results"))
+    Directory.Delete(".benchmark_results", true);
 
 // parse cmd args
 var options = ParseCommandLineArgs(args);
@@ -77,42 +79,45 @@ foreach (var baseBenchmarkType in baseBenchmarkTypes)
     var perInvocationSetup = baseBenchmarkType.GetCustomAttribute<BenchmarkCategoryAttribute>()?.Categories.Contains(Categories.PerInvocationSetup) ?? false;
     
     #if SHORT_RUN
-    benchmarkSwitcher.RunAll(configuration.AddJob(shortJob));
+    var summaries = benchmarkSwitcher.RunAll(configuration.AddJob(shortJob)).ToArray();
     #else
-    benchmarkSwitcher.RunAll(configuration.AddJob(perInvocationSetup ? clearEachInvocationJob : precisionJob));
+    var summaries = benchmarkSwitcher.RunAll(configuration.AddJob(perInvocationSetup ? clearEachInvocationJob : precisionJob)).ToArray();
     #endif
+    
+    // post process benchmark reports
+    foreach (var summary in summaries)
+    {
+        var rootDir = summary.ResultsDirectoryPath;
+        var rootDirInfo = new DirectoryInfo(rootDir);
+        var name = rootDirInfo.Parent.Name;
+
+        var reports = Directory.GetFiles(rootDir, "*.md", SearchOption.TopDirectoryOnly);
+        foreach (var report in reports)
+        {
+            var contents = File.ReadAllLines(report).ToList();
+
+            if (contents[0] == "```")
+            {
+                var hwInfo = new List<string>();
+            
+                // remove hw info
+                hwInfo.Add(contents[0]);
+                contents.RemoveAt(0);
+                while (contents[0] != "```")
+                {
+                    hwInfo.Add(contents[0]);
+                    contents.RemoveAt(0);
+                }
+                hwInfo.Add(contents[0]);
+                contents.RemoveAt(0);
+                
+                File.WriteAllText(".benchmark_results/hwinfo", string.Join("\n", hwInfo));
+            }
+        
+            File.WriteAllText(report, $"# {name}\n\n{string.Join("\n", contents)}");
+        }
+    }
 }
-
-// if single run - do nothing
-if (!string.IsNullOrEmpty(options.Benchmark)) return 0;
-
-// join reports
-var contents = Directory.GetFiles("./.benchmark_results", "*.md", SearchOption.AllDirectories)
-    .Order()
-    .Select(file => (Regex.Match(file, @"\.benchmark_results/(?'name'\w+)/").Groups["name"].Value,
-        File.ReadLines(file).ToArray()))
-    .ToArray();
-
-// find and add header
-var content = new List<string>();
-var i = 1;
-while (!contents[0].Item2[i].StartsWith("```")) i++;
-i++;
-content.AddRange(contents[0].Item2[..i]);
-content.Add(string.Empty);
-
-// add benchmark contents
-foreach (var (benchmark, reportContent) in contents)
-{
-    content.Add($"# {benchmark}");
-    i = 1;
-    while (!contents[0].Item2[i].StartsWith("```")) i++;
-    i++;
-    content.AddRange(reportContent[i..]);
-    content.Add(string.Empty);
-}
-
-File.WriteAllText("./report.md", string.Join("\r\n", content), Encoding.UTF8);
 
 return 0;
 

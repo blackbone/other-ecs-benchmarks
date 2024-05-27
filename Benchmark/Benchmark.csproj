@@ -10,10 +10,15 @@
         <DebugSymbols>true</DebugSymbols>
         <DebugType>pdbonly</DebugType>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <InvariantGlobalization>true</InvariantGlobalization>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
       <DefineConstants>TRACE;SHORT_RUN</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <DefineConstants>TRACE</DefineConstants>
     </PropertyGroup>
 
     <!-- NUGET REFERENCES -->

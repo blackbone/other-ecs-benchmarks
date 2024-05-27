@@ -6,14 +6,12 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <InvariantGlobalization>true</InvariantGlobalization>
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Benchmark._Context\Benchmark._Context.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <PackageReference Include="fennecs" Version="0.4.2-beta" />
+        <ProjectReference Include="..\Benchmark._Context\Benchmark._Context.csproj"/>
+        <PackageReference Include="fennecs" Version="0.4.2-beta"/>
     </ItemGroup>
 
 </Project>

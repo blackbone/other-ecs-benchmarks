@@ -1,26 +1,34 @@
 #!/bin/sh
-$SHORT_RUN=false 
 
 # pre-clean
 rm -rf ./.benchmark_results
-dotnet clean -c Release
+dotnet clean
 
 # restore and build
-dotnet restore -c Release
-dotnet build -c Release /p:CheckCacheMisses=false /p:ShortRun=$SHORT_RUN
+dotnet restore -c Debug
+dotnet build -c Debug /p:CheckCacheMisses=false /p:ShortRun=true
 if (($? > 0))
 then
     exit $?;
 fi
 
-#dotnet test -c Release --no-build
+#dotnet test -c Debug --no-build
 #if (($? > 0))
 #then
 #    exit $?;
 #fi
 
-dotnet run --project Benchmark/Benchmark.csproj -c Release --no-build benchmarks=System
+dotnet run --project Benchmark/Benchmark.csproj -c Debug --no-build /p:CheckCacheMisses=false /p:ShortRun=true
+
+rm report.md
+
+echo "HW Info:\n" >> report.md
+cat .benchmark_results/hwinfo >> report.md
+echo "\n" >> report.md
+find .benchmark_results -name '*.md' -print0 | while IFS= read -r -d '' file; do
+  cat "$file" >> report.md
+done
 
 # post-clean
 rm -rf ./.benchmark_results
-dotnet clean -c Release
+dotnet clean -c Debug

@@ -74,7 +74,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: benchmark-report-${{ matrix.benchmark }}
-          path: .benchmark_results/**/*.md
+          path: |
+            .benchmark_results/${{ matrix.benchmark }}/results/*.md
+            .benchmark_results/hwinfo
           retention-days: 1
           
   merge-reports:
@@ -84,15 +86,18 @@ jobs:
       - name: Download Benchmark Reports
         uses: actions/download-artifact@v4
         with:
+          merge-multiple: true
           path: .benchmark_results/
       - name: Merge Benchmark Reports
         run: |
             find .benchmark_results/ | sed -e "s/[^-][^\/]*\// |/g" -e "s/|\([^ ]\)/|-\1/"
-            echo -e "\n# Build from:\n" >> report.md
-            echo "https://github.com/blackbone/other-ecs-benchmarks/commit/$GITHUB_SHA" >> report.md
+            echo -e "# Build from:\n" >> report.md
+            echo "https://github.com/blackbone/other-ecs-benchmarks/commit/$GITHUB_SHA\n" >> report.md
+            echo "HW Info:\n" >> report.md
+            cat .benchmark_results/hwinfo >> report.md
+            echo "\n" >> report.md
             find .benchmark_results -name '*.md' -print0 | while IFS= read -r -d '' file; do
-              echo -e "\n# $(basename "$file" .md)\n" >> report.md
-              cat "$file" >> report.md
+            cat "$file" >> report.md
             done
       - name: Update Gist
         uses: exuanbo/actions-deploy-gist@v1
