@@ -68,7 +68,6 @@ public class Morpeh2024_DirectContext : BenchmarkContextBase
         {
             entities[i] = _world!.CreateEntity();
             entities[i].AddComponent<T1>() = c1;
-            entities[i].AddComponent<T1>() = c1;
         }
     }
 
@@ -159,7 +158,7 @@ public class Morpeh2024_DirectContext : BenchmarkContextBase
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
-            entities[i].AddComponent<T1>();
+            entities[i].RemoveComponent<T1>();
     }
 
     public override void RemoveComponent<T1, T2>(in object entitySet, in int poolId = -1)
