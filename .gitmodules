@@ -7,3 +7,6 @@
 [submodule "submodules/leopotam-ecs"]
 	path = submodules/leopotam-ecs
 	url = git@github.com:Leopotam/ecs.git
+[submodule "submodules/leopotam-ecslite"]
+	path = submodules/leopotam-ecslite
+	url = git@github.com:Leopotam/ecslite.git

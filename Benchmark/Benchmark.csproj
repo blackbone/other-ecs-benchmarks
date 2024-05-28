@@ -28,6 +28,7 @@
 
     <!-- SUPPORT REFERENCES -->
     <ItemGroup>
+        <ProjectReference Include="..\Benchmark.LeoEcsLite\Benchmark.LeoEcsLite.csproj" />
         <ProjectReference Include="..\Benchmark._Context\Benchmark._Context.csproj"/>
     </ItemGroup>
 

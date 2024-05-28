@@ -61,6 +61,10 @@ public partial class TestContexts
         
         context.Setup(1);
         context.Warmup<Component1>(0);
+        unsafe
+        {
+            context.AddSystem<Component1>(&Update, 0);
+        }
         context.FinishSetup();
         
         context.Lock();
@@ -92,6 +96,9 @@ public partial class TestContexts
         Assert.That(context.EntityCount, Is.EqualTo(0));
         
         _context = context; // set to variable so TearDown will hook it and clean
+        
+        static void Update(ref Component1 c1)
+            => c1.Value++;
     }
     
     [Test]
@@ -104,6 +111,10 @@ public partial class TestContexts
         context.Warmup<Component1>(0);
         context.Warmup<Component2>(1);
         context.Warmup<Component1, Component2>(2);
+        unsafe
+        {
+            context.AddSystem<Component1, Component2>(&Update, 2);
+        }
         context.FinishSetup();
         
         context.Lock();
@@ -150,6 +161,9 @@ public partial class TestContexts
         Assert.That(context.EntityCount, Is.EqualTo(0));
         
         _context = context; // set to variable so TearDown will hook it and clean
+        
+        static void Update(ref Component1 c1, ref Component2 c2)
+            => c1.Value += c2.Value;
     }
 
     [Test]
@@ -166,6 +180,10 @@ public partial class TestContexts
         context.Warmup<Component2, Component3>(4);
         context.Warmup<Component3, Component1>(5);
         context.Warmup<Component1, Component2, Component3>(6);
+        unsafe
+        {
+            context.AddSystem<Component1, Component2, Component3>(&Update, 6);
+        }
         context.FinishSetup();
         
         context.Lock();
@@ -239,6 +257,9 @@ public partial class TestContexts
         Assert.That(context.EntityCount, Is.EqualTo(0));
         
         _context = context; // set to variable so TearDown will hook it and clean
+        
+        static void Update(ref Component1 c1, ref Component2 c2, ref Component3 c3)
+            => c1.Value += c2.Value + c3.Value;
     }
     
     [Test]
@@ -263,6 +284,10 @@ public partial class TestContexts
         context.Warmup<Component1, Component3, Component4>(12);
         context.Warmup<Component2, Component3, Component4>(13);
         context.Warmup<Component1, Component2, Component3, Component4>(14);
+        unsafe
+        {
+            context.AddSystem<Component1, Component2, Component3, Component4>(&Update, 14);
+        }
         context.FinishSetup();
         
         context.Lock();
@@ -391,5 +416,8 @@ public partial class TestContexts
         Assert.That(context.EntityCount, Is.EqualTo(0));
         
         _context = context; // set to variable so TearDown will hook it and clean
+
+        static void Update(ref Component1 c1, ref Component2 c2, ref Component3 c3, ref Component4 c4)
+            => c1.Value += c2.Value + c3.Value + c4.Value;
     }
 }

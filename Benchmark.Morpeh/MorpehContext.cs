@@ -7,7 +7,7 @@ using Scellecs.Morpeh.Workaround;
 
 namespace Benchmark.Morpeh_2023;
 
-public class MorpehStashContext : BenchmarkContextBase
+public class MorpehContext : BenchmarkContextBase
 {
     private World? _world;
     private Dictionary<int, IStash[]>? _stashes;
