@@ -1,9 +1,6 @@
 > [!WARNING]
-> <details>
->  <summary><b>Click me</b></summary>
+> Benchmark is under active development all API, integrations and set of benchmarks is subject to change!
 >
->  alternative to https://github.com/Doraku/Ecs.CSharp.Benchmark
-></details>
 
 # Latest run
 
