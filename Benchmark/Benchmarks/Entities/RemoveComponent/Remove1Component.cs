@@ -1,9 +1,8 @@
 using System;
 using Benchmark._Context;
-using Benchmark.Utils;
 using BenchmarkDotNet.Attributes;
 
-namespace Benchmark.Benchmarks.RemoveComponent;
+namespace Benchmark.Benchmarks.Entities.RemoveComponent;
 
 [BenchmarkCategory(Categories.PerInvocationSetup)]
 [ArtifactsPath(".benchmark_results/" + nameof(Remove1Component<T>))]
@@ -13,22 +12,20 @@ namespace Benchmark.Benchmarks.RemoveComponent;
 #endif
 public class Remove1Component<T> : RemoveComponentBase<T> where T : BenchmarkContextBase, new()
 {
-    private object _entitySet;
-    
     protected override void OnSetup()
     {
         base.OnSetup();
         Context.Warmup<Component1>(0);
-        _entitySet = Context.PrepareSet(EntityCount);
-        Context.CreateEntities<Component1>(_entitySet, 0);
-        if (Random) _entitySet = Context.Shuffle(_entitySet);
+        EntitySet = Context.PrepareSet(EntityCount);
+        Context.CreateEntities<Component1>(EntitySet, 0);
+        if (Random) EntitySet = Context.Shuffle(EntitySet);
     }
-
+    
     [Benchmark]
     public override void Run()
     {
         Context.Lock();
-        Context.RemoveComponent<Component1>(_entitySet, 0);
+        Context.RemoveComponent<Component1>(EntitySet, 0);
         Context.Commit();
     }
 }

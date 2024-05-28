@@ -1,11 +1,12 @@
+using System;
 using Benchmark._Context;
 using BenchmarkDotNet.Attributes;
 
-namespace Benchmark.Benchmarks.AddComponent;
+namespace Benchmark.Benchmarks.Entities.AddComponent;
 
 public abstract class AddComponentBase<T> : EntitiesBenchmarkBase<T> where T : BenchmarkContextBase, new()
 {
-    protected object EntitySet { get; private set; }
+    protected Array EntitySet { get; private set; }
     
     [Params(true, false)] public bool RandomOrder { get; set; }
 

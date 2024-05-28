@@ -1,7 +1,8 @@
+using System;
 using Benchmark._Context;
 using BenchmarkDotNet.Attributes;
 
-namespace Benchmark.Benchmarks.DeleteEntity;
+namespace Benchmark.Benchmarks.Entities.DeleteEntity;
 
 [ArtifactsPath(".benchmark_results/" + nameof(DeleteEntityBenchmark<T>))]
 [BenchmarkCategory(Categories.PerInvocationSetup)]
@@ -11,7 +12,7 @@ namespace Benchmark.Benchmarks.DeleteEntity;
 #endif
 public class DeleteEntityBenchmark<T> : EntitiesBenchmarkBase<T> where T : BenchmarkContextBase, new()
 {
-    private object _entitySet;
+    private Array _entitySet;
 
     protected override void OnSetup()
     {

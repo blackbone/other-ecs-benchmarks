@@ -1,7 +1,8 @@
+using System;
 using Benchmark._Context;
 using BenchmarkDotNet.Attributes;
 
-namespace Benchmark.Benchmarks.CreateEntity;
+namespace Benchmark.Benchmarks.Entities.CreateEntity;
 
 [ArtifactsPath(".benchmark_results/" + nameof(CreateEmptyEntity<T>))]
 [BenchmarkCategory(Categories.PerInvocationSetup)]
@@ -11,12 +12,18 @@ namespace Benchmark.Benchmarks.CreateEntity;
 #endif
 public class CreateEmptyEntity<T> : EntitiesBenchmarkBase<T> where T : BenchmarkContextBase, new()
 {
-    private object _entitySet;
+    private Array _entitySet;
 
     protected override void OnSetup()
     {
         base.OnSetup();
         _entitySet = Context.PrepareSet(EntityCount);
+    }
+
+    protected override void OnCleanup()
+    {
+        base.OnCleanup();
+        Context.DeleteEntities(_entitySet);
     }
 
     [Benchmark]

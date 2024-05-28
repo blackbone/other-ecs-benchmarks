@@ -1,0 +1,31 @@
+name: Test
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - './github/workflows/benchmark.yml'
+      - '**.cs'
+      - '**.csproj'
+      - '**.sln'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.out.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          submodules: true
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Restore Benchmark
+        run: dotnet restore
+      - name: Build Benchmark
+        run: dotnet build -c Release /p:CheckCacheMisses=false
+      - name: Run Tests
+        run: dotnet test -c Release

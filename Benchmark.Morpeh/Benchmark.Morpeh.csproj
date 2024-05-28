@@ -7,12 +7,13 @@
         <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <InvariantGlobalization>true</InvariantGlobalization>
+        <RootNamespace>Benchmark.Morpeh_2023</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\Benchmark._Context\Benchmark._Context.csproj"/>
         <ProjectReference Include="..\Scellecs.Morpeh.Workaround\Scellecs.Morpeh.Workaround.csproj" />
-        <PackageReference Include="Scellecs.Morpeh" Version="2023.1.0"/>
+        <ProjectReference Include="..\submodules\morpeh\Scellecs.Morpeh\Scellecs.Morpeh.csproj" />
     </ItemGroup>
 
 </Project>

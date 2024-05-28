@@ -1,7 +1,7 @@
 using Benchmark._Context;
 using BenchmarkDotNet.Attributes;
 
-namespace Benchmark.Benchmarks.AddComponent;
+namespace Benchmark.Benchmarks.Entities.AddComponent;
 
 [ArtifactsPath(".benchmark_results/" + nameof(Add1Component<T>))]
 [BenchmarkCategory(Categories.PerInvocationSetup)]
