@@ -35,7 +35,7 @@
 
     <!-- REFERENCES TO ECS IMPLEMENTATIONS -->
     <ItemGroup>
-        <ProjectReference Include="..\Benchmark.Arch\Benchmark.Arch.csproj"/>
+<!--        <ProjectReference Include="..\Benchmark.Arch\Benchmark.Arch.csproj"/>-->
         <ProjectReference Include="..\Benchmark.DragonECS\Benchmark.DragonECS.csproj"/>
         <ProjectReference Include="..\Benchmark.LeoEcs\Benchmark.LeoEcs.csproj"/>
         <ProjectReference Include="..\Benchmark.Fennecs\Benchmark.Fennecs.csproj"/>
