@@ -10,7 +10,7 @@ namespace Benchmark.Benchmarks.Entities.CreateEntity;
 #if CHECK_CACHE_MISSES
 [HardwareCounters(BenchmarkDotNet.Diagnosers.HardwareCounter.CacheMisses)]
 #endif
-public abstract class CreateEntityWith3RandomComponents<T> : IBenchmark<T> where T : struct, IBenchmarkContext
+public class CreateEntityWith3RandomComponents<T> : IBenchmark<T> where T : struct, IBenchmarkContext
 {
     [Params(Constants.EntityCount)] public int EntityCount { get; set; }
     [Params(1, 4, 32)] public int ChunkSize { get; set; }
