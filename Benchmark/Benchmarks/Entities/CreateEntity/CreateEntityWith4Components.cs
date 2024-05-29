@@ -10,19 +10,33 @@ namespace Benchmark.Benchmarks.Entities.CreateEntity;
 #if CHECK_CACHE_MISSES
 [HardwareCounters(BenchmarkDotNet.Diagnosers.HardwareCounter.CacheMisses)]
 #endif
-public class CreateEntityWith4Components<T> : EntitiesBenchmarkBase<T> where T : BenchmarkContextBase, new()
+public abstract class CreateEntityWith4Components<T> : IBenchmark<T> where T : struct, IBenchmarkContext
 {
+    [Params(Constants.EntityCount)] public int EntityCount { get; set; }
+    public T Context { get; set; }
     private Array _entitySet;
 
-    protected override void OnSetup()
+    [IterationSetup]
+    public void Setup()
     {
-        base.OnSetup();
+        Context = BenchmarkContext.Create<T>(EntityCount);
+        Context.Setup();
         _entitySet = Context.PrepareSet(EntityCount);
         Context.Warmup<Component1, Component2, Component3, Component4>(0);
+        Context.FinishSetup();
+    }
+
+    [IterationCleanup]
+    public void Cleanup()
+    {
+        Context.DeleteEntities(_entitySet);
+        Context.Cleanup();
+        Context.Dispose();
+        Context = default;
     }
 
     [Benchmark]
-    public override void Run()
+    public void Run()
     {
         Context.Lock();
         Context.CreateEntities<Component1, Component2, Component3, Component4>(_entitySet, 0);

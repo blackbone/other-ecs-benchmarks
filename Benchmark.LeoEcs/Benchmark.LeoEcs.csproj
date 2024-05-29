@@ -11,7 +11,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Benchmark._Context\Benchmark._Context.csproj"/>
-        <ProjectReference Include="..\LeoECS\LeoECS.csproj" />
+        <ProjectReference Include="..\LeoECS\LeoECS.csproj"/>
     </ItemGroup>
 
 </Project>

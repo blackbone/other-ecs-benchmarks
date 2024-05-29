@@ -7,7 +7,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using Benchmark;
-using Benchmark._Context;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Columns;
 using BenchmarkDotNet.Configs;
@@ -22,9 +21,6 @@ if (Directory.Exists(".benchmark_results"))
 
 // parse cmd args
 var options = ParseCommandLineArgs(args);
-
-// preload assemblies
-PreloadAssemblies();
 
 // configure jobs
 var shortJob = Job.ShortRun
@@ -43,29 +39,32 @@ var precisionJob = Job.Dry
 
 // configure runner
 IConfig configuration = DefaultConfig.Instance
-    .AddExporter(MarkdownExporter.GitHub)
-    .WithOptions(ConfigOptions.DisableOptimizationsValidator)
-    .WithOption(ConfigOptions.JoinSummary, true)
-    .HideColumns(Column.Gen0, Column.Gen1, Column.Gen2, Column.Type, Column.Error, Column.Method, Column.StdDev)
-    .AddColumn(new ContextColumn())
+        .AddExporter(MarkdownExporter.GitHub)
+        .WithOptions(ConfigOptions.DisableOptimizationsValidator)
+        .WithOption(ConfigOptions.JoinSummary, true)
+        .HideColumns(Column.Gen0, Column.Gen1, Column.Gen2, Column.Type, Column.Error, Column.Method, Column.StdDev)
+        .AddColumn(new ContextColumn())
     ;
-
-var baseBenchmarkTypes = GetNestedTypes(typeof(BenchmarkBase), static t => t is { IsAbstract: false, IsGenericType: true });
-if (!string.IsNullOrEmpty(options.Benchmark)) baseBenchmarkTypes = [baseBenchmarkTypes.FirstOrDefault(ctx => ctx.Name[..^2] == options.Benchmark)];
-else if (options.Benchmarks is { Length: > 0 }) baseBenchmarkTypes = baseBenchmarkTypes.Where(ctx => options.Benchmarks.Any(c => ctx.Name.Contains(c))).ToArray();
 
 if (options.PrintList)
 {
-    File.WriteAllText("benchmarks.txt", string.Join("\n", baseBenchmarkTypes.Select(b => b.Name[..^2])));
+    File.WriteAllText("benchmarks.txt", string.Join("\n", BenchMap.Runs.Keys.Select(b => b.Name[..^2])));
     return 0;
 }
+
+var baseBenchmarkTypes = BenchMap.Runs.Keys.ToArray();
+if (!string.IsNullOrEmpty(options.Benchmark))
+    baseBenchmarkTypes = [baseBenchmarkTypes.FirstOrDefault(ctx => ctx.Name[..^2] == options.Benchmark)];
+else if (options.Benchmarks is { Length: > 0 })
+    baseBenchmarkTypes = baseBenchmarkTypes.Where(ctx => options.Benchmarks.Any(c => ctx.Name.Contains(c))).ToArray();
 
 Console.WriteLine("Benchmarks:");
 Console.WriteLine(string.Join("\n", baseBenchmarkTypes.Select(b => $"\t{b.Name}")));
 Console.WriteLine();
 
-var contextTypes = GetNestedTypes(typeof(BenchmarkContextBase), static t => t is { IsAbstract: false, IsGenericType: false });
-if (options.Contexts is { Length: > 0 }) contextTypes = contextTypes.Where(ctx => options.Contexts.Any(c => ctx.Name.Contains(c))).ToArray();
+var contextTypes = BenchMap.Contexts.Keys.ToArray();
+if (options.Contexts is { Length: > 0 })
+    contextTypes = contextTypes.Where(ctx => options.Contexts.Any(c => ctx.Name.Contains(c))).ToArray();
 
 Console.WriteLine("Contexts:");
 Console.WriteLine(string.Join("\n", contextTypes.Select(b => $"\t{b.Name}")));
@@ -74,16 +73,25 @@ Console.WriteLine();
 // run benchmarks
 foreach (var baseBenchmarkType in baseBenchmarkTypes)
 {
-    var benchmarkTypes = contextTypes.Select(contextType => baseBenchmarkType.MakeGenericType(contextType)).ToArray();
+    // this is all benchmarks
+    var benchmarkAllTypes = BenchMap.Runs[baseBenchmarkType];
+
+    // we keep only those which intersects with lists of selected context types
+    var benchmarkTypes = new List<Type>();
+    foreach (var contextBenchTypes in contextTypes.Select(t => BenchMap.Contexts[t]))
+        benchmarkTypes.AddRange(benchmarkAllTypes.Where(t => contextBenchTypes.Contains(t)));
+
     var benchmarkSwitcher = BenchmarkSwitcher.FromTypes(benchmarkTypes.ToArray());
-    var perInvocationSetup = baseBenchmarkType.GetCustomAttribute<BenchmarkCategoryAttribute>()?.Categories.Contains(Categories.PerInvocationSetup) ?? false;
-    
-    #if SHORT_RUN
+    var perInvocationSetup = baseBenchmarkType.GetCustomAttribute<BenchmarkCategoryAttribute>()?.Categories
+        .Contains(Categories.PerInvocationSetup) ?? false;
+
+#if SHORT_RUN
     var summaries = benchmarkSwitcher.RunAll(configuration.AddJob(shortJob)).ToArray();
-    #else
-    var summaries = benchmarkSwitcher.RunAll(configuration.AddJob(perInvocationSetup ? clearEachInvocationJob : precisionJob)).ToArray();
-    #endif
-    
+#else
+    var summaries =
+ benchmarkSwitcher.RunAll(configuration.AddJob(perInvocationSetup ? clearEachInvocationJob : precisionJob)).ToArray();
+#endif
+
     // post process benchmark reports
     foreach (var summary in summaries)
     {
@@ -99,7 +107,7 @@ foreach (var baseBenchmarkType in baseBenchmarkTypes)
             if (contents[0] == "```")
             {
                 var hwInfo = new List<string>();
-            
+
                 // remove hw info
                 hwInfo.Add(contents[0]);
                 contents.RemoveAt(0);
@@ -108,38 +116,19 @@ foreach (var baseBenchmarkType in baseBenchmarkTypes)
                     hwInfo.Add(contents[0]);
                     contents.RemoveAt(0);
                 }
+
                 hwInfo.Add(contents[0]);
                 contents.RemoveAt(0);
-                
+
                 File.WriteAllText(".benchmark_results/hwinfo", string.Join("\n", hwInfo));
             }
-        
+
             File.WriteAllText(report, $"# {name}\n\n{string.Join("\n", contents)}");
         }
     }
 }
 
 return 0;
-
-static void PreloadAssemblies()
-{
-    var loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies().ToList();
-    if (loadedAssemblies.Count == 0) return;
-    var loadedPaths = loadedAssemblies.Select(a => a.Location).ToArray();
-    if (loadedPaths.Length == 0) return;
-    var referencedPaths = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.dll");
-    if (referencedPaths.Length == 0) return;
-    var toLoad = referencedPaths.Where(r => !loadedPaths.Contains(r, StringComparer.InvariantCultureIgnoreCase))
-        .ToList();
-    if (toLoad.Count == 0) return;
-    toLoad.ForEach(path => loadedAssemblies.Add(AppDomain.CurrentDomain.Load(AssemblyName.GetAssemblyName(path))));
-}
-
-static Type[] GetNestedTypes(Type baseType, Predicate<Type> filter)
-{
-    return AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.GetTypes())
-        .Where(t => t.IsSubclassOf(baseType) && filter(t)).ToArray();
-}
 
 static Options ParseCommandLineArgs(in string[] args)
 {
@@ -153,12 +142,13 @@ static Options ParseCommandLineArgs(in string[] args)
             result.PrintList = true;
             break;
         }
+
         if (args[i].StartsWith("contexts=")) result.Contexts = args[i].Split("=")[1].Split(",");
         if (args[i].StartsWith("benchmarks=")) result.Benchmarks = args[i].Split("=")[1].Split(",");
         if (args[i].StartsWith("benchmark=")) result.Benchmark = args[i].Split("=")[1];
         i++;
     }
-    
+
     Console.WriteLine("Using Options:");
     Console.WriteLine(JsonSerializer.Serialize(result, JsonSerializerOptions.Default));
     return result;

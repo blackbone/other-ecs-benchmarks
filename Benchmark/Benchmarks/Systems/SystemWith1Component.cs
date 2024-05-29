@@ -4,32 +4,35 @@ using BenchmarkDotNet.Attributes;
 namespace Benchmark.Benchmarks.Systems;
 
 [ArtifactsPath(".benchmark_results/" + nameof(SystemWith1Component<T>))]
+[BenchmarkCategory(Categories.PerInvocationSetup)]
 [MemoryDiagnoser]
 #if CHECK_CACHE_MISSES
 [HardwareCounters(BenchmarkDotNet.Diagnosers.HardwareCounter.CacheMisses)]
 #endif
-// ReSharper disable once InconsistentNaming
-public class SystemWith1Component<T> : SystemBenchmarkBase<T> where T : BenchmarkContextBase, new()
+public abstract class SystemWith1Component<T> : IBenchmark<T> where T : struct, IBenchmarkContext
 {
+    [Params(Constants.SystemEntityCount)] public int EntityCount { get; set; }
     [Params(0, 10)] public int Padding { get; set; }
     [Params(100)] public int Iterations { get; set; }
 
-    protected override void OnSetup()
-    {
-        base.OnSetup();
+    public T Context { get; set; }
 
+    [IterationSetup]
+    public void Setup()
+    {
+        Context = BenchmarkContext.Create<T>(EntityCount);
+        Context.Setup();
         Context.Warmup<Component1>(0);
-        
         var set = Context.PrepareSet(1);
         Context.Lock();
-        // set up entities
         for (var i = 0; i < EntityCount; ++i)
         {
             for (var j = 0; j < Padding; ++j)
                 Context.CreateEntities(set);
-            
+
             Context.CreateEntities(set, 0, new Component1 { Value = 0 });
         }
+
         Context.Commit();
 
         unsafe
@@ -37,14 +40,27 @@ public class SystemWith1Component<T> : SystemBenchmarkBase<T> where T : Benchmar
             // set up systems
             Context.AddSystem<Component1>(&Update, 0);
         }
+
+        Context.FinishSetup();
     }
 
-    private static void Update(ref Component1 c1) => c1.Value++;
+    [IterationCleanup]
+    public void Cleanup()
+    {
+        Context.Cleanup();
+        Context.Dispose();
+        Context = default;
+    }
 
     [Benchmark]
-    public override void Run()
+    public void Run()
     {
         var i = Iterations;
         while (i-- > 0) Context.Tick(0.1f);
+    }
+
+    private static void Update(ref Component1 c1)
+    {
+        c1.Value++;
     }
 }

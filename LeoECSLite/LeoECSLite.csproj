@@ -8,11 +8,11 @@
         <InvariantGlobalization>true</InvariantGlobalization>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
-    
+
     <ItemGroup>
         <Compile Include="..\submodules\leopotam-ecslite\src\**\*.cs">
             <Link>src\%(RecursiveDir)/%(FileName)%(Extension)</Link>
         </Compile>
     </ItemGroup>
-    
+
 </Project>

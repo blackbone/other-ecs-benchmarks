@@ -14,31 +14,32 @@
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-      <DefineConstants>TRACE;SHORT_RUN</DefineConstants>
+        <DefineConstants>TRACE;SHORT_RUN</DefineConstants>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-      <DefineConstants>TRACE</DefineConstants>
+        <DefineConstants>TRACE</DefineConstants>
     </PropertyGroup>
 
     <!-- NUGET REFERENCES -->
     <ItemGroup>
-        <PackageReference Include="BenchmarkDotNet" Version="0.13.12" />
+        <PackageReference Include="BenchmarkDotNet" Version="0.13.12"/>
     </ItemGroup>
 
     <!-- SUPPORT REFERENCES -->
     <ItemGroup>
-        <ProjectReference Include="..\Benchmark.LeoEcsLite\Benchmark.LeoEcsLite.csproj" />
+        <ProjectReference Include="..\Benchmark.LeoEcsLite\Benchmark.LeoEcsLite.csproj"/>
         <ProjectReference Include="..\Benchmark._Context\Benchmark._Context.csproj"/>
+        <ProjectReference Include="..\Benchmark._Generator\Benchmark._Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
     </ItemGroup>
 
     <!-- REFERENCES TO ECS IMPLEMENTATIONS -->
     <ItemGroup>
         <ProjectReference Include="..\Benchmark.Arch\Benchmark.Arch.csproj"/>
-        <ProjectReference Include="..\Benchmark.DragonECS\Benchmark.DragonECS.csproj" />
-        <ProjectReference Include="..\Benchmark.LeoEcs\Benchmark.LeoEcs.csproj" />
+        <ProjectReference Include="..\Benchmark.DragonECS\Benchmark.DragonECS.csproj"/>
+        <ProjectReference Include="..\Benchmark.LeoEcs\Benchmark.LeoEcs.csproj"/>
         <ProjectReference Include="..\Benchmark.Fennecs\Benchmark.Fennecs.csproj"/>
-        <ProjectReference Include="..\Benchmark.Morpeh\Benchmark.Morpeh.csproj" />
+        <ProjectReference Include="..\Benchmark.Morpeh\Benchmark.Morpeh.csproj"/>
     </ItemGroup>
 
 </Project>

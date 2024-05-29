@@ -10,8 +10,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Benchmark._Context\Benchmark._Context.csproj" />
-      <ProjectReference Include="..\DragonECS\DragonECS.csproj" />
+        <ProjectReference Include="..\Benchmark._Context\Benchmark._Context.csproj"/>
+        <ProjectReference Include="..\DragonECS\DragonECS.csproj"/>
     </ItemGroup>
 
 </Project>

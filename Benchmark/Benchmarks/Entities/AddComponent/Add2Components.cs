@@ -1,3 +1,4 @@
+using System;
 using Benchmark._Context;
 using BenchmarkDotNet.Attributes;
 
@@ -9,25 +10,42 @@ namespace Benchmark.Benchmarks.Entities.AddComponent;
 #if CHECK_CACHE_MISSES
 [HardwareCounters(BenchmarkDotNet.Diagnosers.HardwareCounter.CacheMisses)]
 #endif
-public class Add2Components<T> : AddComponentBase<T> where T : BenchmarkContextBase, new()
+public abstract class Add2Components<T> : IBenchmark<T> where T : struct, IBenchmarkContext
 {
-    protected override void OnSetup()
+    [Params(Constants.EntityCount)] public int EntityCount { get; set; }
+    [Params(true, false)] public bool RandomOrder { get; set; }
+
+    public T Context { get; set; }
+    private Array _entitySet;
+
+    [IterationSetup]
+    public void Setup()
     {
-        base.OnSetup();
+        Context = BenchmarkContext.Create<T>(EntityCount);
+        Context.Setup();
+        _entitySet = Context.PrepareSet(EntityCount);
+        Context.CreateEntities(_entitySet);
+        if (RandomOrder) _entitySet = Context.Shuffle(_entitySet);
         Context.Warmup<Component1, Component2>(0);
+        Context.FinishSetup();
     }
 
-    protected override void OnCleanup()
+    [IterationCleanup]
+    public void Cleanup()
     {
-        base.OnCleanup();
-        Context.RemoveComponent<Component1, Component2>(EntitySet, 0);
+        Context.RemoveComponent<Component1, Component2>(_entitySet, 0);
+        if (!Context.DeletesEntityOnLastComponentDeletion)
+            Context.DeleteEntities(_entitySet);
+        Context.Cleanup();
+        Context.Dispose();
+        Context = default;
     }
 
     [Benchmark]
-    public override void Run()
+    public void Run()
     {
         Context.Lock();
-        Context.AddComponent<Component1, Component2>(EntitySet, 0);
+        Context.AddComponent<Component1, Component2>(_entitySet, 0);
         Context.Commit();
     }
 }

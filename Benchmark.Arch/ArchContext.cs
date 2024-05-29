@@ -1,85 +1,101 @@
-﻿using Arch.Core;
+﻿using System.Runtime.CompilerServices;
+using Arch.Core;
 using Arch.Core.Extensions;
 using Arch.Core.Utils;
 using Benchmark._Context;
+using DCFApixels.DragonECS;
+using Scellecs.Morpeh;
+using Entity = Arch.Core.Entity;
+using World = Arch.Core.World;
+
 // ReSharper disable ForCanBeConvertedToForeach
 
 namespace Benchmark.Arch;
 
-public class ArchContext : BenchmarkContextBase
+public readonly struct ArchContext(in int entityCount = 4096) : IBenchmarkContext
 {
-    private int _entityCount;
-    private World? _world;
-    private Dictionary<int, ComponentType[]>? _archetypes;
-    private Dictionary<int, QueryDescription>? _queries;
-    private List<Action<float>>? _systems;
+    private readonly Dictionary<int, ComponentType[]>? _archetypes = new();
+    private readonly int _entityCount = entityCount;
+    private readonly Dictionary<int, QueryDescription>? _queries = new();
+    private readonly List<Action<World>>? _systems = new();
+    private readonly World? _world = World.Create();
 
-    public override bool DeletesEntityOnLastComponentDeletion => false;
-    
-    public override int EntityCount => _world!.Size;
+    public bool DeletesEntityOnLastComponentDeletion => false;
 
-    public override void Setup(int entityCount)
+    public int EntityCount => _world!.Size;
+
+    public void Setup()
     {
-        _entityCount = entityCount;
-        _world = World.Create();
-        _archetypes = new Dictionary<int, ComponentType[]>();
-        _queries = new Dictionary<int, QueryDescription>();
-        _systems = new List<Action<float>>();
     }
 
-    public override void Cleanup()
+    public void FinishSetup()
+    {
+    }
+
+    public void Cleanup()
     {
         _world?.Clear();
         _world?.Dispose();
-        _world = null;
     }
 
-    public override void Lock()
+    public void Dispose()
+    {
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    public void Lock()
     {
         /* no op */
     }
 
-    public override void Commit()
+    public void Commit()
     {
         /* no op */
     }
 
-    public override void Warmup<T1>(in int poolId)
+    public void Warmup<T1>(in int poolId) where T1 : struct, IComponent, IEcsComponent
     {
         _archetypes![poolId] = [typeof(T1)];
         _queries![poolId] = new QueryDescription().WithAll<T1>();
         _world!.Reserve(_archetypes[poolId], _entityCount);
     }
 
-    public override void Warmup<T1, T2>(in int poolId)
+    public void Warmup<T1, T2>(in int poolId) where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
     {
         _archetypes![poolId] = [typeof(T1), typeof(T2)];
         _queries![poolId] = new QueryDescription().WithAll<T1, T2>();
         _world!.Reserve(_archetypes[poolId], _entityCount);
     }
 
-    public override void Warmup<T1, T2, T3>(in int poolId)
+    public void Warmup<T1, T2, T3>(in int poolId) where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+        where T3 : struct, IComponent, IEcsComponent
     {
         _archetypes![poolId] = [typeof(T1), typeof(T2), typeof(T3)];
         _queries![poolId] = new QueryDescription().WithAll<T1, T2, T3>();
         _world!.Reserve(_archetypes[poolId], _entityCount);
     }
 
-    public override void Warmup<T1, T2, T3, T4>(in int poolId)
+    public void Warmup<T1, T2, T3, T4>(in int poolId) where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+        where T3 : struct, IComponent, IEcsComponent
+        where T4 : struct, IComponent, IEcsComponent
     {
         _archetypes![poolId] = [typeof(T1), typeof(T2), typeof(T3), typeof(T4)];
         _queries![poolId] = new QueryDescription().WithAll<T1, T2, T3, T4>();
         _world!.Reserve(_archetypes[poolId], _entityCount);
     }
 
-    public override void CreateEntities(in Array entitySet)
+    public void CreateEntities(in Array entitySet)
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i] = _world!.Create();
     }
 
-    public override void CreateEntities<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default)
+    public void CreateEntities<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default)
+        where T1 : struct, IComponent, IEcsComponent
     {
         var entities = (Entity[])entitySet;
         var archetype = _archetypes![poolId];
@@ -90,7 +106,8 @@ public class ArchContext : BenchmarkContextBase
         }
     }
 
-    public override void CreateEntities<T1, T2>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default)
+    public void CreateEntities<T1, T2>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default)
+        where T1 : struct, IComponent, IEcsComponent where T2 : struct, IComponent, IEcsComponent
     {
         var entities = (Entity[])entitySet;
         var archetype = _archetypes![poolId];
@@ -101,7 +118,10 @@ public class ArchContext : BenchmarkContextBase
         }
     }
 
-    public override void CreateEntities<T1, T2, T3>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default, in T3 c3 = default)
+    public void CreateEntities<T1, T2, T3>(in Array entitySet, in int poolId = -1, in T1 c1 = default,
+        in T2 c2 = default, in T3 c3 = default) where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+        where T3 : struct, IComponent, IEcsComponent
     {
         var entities = (Entity[])entitySet;
         var archetype = _archetypes![poolId];
@@ -112,7 +132,11 @@ public class ArchContext : BenchmarkContextBase
         }
     }
 
-    public override void CreateEntities<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default, in T3 c3 = default, in T4 c4 = default)
+    public void CreateEntities<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1, in T1 c1 = default,
+        in T2 c2 = default, in T3 c3 = default, in T4 c4 = default) where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+        where T3 : struct, IComponent, IEcsComponent
+        where T4 : struct, IComponent, IEcsComponent
     {
         var entities = (Entity[])entitySet;
 
@@ -122,17 +146,17 @@ public class ArchContext : BenchmarkContextBase
             entities[i] = _world!.Create(archetype);
             entities[i].Add(c1, c2, c3, c4);
         }
-
     }
 
-    public override void DeleteEntities(in Array entitySet)
+    public void DeleteEntities(in Array entitySet)
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             _world!.Destroy(entities[i]);
     }
 
-    public override void AddComponent<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default)
+    public void AddComponent<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default)
+        where T1 : struct, IComponent, IEcsComponent
     {
         var entities = (Entity[])entitySet;
         var archetype = _archetypes![poolId];
@@ -142,10 +166,10 @@ public class ArchContext : BenchmarkContextBase
             _world!.AddRange(entities[i], archetype);
             _world!.Set(entities[i], c1);
         }
-
     }
 
-    public override void AddComponent<T1, T2>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default)
+    public void AddComponent<T1, T2>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default)
+        where T1 : struct, IComponent, IEcsComponent where T2 : struct, IComponent, IEcsComponent
     {
         var entities = (Entity[])entitySet;
         var archetype = _archetypes![poolId];
@@ -156,7 +180,10 @@ public class ArchContext : BenchmarkContextBase
         }
     }
 
-    public override void AddComponent<T1, T2, T3>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default, in T3 c3 = default)
+    public void AddComponent<T1, T2, T3>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default,
+        in T3 c3 = default) where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+        where T3 : struct, IComponent, IEcsComponent
     {
         var entities = (Entity[])entitySet;
         var archetype = _archetypes![poolId];
@@ -167,7 +194,11 @@ public class ArchContext : BenchmarkContextBase
         }
     }
 
-    public override void AddComponent<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default, in T3 c3 = default, in T4 c4 = default)
+    public void AddComponent<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1, in T1 c1 = default,
+        in T2 c2 = default, in T3 c3 = default, in T4 c4 = default) where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+        where T3 : struct, IComponent, IEcsComponent
+        where T4 : struct, IComponent, IEcsComponent
     {
         var entities = (Entity[])entitySet;
         var archetype = _archetypes![poolId];
@@ -178,7 +209,7 @@ public class ArchContext : BenchmarkContextBase
         }
     }
 
-    public override void RemoveComponent<T1>(in Array entitySet, in int poolId = -1)
+    public void RemoveComponent<T1>(in Array entitySet, in int poolId = -1) where T1 : struct, IComponent, IEcsComponent
     {
         var entities = (Entity[])entitySet;
         var archetype = _archetypes![poolId];
@@ -186,7 +217,8 @@ public class ArchContext : BenchmarkContextBase
             _world!.RemoveRange(entities[i], archetype);
     }
 
-    public override void RemoveComponent<T1, T2>(in Array entitySet, in int poolId = -1)
+    public void RemoveComponent<T1, T2>(in Array entitySet, in int poolId = -1)
+        where T1 : struct, IComponent, IEcsComponent where T2 : struct, IComponent, IEcsComponent
     {
         var entities = (Entity[])entitySet;
         var archetype = _archetypes![poolId];
@@ -194,7 +226,10 @@ public class ArchContext : BenchmarkContextBase
             _world!.RemoveRange(entities[i], archetype);
     }
 
-    public override void RemoveComponent<T1, T2, T3>(in Array entitySet, in int poolId = -1)
+    public void RemoveComponent<T1, T2, T3>(in Array entitySet, in int poolId = -1)
+        where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+        where T3 : struct, IComponent, IEcsComponent
     {
         var entities = (Entity[])entitySet;
         var archetype = _archetypes![poolId];
@@ -202,7 +237,11 @@ public class ArchContext : BenchmarkContextBase
             _world!.RemoveRange(entities[i], archetype);
     }
 
-    public override void RemoveComponent<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1)
+    public void RemoveComponent<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1)
+        where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+        where T3 : struct, IComponent, IEcsComponent
+        where T4 : struct, IComponent, IEcsComponent
     {
         var entities = (Entity[])entitySet;
         var archetype = _archetypes![poolId];
@@ -210,14 +249,33 @@ public class ArchContext : BenchmarkContextBase
             _world!.RemoveRange(entities[i], archetype);
     }
 
-    public override int CountWith<T1>(in int poolId) => _world!.CountEntities(_queries![poolId]);
-    
-    public override int CountWith<T1, T2>(in int poolId) => _world!.CountEntities(_queries![poolId]);
-    
-    public override int CountWith<T1, T2, T3>(in int poolId) => _world!.CountEntities(_queries![poolId]);
-    
-    public override int CountWith<T1, T2, T3, T4>(in int poolId) => _world!.CountEntities(_queries![poolId]);
-    public override bool GetSingle<T1>(in object? entity, in int poolId, ref T1 c1)
+    public int CountWith<T1>(in int poolId) where T1 : struct, IComponent, IEcsComponent
+    {
+        return _world!.CountEntities(_queries![poolId]);
+    }
+
+    public int CountWith<T1, T2>(in int poolId) where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+    {
+        return _world!.CountEntities(_queries![poolId]);
+    }
+
+    public int CountWith<T1, T2, T3>(in int poolId) where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+        where T3 : struct, IComponent, IEcsComponent
+    {
+        return _world!.CountEntities(_queries![poolId]);
+    }
+
+    public int CountWith<T1, T2, T3, T4>(in int poolId) where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+        where T3 : struct, IComponent, IEcsComponent
+        where T4 : struct, IComponent, IEcsComponent
+    {
+        return _world!.CountEntities(_queries![poolId]);
+    }
+
+    public bool GetSingle<T1>(in object? entity, in int poolId, ref T1 c1) where T1 : struct, IComponent, IEcsComponent
     {
         if (entity == null) return false;
 
@@ -226,7 +284,8 @@ public class ArchContext : BenchmarkContextBase
         return true;
     }
 
-    public override bool GetSingle<T1, T2>(in object? entity, in int poolId, ref T1 c1, ref T2 c2)
+    public bool GetSingle<T1, T2>(in object? entity, in int poolId, ref T1 c1, ref T2 c2)
+        where T1 : struct, IComponent, IEcsComponent where T2 : struct, IComponent, IEcsComponent
     {
         if (entity == null) return false;
 
@@ -237,7 +296,10 @@ public class ArchContext : BenchmarkContextBase
         return true;
     }
 
-    public override bool GetSingle<T1, T2, T3>(in object? entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3)
+    public bool GetSingle<T1, T2, T3>(in object? entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3)
+        where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+        where T3 : struct, IComponent, IEcsComponent
     {
         if (entity == null) return false;
 
@@ -249,7 +311,11 @@ public class ArchContext : BenchmarkContextBase
         return true;
     }
 
-    public override bool GetSingle<T1, T2, T3, T4>(in object? entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4)
+    public bool GetSingle<T1, T2, T3, T4>(in object? entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4)
+        where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+        where T3 : struct, IComponent, IEcsComponent
+        where T4 : struct, IComponent, IEcsComponent
     {
         if (entity == null) return false;
 
@@ -262,43 +328,53 @@ public class ArchContext : BenchmarkContextBase
         return true;
     }
 
-    public override void Tick(float delta)
+    public void Tick(float delta)
     {
         foreach (var system in _systems!)
-            system(delta);
+            system(_world!);
     }
 
-    public override unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId)
+    public unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId)
+        where T1 : struct, IComponent, IEcsComponent
     {
         var system = new System<T1>(method);
-        _systems!.Add(_ => system.ForEachQuery(_world!));
+        _systems!.Add(system.ForEachQuery);
     }
 
-    public override unsafe void AddSystem<T1, T2>(delegate*<ref T1, ref T2, void> method, int poolId)
+    public unsafe void AddSystem<T1, T2>(delegate*<ref T1, ref T2, void> method, int poolId)
+        where T1 : struct, IComponent, IEcsComponent where T2 : struct, IComponent, IEcsComponent
     {
         var system = new System<T1, T2>(method);
-        _systems!.Add(_ => system.ForEachQuery(_world!));
+        _systems!.Add(system.ForEachQuery);
     }
 
-    public override unsafe void AddSystem<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> method, int poolId)
+    public unsafe void AddSystem<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> method, int poolId)
+        where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+        where T3 : struct, IComponent, IEcsComponent
     {
         var system = new System<T1, T2, T3>(method);
-        _systems!.Add(_ => system.ForEachQuery(_world!));
+        _systems!.Add(system.ForEachQuery);
     }
 
-    public override unsafe void AddSystem<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> method, int poolId)
+    public unsafe void AddSystem<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> method, int poolId)
+        where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+        where T3 : struct, IComponent, IEcsComponent
+        where T4 : struct, IComponent, IEcsComponent
     {
         var system = new System<T1, T2, T3, T4>(method);
-        _systems!.Add(_ => system.ForEachQuery(_world!));
+        _systems!.Add(system.ForEachQuery);
     }
 
-    public override Array Shuffle(in Array entitySet)
+    public Array Shuffle(in Array entitySet)
     {
         Random.Shared.Shuffle((Entity[])entitySet);
         return entitySet;
     }
 
-    public override Array PrepareSet(in int count) => new Entity[count];
-
-
+    public Array PrepareSet(in int count)
+    {
+        return new Entity[count];
+    }
 }

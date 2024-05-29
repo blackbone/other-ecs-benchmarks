@@ -1,89 +1,101 @@
 using Benchmark._Context;
+using DCFApixels.DragonECS;
 using Leopotam.EcsLite;
+using Scellecs.Morpeh;
 using EcsWorld = Leopotam.EcsLite.EcsWorld;
+using IEcsPool = Leopotam.EcsLite.IEcsPool;
 
 namespace Benchmark.LeoEcsLite;
 
-public class LeoEcsLiteContext : BenchmarkContextBase
+public readonly struct LeoEcsLiteContext(in int entityCount = 4096) : IBenchmarkContext
 {
-    private int _maxEntityCount;
-    
-    private EcsWorld? _world;
-    private List<IEcsSystems>? _systems;
-    private Dictionary<int, IEcsPool[]>? _pools;
-    private Dictionary<int, EcsFilter>? _filters;
+    private readonly int _maxEntityCount = entityCount;
+    private readonly Dictionary<int, EcsFilter>? _filters = new();
+    private readonly Dictionary<int, IEcsPool[]>? _pools = new();
+    private readonly List<IEcsSystems>? _systems = new();
+    private readonly EcsWorld? _world = new(new EcsWorld.Config { Entities = entityCount });
 
-    public override bool DeletesEntityOnLastComponentDeletion => true;
+    public bool DeletesEntityOnLastComponentDeletion => true;
 
-    public override int EntityCount => _world!.GetEntitiesCount();
-    
-    public override void Setup(int entityCount)
+    public int EntityCount => _world!.GetEntitiesCount();
+
+    public void Setup()
     {
-        _maxEntityCount = entityCount;
-        _world = new EcsWorld(new EcsWorld.Config { Entities = entityCount });
-        _systems = new List<IEcsSystems>();
-        _pools = new Dictionary<int, IEcsPool[]>();
-        _filters = new Dictionary<int, EcsFilter>();
     }
 
-    public override void FinishSetup()
+    public void FinishSetup()
     {
         foreach (var system in _systems!)
             system.Init();
     }
 
-    public override void Warmup<T1>(in int poolId)
+    public void Cleanup()
+    {
+        foreach (var system in _systems!)
+            system.Destroy();
+        _systems!.Clear();
+        _filters!.Clear();
+        _pools!.Clear();
+        _world!.Destroy();
+    }
+
+    public void Dispose()
+    {
+    }
+
+    public void Warmup<T1>(in int poolId) where T1 : struct, IComponent, IEcsComponent
     {
         _pools![poolId] = [_world!.GetPool<T1>()];
         _filters![poolId] = _world!.Filter<T1>().End(_maxEntityCount);
     }
 
-    public override void Warmup<T1, T2>(in int poolId)
+    public void Warmup<T1, T2>(in int poolId) where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
     {
         _pools![poolId] = [_world!.GetPool<T1>(), _world!.GetPool<T2>()];
         _filters![poolId] = _world!.Filter<T1>().Inc<T2>().End(_maxEntityCount);
     }
 
-    public override void Warmup<T1, T2, T3>(in int poolId)
+    public void Warmup<T1, T2, T3>(in int poolId) where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+        where T3 : struct, IComponent, IEcsComponent
     {
         _pools![poolId] = [_world!.GetPool<T1>(), _world!.GetPool<T2>(), _world!.GetPool<T3>()];
         _filters![poolId] = _world!.Filter<T1>().Inc<T2>().Inc<T3>().End(_maxEntityCount);
     }
 
-    public override void Warmup<T1, T2, T3, T4>(in int poolId)
+    public void Warmup<T1, T2, T3, T4>(in int poolId) where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+        where T3 : struct, IComponent, IEcsComponent
+        where T4 : struct, IComponent, IEcsComponent
     {
         _pools![poolId] = [_world!.GetPool<T1>(), _world!.GetPool<T2>(), _world!.GetPool<T3>(), _world!.GetPool<T4>()];
         _filters![poolId] = _world!.Filter<T1>().Inc<T2>().Inc<T3>().Inc<T4>().End(_maxEntityCount);
     }
 
-    public override void Cleanup()
-    {
-        _world!.Destroy();
-        _world = null;
-    }
-
-    public override void Lock()
+    public void Lock()
     {
         // no op
     }
 
-    public override void Commit()
+    public void Commit()
     {
         // no op
     }
 
-    public override void CreateEntities(in Array entitySet)
+    public void CreateEntities(in Array entitySet)
     {
         var entities = (int[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i] = _world!.NewEntity();
     }
 
-    public override void CreateEntities<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default)
+    public void CreateEntities<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default)
+        where T1 : struct, IComponent, IEcsComponent
     {
         var entities = (int[])entitySet;
         var pools = _pools![poolId];
-        var p1 = (EcsPool<T1>)pools[0];
+        var p1 = (Leopotam.EcsLite.EcsPool<T1>)pools[0];
         for (var i = 0; i < entities.Length; i++)
         {
             entities[i] = _world!.NewEntity();
@@ -91,12 +103,13 @@ public class LeoEcsLiteContext : BenchmarkContextBase
         }
     }
 
-    public override void CreateEntities<T1, T2>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default)
+    public void CreateEntities<T1, T2>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default)
+        where T1 : struct, IComponent, IEcsComponent where T2 : struct, IComponent, IEcsComponent
     {
         var entities = (int[])entitySet;
         var pools = _pools![poolId];
-        var p1 = (EcsPool<T1>)pools[0];
-        var p2 = (EcsPool<T2>)pools[1];
+        var p1 = (Leopotam.EcsLite.EcsPool<T1>)pools[0];
+        var p2 = (Leopotam.EcsLite.EcsPool<T2>)pools[1];
         for (var i = 0; i < entities.Length; i++)
         {
             entities[i] = _world!.NewEntity();
@@ -105,13 +118,16 @@ public class LeoEcsLiteContext : BenchmarkContextBase
         }
     }
 
-    public override void CreateEntities<T1, T2, T3>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default, in T3 c3 = default)
+    public void CreateEntities<T1, T2, T3>(in Array entitySet, in int poolId = -1, in T1 c1 = default,
+        in T2 c2 = default, in T3 c3 = default) where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+        where T3 : struct, IComponent, IEcsComponent
     {
         var entities = (int[])entitySet;
         var pools = _pools![poolId];
-        var p1 = (EcsPool<T1>)pools[0];
-        var p2 = (EcsPool<T2>)pools[1];
-        var p3 = (EcsPool<T3>)pools[2];
+        var p1 = (Leopotam.EcsLite.EcsPool<T1>)pools[0];
+        var p2 = (Leopotam.EcsLite.EcsPool<T2>)pools[1];
+        var p3 = (Leopotam.EcsLite.EcsPool<T3>)pools[2];
         for (var i = 0; i < entities.Length; i++)
         {
             entities[i] = _world!.NewEntity();
@@ -121,14 +137,18 @@ public class LeoEcsLiteContext : BenchmarkContextBase
         }
     }
 
-    public override void CreateEntities<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default, in T3 c3 = default, in T4 c4 = default)
+    public void CreateEntities<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1, in T1 c1 = default,
+        in T2 c2 = default, in T3 c3 = default, in T4 c4 = default) where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+        where T3 : struct, IComponent, IEcsComponent
+        where T4 : struct, IComponent, IEcsComponent
     {
         var entities = (int[])entitySet;
         var pools = _pools![poolId];
-        var p1 = (EcsPool<T1>)pools[0];
-        var p2 = (EcsPool<T2>)pools[1];
-        var p3 = (EcsPool<T3>)pools[2];
-        var p4 = (EcsPool<T4>)pools[3];
+        var p1 = (Leopotam.EcsLite.EcsPool<T1>)pools[0];
+        var p2 = (Leopotam.EcsLite.EcsPool<T2>)pools[1];
+        var p3 = (Leopotam.EcsLite.EcsPool<T3>)pools[2];
+        var p4 = (Leopotam.EcsLite.EcsPool<T4>)pools[3];
         for (var i = 0; i < entities.Length; i++)
         {
             entities[i] = _world!.NewEntity();
@@ -139,28 +159,30 @@ public class LeoEcsLiteContext : BenchmarkContextBase
         }
     }
 
-    public override void DeleteEntities(in Array entitySet)
+    public void DeleteEntities(in Array entitySet)
     {
         var entities = (int[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             _world!.DelEntity(entities[i]);
     }
 
-    public override void AddComponent<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default)
+    public void AddComponent<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default)
+        where T1 : struct, IComponent, IEcsComponent
     {
         var entities = (int[])entitySet;
         var pools = _pools![poolId];
-        var p1 = (EcsPool<T1>)pools[0];
+        var p1 = (Leopotam.EcsLite.EcsPool<T1>)pools[0];
         for (var i = 0; i < entities.Length; i++)
             p1.Add(entities[i]) = c1;
     }
 
-    public override void AddComponent<T1, T2>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default)
+    public void AddComponent<T1, T2>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default)
+        where T1 : struct, IComponent, IEcsComponent where T2 : struct, IComponent, IEcsComponent
     {
         var entities = (int[])entitySet;
         var pools = _pools![poolId];
-        var p1 = (EcsPool<T1>)pools[0];
-        var p2 = (EcsPool<T2>)pools[1];
+        var p1 = (Leopotam.EcsLite.EcsPool<T1>)pools[0];
+        var p2 = (Leopotam.EcsLite.EcsPool<T2>)pools[1];
         for (var i = 0; i < entities.Length; i++)
         {
             p1.Add(entities[i]) = c1;
@@ -168,13 +190,16 @@ public class LeoEcsLiteContext : BenchmarkContextBase
         }
     }
 
-    public override void AddComponent<T1, T2, T3>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default, in T3 c3 = default)
+    public void AddComponent<T1, T2, T3>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default,
+        in T3 c3 = default) where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+        where T3 : struct, IComponent, IEcsComponent
     {
         var entities = (int[])entitySet;
         var pools = _pools![poolId];
-        var p1 = (EcsPool<T1>)pools[0];
-        var p2 = (EcsPool<T2>)pools[1];
-        var p3 = (EcsPool<T3>)pools[2];
+        var p1 = (Leopotam.EcsLite.EcsPool<T1>)pools[0];
+        var p2 = (Leopotam.EcsLite.EcsPool<T2>)pools[1];
+        var p3 = (Leopotam.EcsLite.EcsPool<T3>)pools[2];
         for (var i = 0; i < entities.Length; i++)
         {
             p1.Add(entities[i]) = c1;
@@ -183,14 +208,18 @@ public class LeoEcsLiteContext : BenchmarkContextBase
         }
     }
 
-    public override void AddComponent<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default, in T3 c3 = default, in T4 c4 = default)
+    public void AddComponent<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1, in T1 c1 = default,
+        in T2 c2 = default, in T3 c3 = default, in T4 c4 = default) where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+        where T3 : struct, IComponent, IEcsComponent
+        where T4 : struct, IComponent, IEcsComponent
     {
         var entities = (int[])entitySet;
         var pools = _pools![poolId];
-        var p1 = (EcsPool<T1>)pools[0];
-        var p2 = (EcsPool<T2>)pools[1];
-        var p3 = (EcsPool<T3>)pools[2];
-        var p4 = (EcsPool<T4>)pools[3];
+        var p1 = (Leopotam.EcsLite.EcsPool<T1>)pools[0];
+        var p2 = (Leopotam.EcsLite.EcsPool<T2>)pools[1];
+        var p3 = (Leopotam.EcsLite.EcsPool<T3>)pools[2];
+        var p4 = (Leopotam.EcsLite.EcsPool<T4>)pools[3];
         for (var i = 0; i < entities.Length; i++)
         {
             p1.Add(entities[i]) = c1;
@@ -200,21 +229,22 @@ public class LeoEcsLiteContext : BenchmarkContextBase
         }
     }
 
-    public override void RemoveComponent<T1>(in Array entitySet, in int poolId = -1)
+    public void RemoveComponent<T1>(in Array entitySet, in int poolId = -1) where T1 : struct, IComponent, IEcsComponent
     {
         var entities = (int[])entitySet;
         var pools = _pools![poolId];
-        var p1 = (EcsPool<T1>)pools[0];
+        var p1 = (Leopotam.EcsLite.EcsPool<T1>)pools[0];
         for (var i = 0; i < entities.Length; i++)
             p1.Del(entities[i]);
     }
 
-    public override void RemoveComponent<T1, T2>(in Array entitySet, in int poolId = -1)
+    public void RemoveComponent<T1, T2>(in Array entitySet, in int poolId = -1)
+        where T1 : struct, IComponent, IEcsComponent where T2 : struct, IComponent, IEcsComponent
     {
         var entities = (int[])entitySet;
         var pools = _pools![poolId];
-        var p1 = (EcsPool<T1>)pools[0];
-        var p2 = (EcsPool<T2>)pools[1];
+        var p1 = (Leopotam.EcsLite.EcsPool<T1>)pools[0];
+        var p2 = (Leopotam.EcsLite.EcsPool<T2>)pools[1];
         for (var i = 0; i < entities.Length; i++)
         {
             p1.Del(entities[i]);
@@ -222,13 +252,16 @@ public class LeoEcsLiteContext : BenchmarkContextBase
         }
     }
 
-    public override void RemoveComponent<T1, T2, T3>(in Array entitySet, in int poolId = -1)
+    public void RemoveComponent<T1, T2, T3>(in Array entitySet, in int poolId = -1)
+        where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+        where T3 : struct, IComponent, IEcsComponent
     {
         var entities = (int[])entitySet;
         var pools = _pools![poolId];
-        var p1 = (EcsPool<T1>)pools[0];
-        var p2 = (EcsPool<T2>)pools[1];
-        var p3 = (EcsPool<T3>)pools[2];
+        var p1 = (Leopotam.EcsLite.EcsPool<T1>)pools[0];
+        var p2 = (Leopotam.EcsLite.EcsPool<T2>)pools[1];
+        var p3 = (Leopotam.EcsLite.EcsPool<T3>)pools[2];
         for (var i = 0; i < entities.Length; i++)
         {
             p1.Del(entities[i]);
@@ -237,14 +270,18 @@ public class LeoEcsLiteContext : BenchmarkContextBase
         }
     }
 
-    public override void RemoveComponent<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1)
+    public void RemoveComponent<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1)
+        where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+        where T3 : struct, IComponent, IEcsComponent
+        where T4 : struct, IComponent, IEcsComponent
     {
         var entities = (int[])entitySet;
         var pools = _pools![poolId];
-        var p1 = (EcsPool<T1>)pools[0];
-        var p2 = (EcsPool<T2>)pools[1];
-        var p3 = (EcsPool<T3>)pools[2];
-        var p4 = (EcsPool<T4>)pools[3];
+        var p1 = (Leopotam.EcsLite.EcsPool<T1>)pools[0];
+        var p2 = (Leopotam.EcsLite.EcsPool<T2>)pools[1];
+        var p3 = (Leopotam.EcsLite.EcsPool<T3>)pools[2];
+        var p4 = (Leopotam.EcsLite.EcsPool<T4>)pools[3];
         for (var i = 0; i < entities.Length; i++)
         {
             p1.Del(entities[i]);
@@ -254,63 +291,89 @@ public class LeoEcsLiteContext : BenchmarkContextBase
         }
     }
 
-    public override int CountWith<T1>(in int poolId) => _filters![poolId].GetEntitiesCount();
+    public int CountWith<T1>(in int poolId) where T1 : struct, IComponent, IEcsComponent
+    {
+        return _filters![poolId].GetEntitiesCount();
+    }
 
-    public override int CountWith<T1, T2>(in int poolId) => _filters![poolId].GetEntitiesCount();
+    public int CountWith<T1, T2>(in int poolId) where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+    {
+        return _filters![poolId].GetEntitiesCount();
+    }
 
-    public override int CountWith<T1, T2, T3>(in int poolId) => _filters![poolId].GetEntitiesCount();
+    public int CountWith<T1, T2, T3>(in int poolId) where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+        where T3 : struct, IComponent, IEcsComponent
+    {
+        return _filters![poolId].GetEntitiesCount();
+    }
 
-    public override int CountWith<T1, T2, T3, T4>(in int poolId) => _filters![poolId].GetEntitiesCount();
-    
-    public override bool GetSingle<T1>(in object? entity, in int poolId, ref T1 c1)
+    public int CountWith<T1, T2, T3, T4>(in int poolId) where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+        where T3 : struct, IComponent, IEcsComponent
+        where T4 : struct, IComponent, IEcsComponent
+    {
+        return _filters![poolId].GetEntitiesCount();
+    }
+
+    public bool GetSingle<T1>(in object? entity, in int poolId, ref T1 c1) where T1 : struct, IComponent, IEcsComponent
     {
         if (entity == null) return false;
-        
+
         var e = (int)entity;
         var pools = _pools![poolId];
-        var p1 = (EcsPool<T1>)pools[0];
+        var p1 = (Leopotam.EcsLite.EcsPool<T1>)pools[0];
         c1 = p1.Get(e);
         return true;
     }
 
-    public override bool GetSingle<T1, T2>(in object? entity, in int poolId, ref T1 c1, ref T2 c2)
+    public bool GetSingle<T1, T2>(in object? entity, in int poolId, ref T1 c1, ref T2 c2)
+        where T1 : struct, IComponent, IEcsComponent where T2 : struct, IComponent, IEcsComponent
     {
         if (entity == null) return false;
-        
+
         var e = (int)entity;
         var pools = _pools![poolId];
-        var p1 = (EcsPool<T1>)pools[0];
-        var p2 = (EcsPool<T2>)pools[1];
+        var p1 = (Leopotam.EcsLite.EcsPool<T1>)pools[0];
+        var p2 = (Leopotam.EcsLite.EcsPool<T2>)pools[1];
         c1 = p1.Get(e);
         c2 = p2.Get(e);
         return true;
     }
 
-    public override bool GetSingle<T1, T2, T3>(in object? entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3)
+    public bool GetSingle<T1, T2, T3>(in object? entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3)
+        where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+        where T3 : struct, IComponent, IEcsComponent
     {
         if (entity == null) return false;
-        
+
         var e = (int)entity;
         var pools = _pools![poolId];
-        var p1 = (EcsPool<T1>)pools[0];
-        var p2 = (EcsPool<T2>)pools[1];
-        var p3 = (EcsPool<T3>)pools[2];
+        var p1 = (Leopotam.EcsLite.EcsPool<T1>)pools[0];
+        var p2 = (Leopotam.EcsLite.EcsPool<T2>)pools[1];
+        var p3 = (Leopotam.EcsLite.EcsPool<T3>)pools[2];
         c1 = p1.Get(e);
         c2 = p2.Get(e);
         c3 = p3.Get(e);
         return true;
     }
 
-    public override bool GetSingle<T1, T2, T3, T4>(in object? entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4)
+    public bool GetSingle<T1, T2, T3, T4>(in object? entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4)
+        where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+        where T3 : struct, IComponent, IEcsComponent
+        where T4 : struct, IComponent, IEcsComponent
     {
         if (entity == null) return false;
-        
+
         var e = (int)entity;
         var pools = _pools![poolId];
-        var p1 = (EcsPool<T1>)pools[0];
-        var p2 = (EcsPool<T2>)pools[1];
-        var p3 = (EcsPool<T3>)pools[2];
-        var p4 = (EcsPool<T4>)pools[3];
+        var p1 = (Leopotam.EcsLite.EcsPool<T1>)pools[0];
+        var p2 = (Leopotam.EcsLite.EcsPool<T2>)pools[1];
+        var p3 = (Leopotam.EcsLite.EcsPool<T3>)pools[2];
+        var p4 = (Leopotam.EcsLite.EcsPool<T4>)pools[3];
         c1 = p1.Get(e);
         c2 = p2.Get(e);
         c3 = p3.Get(e);
@@ -318,33 +381,49 @@ public class LeoEcsLiteContext : BenchmarkContextBase
         return true;
     }
 
-    public override void Tick(float delta)
+    public void Tick(float delta)
     {
         foreach (var system in _systems!)
             system.Run();
     }
-    
-    public override unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId)
-        => _systems!.Add(new EcsSystems(_world!).Add(new System<T1>(method)));
 
-    public override unsafe void AddSystem<T1, T2>(delegate*<ref T1, ref T2, void> method, int poolId)
-        => _systems!.Add(new EcsSystems(_world!).Add(new System<T1, T2>(method)));
+    public unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId)
+        where T1 : struct, IComponent, IEcsComponent
+    {
+        _systems!.Add(new EcsSystems(_world!).Add(new System<T1>(method)));
+    }
 
-    public override unsafe void AddSystem<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> method, int poolId)
-        => _systems!.Add(new EcsSystems(_world!).Add(new System<T1, T2, T3>(method)));
+    public unsafe void AddSystem<T1, T2>(delegate*<ref T1, ref T2, void> method, int poolId)
+        where T1 : struct, IComponent, IEcsComponent where T2 : struct, IComponent, IEcsComponent
+    {
+        _systems!.Add(new EcsSystems(_world!).Add(new System<T1, T2>(method)));
+    }
 
-    public override unsafe void AddSystem<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> method, int poolId)
-        => _systems!.Add(new EcsSystems(_world!).Add(new System<T1, T2, T3, T4>(method)));
+    public unsafe void AddSystem<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> method, int poolId)
+        where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+        where T3 : struct, IComponent, IEcsComponent
+    {
+        _systems!.Add(new EcsSystems(_world!).Add(new System<T1, T2, T3>(method)));
+    }
 
-    public override Array Shuffle(in Array entitySet)
+    public unsafe void AddSystem<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> method, int poolId)
+        where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+        where T3 : struct, IComponent, IEcsComponent
+        where T4 : struct, IComponent, IEcsComponent
+    {
+        _systems!.Add(new EcsSystems(_world!).Add(new System<T1, T2, T3, T4>(method)));
+    }
+
+    public Array Shuffle(in Array entitySet)
     {
         Random.Shared.Shuffle((int[])entitySet);
         return entitySet;
     }
 
-    public override Array PrepareSet(in int count)
+    public Array PrepareSet(in int count)
     {
         return new int[count];
     }
 }
-

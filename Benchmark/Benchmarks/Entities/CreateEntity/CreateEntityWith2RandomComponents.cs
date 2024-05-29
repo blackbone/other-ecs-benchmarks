@@ -10,39 +10,60 @@ namespace Benchmark.Benchmarks.Entities.CreateEntity;
 #if CHECK_CACHE_MISSES
 [HardwareCounters(BenchmarkDotNet.Diagnosers.HardwareCounter.CacheMisses)]
 #endif
-public class CreateEntityWith2RandomComponents<T> : EntitiesBenchmarkBase<T> where T : BenchmarkContextBase, new()
+public abstract class CreateEntityWith2RandomComponents<T> : IBenchmark<T> where T : struct, IBenchmarkContext
 {
+    [Params(Constants.EntityCount)] public int EntityCount { get; set; }
+    [Params(1, 4, 32)] public int ChunkSize { get; set; }
+    public T Context { get; set; }
     private Array _entitySet;
     private Random _rnd;
-    
-    [Params(1, 4, 32)] public int ChunkSize { get; set; }
 
-    protected override void OnSetup()
+    [IterationSetup]
+    public void Setup()
     {
-        base.OnSetup();
-        _entitySet = Context.PrepareSet(ChunkSize);
+        Context = BenchmarkContext.Create<T>(EntityCount);
+        Context.Setup();
+        _entitySet = Context.PrepareSet(EntityCount);
         Context.Warmup<Component1, Component2>(0);
         Context.Warmup<Component2, Component3>(1);
         Context.Warmup<Component3, Component4>(2);
         Context.Warmup<Component4, Component1>(3);
         _rnd = new Random(Constants.Seed);
+        Context.FinishSetup();
+    }
+
+    [IterationCleanup]
+    public void Cleanup()
+    {
+        Context.DeleteEntities(_entitySet);
+        Context.Cleanup();
+        Context.Dispose();
+        Context = default;
     }
 
     [Benchmark]
-    public override void Run()
+    public void Run()
     {
         for (var i = 0; i < EntityCount; i += ChunkSize)
         {
             Context.Lock();
             switch (_rnd.Next() % 4)
             {
-                case 0: Context.CreateEntities<Component1, Component2>(_entitySet, 0); break;
-                case 1: Context.CreateEntities<Component2, Component3>(_entitySet, 1); break;
-                case 2: Context.CreateEntities<Component3, Component4>(_entitySet, 2); break;
-                case 3: Context.CreateEntities<Component4, Component1>(_entitySet, 3); break;
+                case 0:
+                    Context.CreateEntities<Component1, Component2>(_entitySet, 0);
+                    break;
+                case 1:
+                    Context.CreateEntities<Component2, Component3>(_entitySet, 1);
+                    break;
+                case 2:
+                    Context.CreateEntities<Component3, Component4>(_entitySet, 2);
+                    break;
+                case 3:
+                    Context.CreateEntities<Component4, Component1>(_entitySet, 3);
+                    break;
             }
+
             Context.Commit();
         }
-            
     }
 }

@@ -80,6 +80,7 @@ public class PointerInvocationSystem<T1, T2, T3, T4> : IEcsRun
     public unsafe void Run()
     {
         foreach (var e in _world!.Where(out Aspect<T1, T2, T3, T4> aspect))
-            _method(ref aspect.Components1!.Get(e), ref aspect.Components2!.Get(e), ref aspect.Components3!.Get(e), ref aspect.Components4!.Get(e));
+            _method(ref aspect.Components1!.Get(e), ref aspect.Components2!.Get(e), ref aspect.Components3!.Get(e),
+                ref aspect.Components4!.Get(e));
     }
 }

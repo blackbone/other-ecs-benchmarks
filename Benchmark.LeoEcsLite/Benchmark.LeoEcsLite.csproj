@@ -8,10 +8,10 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <InvariantGlobalization>true</InvariantGlobalization>
     </PropertyGroup>
-    
+
     <ItemGroup>
         <ProjectReference Include="..\Benchmark._Context\Benchmark._Context.csproj"/>
-        <ProjectReference Include="..\LeoECSLite\LeoECSLite.csproj" />
+        <ProjectReference Include="..\LeoECSLite\LeoECSLite.csproj"/>
     </ItemGroup>
-    
+
 </Project>

@@ -15,18 +15,20 @@ General idea is to hide implementation of each ECS under context abstraction and
 implementations.
 
 Benchmarks design follow 2 rules which I try to balance with:
+
 * **Strict usage** - to ensure all benchmarks are running with same flow to avoid cheating.
 * **Features utilization** - to allow implementations to run in perfomant way.
 
 General flow of any benchmark execution is divided into 3 steps:
+
 * Preparation
-  * Creating world
-  * Creating initial entities if needed
-  * Initialize filters and queries or other stuff which used to gain perfomance
+    * Creating world
+    * Creating initial entities if needed
+    * Initialize filters and queries or other stuff which used to gain perfomance
 * Benchmark call
-  * Aquiring lock of world
-  * Run main logic
-  * Commiting changes
+    * Aquiring lock of world
+    * Run main logic
+    * Commiting changes
 * Cleanup - mostly omited
 
 > [!IMPORTANT]
@@ -34,14 +36,14 @@ General flow of any benchmark execution is divided into 3 steps:
 
 # Implemented contexts
 
-|                                                  ECS | Version                                                                                                       | Implemented | Verified |
-|-----------------------------------------------------:|:--------------------------------------------------------------------------------------------------------------|-------------|----------|
-|              [Arch](https://github.com/genaray/Arch) | [1.2.8](https://www.nuget.org/packages/Arch/1.2.8)                                                            | ✅           | ❌        |
-|                     [fennecs](https://fennecs.tech/) | [0.4.2-beta](https://www.nuget.org/packages/fennecs/0.4.2-beta)                                               | ✅           | ❌        |
-|         [Morpeh](https://github.com/scellecs/morpeh) | [2024.1.0-rc48](https://github.com/scellecs/morpeh/releases/tag/2024.1.0-rc48)                                | ✅           | ❌        |
-| [DragonECS](https://github.com/DCFApixels/DragonECS) | [0.8.36](https://github.com/DCFApixels/DragonECS/commit/29f656f394984e738c7fc70bacca050ffea746d8)             | ✅           | ❌        |
-|            [LeoECS](https://github.com/Leopotam/ecs) | [2023.6.22](https://github.com/Leopotam/ecs/releases/tag/2023.6.22)                                           | ✅           | ❌        |
-|    [LeoECSLite](https://github.com/Leopotam/ecslite) | [2024.5.22](https://github.com/Leopotam/ecslite/releases/tag/2024.5.22)                                       | ✅           | ❌        |
+|                                                  ECS | Version                                                                                           | Implemented | Verified |
+|-----------------------------------------------------:|:--------------------------------------------------------------------------------------------------|-------------|----------|
+|              [Arch](https://github.com/genaray/Arch) | [1.2.8](https://www.nuget.org/packages/Arch/1.2.8)                                                | ✅           | ❌        |
+|                     [fennecs](https://fennecs.tech/) | [0.4.2-beta](https://www.nuget.org/packages/fennecs/0.4.2-beta)                                   | ✅           | ❌        |
+|         [Morpeh](https://github.com/scellecs/morpeh) | [2024.1.0-rc48](https://github.com/scellecs/morpeh/releases/tag/2024.1.0-rc48)                    | ✅           | ❌        |
+| [DragonECS](https://github.com/DCFApixels/DragonECS) | [0.8.36](https://github.com/DCFApixels/DragonECS/commit/29f656f394984e738c7fc70bacca050ffea746d8) | ✅           | ❌        |
+|            [LeoECS](https://github.com/Leopotam/ecs) | [2023.6.22](https://github.com/Leopotam/ecs/releases/tag/2023.6.22)                               | ✅           | ❌        |
+|    [LeoECSLite](https://github.com/Leopotam/ecslite) | [2024.5.22](https://github.com/Leopotam/ecslite/releases/tag/2024.5.22)                           | ✅           | ❌        |
 
 # Implemented benchmarks
 
@@ -82,15 +84,19 @@ Command line args:
 # Problems
 
 1. Because of nature of BenchmarkDotNet there's sequential iteration of creating entities happening.
-This leads to case where, for example we creating 100k entities in benchmark, it's properly cleared
-in Setup and Cleanup but benchmark itself will be called multiple times which will lead to creating
+   This leads to case where, for example we creating 100k entities in benchmark, it's properly cleared
+   in Setup and Cleanup but benchmark itself will be called multiple times which will lead to creating
 2. 100k entities,
-then another 100k and in some cases lead to millions of entities in the world which can affect perfomance of creation
-and deletion on certain ECS implementations.
+   then another 100k and in some cases lead to millions of entities in the world which can affect perfomance of creation
+   and deletion on certain ECS implementations.
 3. System benchmarks which uses *Padding* property produces up to 1.100.000 entities each because of logic of padding
-generation. It affects runs duration but for now i'm not sure about correct way do fix that (maybe keep entire entities
-count up to *EntityCount* so it'll not affect speed but it'll reduce actual entity count to about 9.9k so archetype ecs
-implementation will gain significant boost).
-4. Because some framework deleting entity on delete last components there are differences in behaviours in tests and benchmarks.
-For example **RemoveComponent** benchmark will work faster with Arch and FennECS because they're not deleting entity.
-Because of that special property called `DeletesEntityOnLastComponentDeletion` is required to be implemented in each context.
+   generation. It affects runs duration but for now i'm not sure about correct way do fix that (maybe keep entire
+   entities
+   count up to *EntityCount* so it'll not affect speed but it'll reduce actual entity count to about 9.9k so archetype
+   ecs
+   implementation will gain significant boost).
+4. Because some framework deleting entity on delete last components there are differences in behaviours in tests and
+   benchmarks.
+   For example **RemoveComponent** benchmark will work faster with Arch and FennECS because they're not deleting entity.
+   Because of that special property called `DeletesEntityOnLastComponentDeletion` is required to be implemented in each
+   context.

@@ -78,7 +78,7 @@ jobs:
             .benchmark_results/${{ matrix.benchmark }}/results/*.md
             .benchmark_results/hwinfo
           retention-days: 1
-          
+  
   merge-reports:
     runs-on: ubuntu-latest
     needs: run
@@ -90,16 +90,16 @@ jobs:
           path: .benchmark_results/
       - name: Merge Benchmark Reports
         run: |
-            find .benchmark_results/ | sed -e "s/[^-][^\/]*\// |/g" -e "s/|\([^ ]\)/|-\1/"
-            echo -e "# Build from:\n" >> report.md
-            echo -e "https://github.com/blackbone/other-ecs-benchmarks/commit/$GITHUB_SHA\n" >> report.md
-            echo -e "HW Info:\n" >> report.md
-            cat .benchmark_results/hwinfo >> report.md
-            echo -e "\n" >> report.md
-            find .benchmark_results -name '*.md' -print0 | while IFS= read -r -d '' file; do
-            cat "$file" >> report.md
-            echo -e "\n" >> report.md
-            done
+          find .benchmark_results/ | sed -e "s/[^-][^\/]*\// |/g" -e "s/|\([^ ]\)/|-\1/"
+          echo -e "# Build from:\n" >> report.md
+          echo -e "https://github.com/blackbone/other-ecs-benchmarks/commit/$GITHUB_SHA\n" >> report.md
+          echo -e "HW Info:\n" >> report.md
+          cat .benchmark_results/hwinfo >> report.md
+          echo -e "\n" >> report.md
+          find .benchmark_results -name '*.md' -print0 | while IFS= read -r -d '' file; do
+          cat "$file" >> report.md
+          echo -e "\n" >> report.md
+          done
       - name: Update Gist
         uses: exuanbo/actions-deploy-gist@v1
         with:

@@ -1,87 +1,124 @@
 using Benchmark._Context;
+using DCFApixels.DragonECS;
 using fennecs;
+using Scellecs.Morpeh;
+using Entity = fennecs.Entity;
+using World = fennecs.World;
 
 namespace Benchmark.Fennecs;
 
-public class FennecsContext : BenchmarkContextBase
+public readonly struct FennecsContext(in int entityCount = 4096) : IBenchmarkContext
 {
-    private World? _world;
-    private World.WorldLock _lock;
-    private Dictionary<int, Query>? _queries;
-    private List<Action<float>>? _systems;
-    
-    public override bool DeletesEntityOnLastComponentDeletion => false;
+    private readonly ManagedRef<World.WorldLock>? _lock = new();
+    private readonly Dictionary<int, Query>? _queries = new();
+    private readonly List<ISystem>? _systems = new();
+    private readonly World? _world = new(entityCount);
 
-    public override int EntityCount => _world!.Count;
+    public bool DeletesEntityOnLastComponentDeletion => false;
 
-    public override void Setup(int entityCount)
+    public int EntityCount => _world!.Count;
+
+    public void Setup()
     {
-        _world = new World(entityCount);
-        _queries = new Dictionary<int, Query>();
-        _systems = new List<Action<float>>();
     }
 
-    public override void Warmup<T1>(in int poolId) => _queries![poolId] = _world!.Query<T1>().Compile().Warmup();
+    public void FinishSetup()
+    {
+    }
 
-    public override void Warmup<T1, T2>(in int poolId) => _queries![poolId] = _world!.Query<T1, T2>().Compile().Warmup();
-
-    public override void Warmup<T1, T2, T3>(in int poolId) => _queries![poolId] = _world!.Query<T1, T2, T3>().Compile().Warmup();
-
-    public override void Warmup<T1, T2, T3, T4>(in int poolId) => _queries![poolId] = _world!.Query<T1, T2, T3, T4>().Compile().Warmup();
-
-    public override void Cleanup()
+    public void Cleanup()
     {
         _systems!.Clear();
-        _systems = null;
-        
         _queries!.Clear();
-        _queries = null;
-        
         _world!.GC();
         _world.Dispose();
-        _world = null;
     }
 
-    public override void Lock() => _lock = _world!.Lock();
+    public void Dispose()
+    {
+    }
 
-    public override void Commit() => _lock.Dispose();
+    public void Warmup<T1>(in int poolId) where T1 : struct, IComponent, IEcsComponent
+    {
+        _queries![poolId] = _world!.Query<T1>().Compile().Warmup();
+    }
 
-    public override void CreateEntities(in Array entitySet)
+    public void Warmup<T1, T2>(in int poolId) where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+    {
+        _queries![poolId] = _world!.Query<T1, T2>().Compile().Warmup();
+    }
+
+    public void Warmup<T1, T2, T3>(in int poolId) where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+        where T3 : struct, IComponent, IEcsComponent
+    {
+        _queries![poolId] = _world!.Query<T1, T2, T3>().Compile().Warmup();
+    }
+
+    public void Warmup<T1, T2, T3, T4>(in int poolId) where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+        where T3 : struct, IComponent, IEcsComponent
+        where T4 : struct, IComponent, IEcsComponent
+    {
+        _queries![poolId] = _world!.Query<T1, T2, T3, T4>().Compile().Warmup();
+    }
+
+    public void Lock()
+    {
+        _lock.V = _world!.Lock();
+    }
+
+    public void Commit()
+    {
+        _lock.V.Dispose();
+    }
+
+    public void CreateEntities(in Array entitySet)
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i] = _world!.Spawn();
     }
 
-    public override void CreateEntities<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default)
+    public void CreateEntities<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default)
+        where T1 : struct, IComponent, IEcsComponent
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i] = _world!.Spawn().Add(c1);
     }
 
-    public override void CreateEntities<T1, T2>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default)
+    public void CreateEntities<T1, T2>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default)
+        where T1 : struct, IComponent, IEcsComponent where T2 : struct, IComponent, IEcsComponent
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i] = _world!.Spawn().Add(c1).Add(c2);
     }
 
-    public override void CreateEntities<T1, T2, T3>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default, in T3 c3 = default)
+    public void CreateEntities<T1, T2, T3>(in Array entitySet, in int poolId = -1, in T1 c1 = default,
+        in T2 c2 = default, in T3 c3 = default) where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+        where T3 : struct, IComponent, IEcsComponent
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i] = _world!.Spawn().Add(c1).Add(c2).Add(c3);
     }
 
-    public override void CreateEntities<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default, in T3 c3 = default, in T4 c4 = default)
+    public void CreateEntities<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1, in T1 c1 = default,
+        in T2 c2 = default, in T3 c3 = default, in T4 c4 = default) where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+        where T3 : struct, IComponent, IEcsComponent
+        where T4 : struct, IComponent, IEcsComponent
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i] = _world!.Spawn().Add(c1).Add(c2).Add(c3).Add(c4);
     }
 
-    public override void DeleteEntities(in Array entitySet)
+    public void DeleteEntities(in Array entitySet)
     {
         var entities = (Entity[])entitySet;
         // TODO perform use overload which utilizes ReadOnlySpan<Identity>
@@ -89,71 +126,106 @@ public class FennecsContext : BenchmarkContextBase
             _world!.Despawn(entities[i].Id);
     }
 
-    public override void AddComponent<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default)
+    public void AddComponent<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default)
+        where T1 : struct, IComponent, IEcsComponent
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i].Add(c1);
     }
 
-    public override void AddComponent<T1, T2>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default)
+    public void AddComponent<T1, T2>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default)
+        where T1 : struct, IComponent, IEcsComponent where T2 : struct, IComponent, IEcsComponent
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i].Add(c1).Add(c2);
     }
 
-    public override void AddComponent<T1, T2, T3>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default, in T3 c3 = default)
+    public void AddComponent<T1, T2, T3>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default,
+        in T3 c3 = default) where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+        where T3 : struct, IComponent, IEcsComponent
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i].Add(c1).Add(c2).Add(c3);
     }
 
-    public override void AddComponent<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default, in T3 c3 = default, in T4 c4 = default)
+    public void AddComponent<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1, in T1 c1 = default,
+        in T2 c2 = default, in T3 c3 = default, in T4 c4 = default) where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+        where T3 : struct, IComponent, IEcsComponent
+        where T4 : struct, IComponent, IEcsComponent
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i].Add(c1).Add(c2).Add(c3).Add(c4);
     }
 
-    public override void RemoveComponent<T1>(in Array entitySet, in int poolId = -1)
+    public void RemoveComponent<T1>(in Array entitySet, in int poolId = -1) where T1 : struct, IComponent, IEcsComponent
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i].Remove<T1>();
     }
 
-    public override void RemoveComponent<T1, T2>(in Array entitySet, in int poolId = -1)
+    public void RemoveComponent<T1, T2>(in Array entitySet, in int poolId = -1)
+        where T1 : struct, IComponent, IEcsComponent where T2 : struct, IComponent, IEcsComponent
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i].Remove<T1>().Remove<T2>();
     }
 
-    public override void RemoveComponent<T1, T2, T3>(in Array entitySet, in int poolId = -1)
+    public void RemoveComponent<T1, T2, T3>(in Array entitySet, in int poolId = -1)
+        where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+        where T3 : struct, IComponent, IEcsComponent
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i].Remove<T1>().Remove<T2>().Remove<T3>();
     }
 
-    public override void RemoveComponent<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1)
+    public void RemoveComponent<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1)
+        where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+        where T3 : struct, IComponent, IEcsComponent
+        where T4 : struct, IComponent, IEcsComponent
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i].Remove<T1>().Remove<T2>().Remove<T3>().Remove<T4>();
     }
 
-    public override int CountWith<T1>(in int poolId) => _queries![poolId].Count;
+    public int CountWith<T1>(in int poolId) where T1 : struct, IComponent, IEcsComponent
+    {
+        return _queries![poolId].Count;
+    }
 
-    public override int CountWith<T1, T2>(in int poolId) => _queries![poolId].Count;
+    public int CountWith<T1, T2>(in int poolId) where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+    {
+        return _queries![poolId].Count;
+    }
 
-    public override int CountWith<T1, T2, T3>(in int poolId) => _queries![poolId].Count;
+    public int CountWith<T1, T2, T3>(in int poolId) where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+        where T3 : struct, IComponent, IEcsComponent
+    {
+        return _queries![poolId].Count;
+    }
 
-    public override int CountWith<T1, T2, T3, T4>(in int poolId) => _queries![poolId].Count;
-    
-    public override bool GetSingle<T1>(in object? entity, in int poolId, ref T1 c1)
+    public int CountWith<T1, T2, T3, T4>(in int poolId) where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+        where T3 : struct, IComponent, IEcsComponent
+        where T4 : struct, IComponent, IEcsComponent
+    {
+        return _queries![poolId].Count;
+    }
+
+    public bool GetSingle<T1>(in object? entity, in int poolId, ref T1 c1) where T1 : struct, IComponent, IEcsComponent
     {
         if (entity == null) return false;
 
@@ -162,7 +234,8 @@ public class FennecsContext : BenchmarkContextBase
         return true;
     }
 
-    public override bool GetSingle<T1, T2>(in object? entity, in int poolId, ref T1 c1, ref T2 c2)
+    public bool GetSingle<T1, T2>(in object? entity, in int poolId, ref T1 c1, ref T2 c2)
+        where T1 : struct, IComponent, IEcsComponent where T2 : struct, IComponent, IEcsComponent
     {
         if (entity == null) return false;
 
@@ -172,7 +245,10 @@ public class FennecsContext : BenchmarkContextBase
         return true;
     }
 
-    public override bool GetSingle<T1, T2, T3>(in object? entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3)
+    public bool GetSingle<T1, T2, T3>(in object? entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3)
+        where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+        where T3 : struct, IComponent, IEcsComponent
     {
         if (entity == null) return false;
 
@@ -183,7 +259,11 @@ public class FennecsContext : BenchmarkContextBase
         return true;
     }
 
-    public override bool GetSingle<T1, T2, T3, T4>(in object? entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4)
+    public bool GetSingle<T1, T2, T3, T4>(in object? entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4)
+        where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+        where T3 : struct, IComponent, IEcsComponent
+        where T4 : struct, IComponent, IEcsComponent
     {
         if (entity == null) return false;
 
@@ -195,49 +275,49 @@ public class FennecsContext : BenchmarkContextBase
         return true;
     }
 
-    public override void Tick(float delta)
+    public void Tick(float delta)
     {
-        for (int i = 0; i < _systems!.Count; i++)
-            _systems[i](delta);
-    } 
-    
-    public override unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId)
-    {
-        _systems!.Add(_ => ((Query<T1>)_queries![poolId]).For(Invoke));
-        return;
-
-        void Invoke(ref T1 c0) => method(ref c0);
+        for (var i = 0; i < _systems!.Count; i++)
+            _systems[i].Run(delta);
     }
 
-    public override unsafe void AddSystem<T1, T2>(delegate*<ref T1, ref T2, void> method, int poolId)
+    public unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId)
+        where T1 : struct, IComponent, IEcsComponent
     {
-        _systems!.Add(_ => ((Query<T1, T2>)_queries![poolId]).For(Invoke));
-        return;
-
-        void Invoke(ref T1 c0, ref T2 c1) => method(ref c0, ref c1);
+        _systems!.Add(new System<T1>(method, (Query<T1>)_queries![poolId]));
     }
 
-    public override unsafe void AddSystem<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> method, int poolId)
+    public unsafe void AddSystem<T1, T2>(delegate*<ref T1, ref T2, void> method, int poolId)
+        where T1 : struct, IComponent, IEcsComponent where T2 : struct, IComponent, IEcsComponent
     {
-        _systems!.Add(_ => ((Query<T1, T2, T3>)_queries![poolId]).For(Invoke));
-        return;
-
-        void Invoke(ref T1 c0, ref T2 c1, ref T3 c2) => method(ref c0, ref c1, ref c2);
+        _systems!.Add(new System<T1, T2>(method, (Query<T1, T2>)_queries![poolId]));
     }
 
-    public override unsafe void AddSystem<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> method, int poolId)
+    public unsafe void AddSystem<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> method, int poolId)
+        where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+        where T3 : struct, IComponent, IEcsComponent
     {
-        _systems!.Add(_ => ((Query<T1, T2, T3, T4>)_queries![poolId]).For(Invoke));
-        return;
-
-        void Invoke(ref T1 c0, ref T2 c1, ref T3 c2, ref T4 c3) => method(ref c0, ref c1, ref c2, ref c3);
+        _systems!.Add(new System<T1, T2, T3>(method, (Query<T1, T2, T3>)_queries![poolId]));
     }
 
-    public override Array Shuffle(in Array entitySet)
+    public unsafe void AddSystem<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> method, int poolId)
+        where T1 : struct, IComponent, IEcsComponent
+        where T2 : struct, IComponent, IEcsComponent
+        where T3 : struct, IComponent, IEcsComponent
+        where T4 : struct, IComponent, IEcsComponent
+    {
+        _systems!.Add(new System<T1, T2, T3, T4>(method, (Query<T1, T2, T3, T4>)_queries![poolId]));
+    }
+
+    public Array Shuffle(in Array entitySet)
     {
         Random.Shared.Shuffle((Entity[])entitySet);
         return entitySet;
     }
-    
-    public override Array PrepareSet(in int count) => new Entity[count];
+
+    public Array PrepareSet(in int count)
+    {
+        return new Entity[count];
+    }
 }

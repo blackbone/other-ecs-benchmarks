@@ -22,7 +22,7 @@ public class ContextColumn : IColumn
 
     public string GetValue(Summary summary, BenchmarkCase benchmarkCase, SummaryStyle style)
     {
-        return benchmarkCase.Descriptor.Type.GetGenericArguments()[0].Name.Replace("Context", "");
+        return benchmarkCase.Descriptor.Type.GetProperty("Context")?.PropertyType.Name.Replace("Context", "") ?? "N/A";
     }
 
     public bool IsDefault(Summary summary, BenchmarkCase benchmarkCase)

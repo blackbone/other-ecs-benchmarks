@@ -6,7 +6,7 @@ public class TestBenchmarks
 {
     [Test]
     [TestCaseSource(nameof(GetBenchmarks))]
-    public void CheckBenchmark<T>(T benchmark) where T : BenchmarkBase, new()
+    public void CheckBenchmark<T>(T benchmark) where T : IBenchmark, new()
     {
         Assert.NotNull(benchmark);
 
@@ -20,13 +20,11 @@ public class TestBenchmarks
         }
     }
 
-    public static IEnumerable<BenchmarkBase?> GetBenchmarks()
+    public static IEnumerable<IBenchmark?> GetBenchmarks()
     {
-        foreach (var contextType in Helper.GetContextTypes())
-        foreach (var baseBenchmarkType in Helper.GetBenchmarkTypes())
+        foreach (var benchmarkType in BenchMap.Runs.Values.SelectMany(v => v))
         {
-            var benchmark = Activator.CreateInstance(baseBenchmarkType.MakeGenericType(contextType)) as BenchmarkBase;
-            if (benchmark == null)
+            if (Activator.CreateInstance(benchmarkType) is not IBenchmark benchmark)
             {
                 yield return null;
                 continue;
@@ -36,6 +34,4 @@ public class TestBenchmarks
             yield return benchmark;
         }
     }
-
-    
 }

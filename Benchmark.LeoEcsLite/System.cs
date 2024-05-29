@@ -1,4 +1,5 @@
 using Leopotam.EcsLite;
+
 #pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
 
 namespace Benchmark.LeoEcsLite;
@@ -15,7 +16,7 @@ public unsafe class System<T1>(delegate*<ref T1, void> method) : IEcsInitSystem,
         _filter = world.Filter<T1>().End();
         _p1 = world.GetPool<T1>();
     }
-    
+
     public void Run(IEcsSystems systems)
     {
         foreach (var entity in _filter!)
@@ -38,7 +39,7 @@ public unsafe class System<T1, T2>(delegate*<ref T1, ref T2, void> method) : IEc
         _p1 = world.GetPool<T1>();
         _p2 = world.GetPool<T2>();
     }
-    
+
     public void Run(IEcsSystems systems)
     {
         foreach (var entity in _filter!)
@@ -64,7 +65,7 @@ public unsafe class System<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> m
         _p2 = world.GetPool<T2>();
         _p3 = world.GetPool<T3>();
     }
-    
+
     public void Run(IEcsSystems systems)
     {
         foreach (var entity in _filter!)
@@ -72,7 +73,8 @@ public unsafe class System<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> m
     }
 }
 
-public unsafe class System<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> method) : IEcsInitSystem, IEcsRunSystem
+public unsafe class System<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> method)
+    : IEcsInitSystem, IEcsRunSystem
     where T1 : struct
     where T2 : struct
     where T3 : struct
@@ -93,7 +95,7 @@ public unsafe class System<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref
         _p3 = world.GetPool<T3>();
         _p4 = world.GetPool<T4>();
     }
-    
+
     public void Run(IEcsSystems systems)
     {
         foreach (var entity in _filter!)

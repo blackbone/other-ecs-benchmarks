@@ -10,11 +10,11 @@
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-      <DefineConstants>TRACE;DISABLE_DEBUG</DefineConstants>
+        <DefineConstants>TRACE;DISABLE_DEBUG</DefineConstants>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-      <DefineConstants>TRACE;DISABLE_DEBUG</DefineConstants>
+        <DefineConstants>TRACE;DISABLE_DEBUG</DefineConstants>
     </PropertyGroup>
 
     <ItemGroup>
@@ -22,5 +22,5 @@
             <Link>src\%(RecursiveDir)/%(FileName)%(Extension)</Link>
         </Compile>
     </ItemGroup>
-    
+
 </Project>

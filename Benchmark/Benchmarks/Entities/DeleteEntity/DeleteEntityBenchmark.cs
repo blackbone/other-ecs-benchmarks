@@ -10,22 +10,34 @@ namespace Benchmark.Benchmarks.Entities.DeleteEntity;
 #if CHECK_CACHE_MISSES
 [HardwareCounters(BenchmarkDotNet.Diagnosers.HardwareCounter.CacheMisses)]
 #endif
-public class DeleteEntityBenchmark<T> : EntitiesBenchmarkBase<T> where T : BenchmarkContextBase, new()
+public abstract class DeleteEntityBenchmark<T> : IBenchmark<T> where T : struct, IBenchmarkContext
 {
+    [Params(Constants.EntityCount)] public int EntityCount { get; set; }
+    public T Context { get; set; }
     private Array _entitySet;
 
-    protected override void OnSetup()
+    [IterationSetup]
+    public void Setup()
     {
-        base.OnSetup();
+        Context = BenchmarkContext.Create<T>(EntityCount);
+        Context.Setup();
         _entitySet = Context.PrepareSet(EntityCount);
-        
         Context.Lock();
         Context.CreateEntities(_entitySet);
         Context.Commit();
+        Context.FinishSetup();
+    }
+
+    [IterationCleanup]
+    public void Cleanup()
+    {
+        Context.Cleanup();
+        Context.Dispose();
+        Context = default;
     }
 
     [Benchmark]
-    public override void Run()
+    public void Run()
     {
         Context.Lock();
         Context.DeleteEntities(_entitySet);
