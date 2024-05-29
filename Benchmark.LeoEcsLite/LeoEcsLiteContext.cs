@@ -193,7 +193,6 @@ public class LeoEcsLiteContext : BenchmarkContextBase
         var p4 = (EcsPool<T4>)pools[3];
         for (var i = 0; i < entities.Length; i++)
         {
-            entities[i] = _world!.NewEntity();
             p1.Add(entities[i]) = c1;
             p2.Add(entities[i]) = c2;
             p3.Add(entities[i]) = c3;
