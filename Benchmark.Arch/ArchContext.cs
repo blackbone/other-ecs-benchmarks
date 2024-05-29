@@ -14,8 +14,8 @@ namespace Benchmark.Arch;
 
 public readonly struct ArchContext(in int entityCount = 4096) : IBenchmarkContext
 {
-    private readonly Dictionary<int, ComponentType[]>? _archetypes = new();
     private readonly int _entityCount = entityCount;
+    private readonly Dictionary<int, ComponentType[]>? _archetypes = new();
     private readonly Dictionary<int, QueryDescription>? _queries = new();
     private readonly List<Action<World>>? _systems = new();
     private readonly World? _world = World.Create();
@@ -35,11 +35,11 @@ public readonly struct ArchContext(in int entityCount = 4096) : IBenchmarkContex
     public void Cleanup()
     {
         _world?.Clear();
-        _world?.Dispose();
     }
 
     public void Dispose()
     {
+        _world?.Dispose();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]

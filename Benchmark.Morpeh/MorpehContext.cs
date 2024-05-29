@@ -10,6 +10,7 @@ namespace Benchmark.Morpeh;
 
 public readonly struct MorpehContext : IBenchmarkContext
 {
+    private readonly int _entityCount;
     private readonly Dictionary<int, Filter>? _filters;
     private readonly Dictionary<int, IStash[]>? _stashes;
     private readonly SystemsGroup? _systems;
@@ -21,6 +22,7 @@ public readonly struct MorpehContext : IBenchmarkContext
 
     public MorpehContext(in int entityCount = 4096)
     {
+        _entityCount = entityCount;
         _world = World.Create();
         _systems = _world.CreateSystemsGroup();
         _world.AddSystemsGroup(0, _systems);
@@ -34,6 +36,7 @@ public readonly struct MorpehContext : IBenchmarkContext
 
     public void FinishSetup()
     {
+        _world!.WarmupArchetypes(_entityCount);
     }
 
     public void Cleanup()
@@ -43,13 +46,12 @@ public readonly struct MorpehContext : IBenchmarkContext
         _stashes!.Clear();
 
         _systems!.Dispose();
-        ;
         _filters!.Clear();
-        _world?.Dispose();
     }
 
     public void Dispose()
     {
+        _world?.Dispose();
     }
 
     public void Lock()

@@ -11,7 +11,7 @@ public class TestBenchmarks
         Assert.NotNull(benchmark);
 
         // because of repetative logic we need to check bench will clear and reuse correctly
-        var i = 2;
+        var i = 10;
         while (i-- > 0)
         {
             benchmark.Setup();

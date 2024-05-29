@@ -31,11 +31,11 @@ public readonly struct FennecsContext(in int entityCount = 4096) : IBenchmarkCon
         _systems!.Clear();
         _queries!.Clear();
         _world!.GC();
-        _world.Dispose();
     }
 
     public void Dispose()
     {
+        _world!.Dispose();
     }
 
     public void Warmup<T1>(in int poolId) where T1 : struct, IComponent, IEcsComponent

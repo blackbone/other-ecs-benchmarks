@@ -42,12 +42,12 @@ public readonly struct DragonECSContext(in int entityCount = 4096) : IBenchmarkC
             pool.ClearAll();
 
         _pipeline!.V.Destroy();
-        _world!.Destroy();
         _systems!.Clear();
     }
 
     public void Dispose()
     {
+        _world!.Destroy();
     }
 
     public void Warmup<T1>(in int poolId) where T1 : struct, IComponent, IEcsComponent

@@ -31,11 +31,11 @@ public readonly struct LeoEcsContext(in int entityCount = 4096) : IBenchmarkCont
         foreach (var system in _systems!)
             system.Destroy();
         _systems.Clear();
-        _world!.Destroy();
     }
 
     public void Dispose()
     {
+        _world!.Destroy();
     }
 
     public void Warmup<T1>(in int poolId) where T1 : struct, IComponent, IEcsComponent

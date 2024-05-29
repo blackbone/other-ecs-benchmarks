@@ -36,11 +36,11 @@ public readonly struct LeoEcsLiteContext(in int entityCount = 4096) : IBenchmark
         _systems!.Clear();
         _filters!.Clear();
         _pools!.Clear();
-        _world!.Destroy();
     }
 
     public void Dispose()
     {
+        _world!.Destroy();
     }
 
     public void Warmup<T1>(in int poolId) where T1 : struct, IComponent, IEcsComponent
