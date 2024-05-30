@@ -58,7 +58,7 @@ public abstract class Add1RandomComponent<T> : IBenchmark<T> where T : IBenchmar
     [Benchmark]
     public void Run()
     {
-        for (var i = 0; i < _entitySets.Length; i += ChunkSize)
+        for (var i = 0; i < _entitySets.Length; i++)
         {
             Context?.Lock();
             switch (_rnd.Next() % 4)
