@@ -425,8 +425,5 @@ public sealed class LeoEcsLiteContext(int entityCount = 4096) : IBenchmarkContex
         return entitySet;
     }
 
-    public Array PrepareSet(in int count)
-    {
-        return new int[count];
-    }
+    public Array PrepareSet(in int count) => count > 0 ? new int[count] : [];
 }

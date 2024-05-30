@@ -432,8 +432,5 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
         return entitySet;
     }
 
-    public Array PrepareSet(in int count)
-    {
-        return new Entity[count];
-    }
+    public Array PrepareSet(in int count) => count > 0 ? new Entity[count] : [];
 }

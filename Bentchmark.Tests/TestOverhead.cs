@@ -2,7 +2,7 @@ using Benchmark;
 
 namespace Bentchmark.Tests;
 
-public class TestBenchmarks
+public class TestOverhead
 {
     [Test]
     [TestCaseSource(nameof(GetBenchmarks))]
@@ -15,7 +15,6 @@ public class TestBenchmarks
         while (i-- > 0)
         {
             benchmark.Setup();
-            benchmark.Run();
             benchmark.Cleanup();
         }
     }

@@ -34,8 +34,7 @@ public abstract class Add3Components<T> : IBenchmark<T> where T : IBenchmarkCont
     public void Cleanup()
     {
         Context?.RemoveComponent<Component1, Component2, Component3>(_entitySet, 0);
-        if (!Context.DeletesEntityOnLastComponentDeletion)
-            Context?.DeleteEntities(_entitySet);
+        Context?.DeleteEntities(_entitySet);
         Context?.Cleanup();
         Context?.Dispose();
         Context = default;

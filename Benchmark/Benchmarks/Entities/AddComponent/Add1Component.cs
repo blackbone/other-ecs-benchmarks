@@ -34,8 +34,7 @@ public abstract class Add1Component<T> : IBenchmark<T> where T : IBenchmarkConte
     public void Cleanup()
     {
         Context?.RemoveComponent<Component1>(_entitySet, 0);
-        if (!Context.DeletesEntityOnLastComponentDeletion)
-            Context?.DeleteEntities(_entitySet);
+        Context?.DeleteEntities(_entitySet);
         Context?.Cleanup();
         Context?.Dispose();
         Context = default;

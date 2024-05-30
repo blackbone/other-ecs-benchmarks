@@ -170,7 +170,7 @@ public sealed class DragonECSContext(int entityCount = 4096) : IBenchmarkContext
     {
         var entities = (int[])entitySet;
         for (var i = 0; i < entities.Length; i++)
-            _world!.DelEntity(entities[i]);
+            _world!.TryDelEntity(entities[i]);
     }
 
     public void AddComponent<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default)
@@ -433,8 +433,5 @@ public sealed class DragonECSContext(int entityCount = 4096) : IBenchmarkContext
         return entitySet;
     }
 
-    public Array PrepareSet(in int count)
-    {
-        return new int[count];
-    }
+    public Array PrepareSet(in int count) => count > 0 ? new int[count] : [];
 }

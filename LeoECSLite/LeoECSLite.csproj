@@ -9,6 +9,14 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <DefineConstants>TRACE;LEOECSLITE_NO_SANITIZE_CHECKS</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <DefineConstants>TRACE;LEOECSLITE_NO_SANITIZE_CHECKS</DefineConstants>
+    </PropertyGroup>
+
     <ItemGroup>
         <Compile Include="..\submodules\leopotam-ecslite\src\**\*.cs">
             <Link>src\%(RecursiveDir)/%(FileName)%(Extension)</Link>

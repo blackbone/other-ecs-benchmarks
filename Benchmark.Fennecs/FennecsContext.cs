@@ -125,7 +125,7 @@ public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
         var entities = (Entity[])entitySet;
         // TODO perform use overload which utilizes ReadOnlySpan<Identity>
         for (var i = 0; i < entities.Length; i++)
-            _world!.Despawn(entities[i].Id);
+            if (_world!.IsAlive(entities[i]))_world!.Despawn(entities[i].Id);
     }
 
     public void AddComponent<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default)
@@ -169,7 +169,8 @@ public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
-            entities[i].Remove<T1>();
+            if (entities[i].Has<T1>())
+                entities[i].Remove<T1>();
     }
 
     public void RemoveComponent<T1, T2>(in Array entitySet, in int poolId = -1)
@@ -177,7 +178,10 @@ public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
-            entities[i].Remove<T1>().Remove<T2>();
+        {
+            if (entities[i].Has<T1>()) entities[i].Remove<T1>();
+            if (entities[i].Has<T2>()) entities[i].Remove<T2>();
+        }
     }
 
     public void RemoveComponent<T1, T2, T3>(in Array entitySet, in int poolId = -1)
@@ -187,7 +191,11 @@ public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
-            entities[i].Remove<T1>().Remove<T2>().Remove<T3>();
+        {
+            if (entities[i].Has<T1>()) entities[i].Remove<T1>();
+            if (entities[i].Has<T2>()) entities[i].Remove<T2>();
+            if (entities[i].Has<T3>()) entities[i].Remove<T3>();
+        }
     }
 
     public void RemoveComponent<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1)
@@ -198,7 +206,12 @@ public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
-            entities[i].Remove<T1>().Remove<T2>().Remove<T3>().Remove<T4>();
+        {
+            if (entities[i].Has<T1>()) entities[i].Remove<T1>();
+            if (entities[i].Has<T2>()) entities[i].Remove<T2>();
+            if (entities[i].Has<T3>()) entities[i].Remove<T3>();
+            if (entities[i].Has<T4>()) entities[i].Remove<T4>();
+        }
     }
 
     public int CountWith<T1>(in int poolId) where T1 : struct, IComponent, IEcsComponent
@@ -318,8 +331,5 @@ public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
         return entitySet;
     }
 
-    public Array PrepareSet(in int count)
-    {
-        return new Entity[count];
-    }
+    public Array PrepareSet(in int count) => count > 0 ? new Entity[count] : [];
 }
