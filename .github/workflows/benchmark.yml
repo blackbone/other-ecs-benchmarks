@@ -91,14 +91,11 @@ jobs:
       - name: Merge Benchmark Reports
         run: |
           find .benchmark_results/ | sed -e "s/[^-][^\/]*\// |/g" -e "s/|\([^ ]\)/|-\1/"
-# Prepare the report file
           echo -e "# Build from:\n" >> report.md
           echo -e "https://github.com/blackbone/other-ecs-benchmarks/commit/$GITHUB_SHA\n" >> report.md
           echo -e "HW Info:\n" >> report.md
           cat .benchmark_results/hwinfo >> report.md
           echo -e "\n" >> report.md
-            
-# Find and sort the markdown files by their first line
           find .benchmark_results -name '*.md' -print0 | while IFS= read -r -d '' file; do
           first_line=$(head -n 1 "$file")
           echo "$first_line|$file"
