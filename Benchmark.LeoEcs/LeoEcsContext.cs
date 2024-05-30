@@ -6,11 +6,11 @@ using EcsWorld = Leopotam.Ecs.EcsWorld;
 
 namespace Benchmark.LeoEcs;
 
-public readonly struct LeoEcsContext(in int entityCount = 4096) : IBenchmarkContext
+public sealed class LeoEcsContext(int entityCount = 4096) : IBenchmarkContext
 {
     private readonly Dictionary<int, EcsFilter>? _filters = new();
     private readonly List<EcsSystems>? _systems = new();
-    private readonly EcsWorld? _world = new();
+    private EcsWorld? _world;
 
     public bool DeletesEntityOnLastComponentDeletion => true;
 
@@ -18,6 +18,7 @@ public readonly struct LeoEcsContext(in int entityCount = 4096) : IBenchmarkCont
 
     public void Setup()
     {
+        _world = new EcsWorld();
     }
 
     public void FinishSetup()
@@ -31,11 +32,12 @@ public readonly struct LeoEcsContext(in int entityCount = 4096) : IBenchmarkCont
         foreach (var system in _systems!)
             system.Destroy();
         _systems.Clear();
+        _world!.Destroy();
+        _world = null;
     }
 
     public void Dispose()
     {
-        _world!.Destroy();
     }
 
     public void Warmup<T1>(in int poolId) where T1 : struct, IComponent, IEcsComponent

@@ -9,7 +9,7 @@ namespace Benchmark.Benchmarks.Systems;
 #if CHECK_CACHE_MISSES
 [HardwareCounters(BenchmarkDotNet.Diagnosers.HardwareCounter.CacheMisses)]
 #endif
-public abstract class SystemWith1ComponentMultipleComposition<T> : IBenchmark<T> where T : struct, IBenchmarkContext
+public abstract class SystemWith1ComponentMultipleComposition<T> : IBenchmark<T> where T : IBenchmarkContext
 {
     [Params(Constants.SystemEntityCount)] public int EntityCount { get; set; }
     [Params(0, 10)] public int Padding { get; set; }
@@ -21,57 +21,57 @@ public abstract class SystemWith1ComponentMultipleComposition<T> : IBenchmark<T>
     public void Setup()
     {
         Context = BenchmarkContext.Create<T>(EntityCount);
-        Context.Setup();
+        Context?.Setup();
 
-        Context.Warmup<Component1>(0);
-        Context.Warmup<Padding1>(1);
-        Context.Warmup<Padding2>(2);
-        Context.Warmup<Padding3>(3);
-        Context.Warmup<Padding4>(4);
+        Context?.Warmup<Component1>(0);
+        Context?.Warmup<Padding1>(1);
+        Context?.Warmup<Padding2>(2);
+        Context?.Warmup<Padding3>(3);
+        Context?.Warmup<Padding4>(4);
 
-        var set = Context.PrepareSet(1);
-        Context.Lock();
+        var set = Context?.PrepareSet(1);
+        Context?.Lock();
         // set up entities
         for (var i = 0; i < EntityCount; ++i)
         {
             for (var j = 0; j < Padding; ++j)
-                Context.CreateEntities(set);
+                Context?.CreateEntities(set);
 
-            Context.CreateEntities(set, 0, new Component1 { Value = 0 });
+            Context?.CreateEntities(set, 0, new Component1 { Value = 0 });
 
             switch (i % 4)
             {
                 case 0:
-                    Context.AddComponent(set, 1, default(Padding1));
+                    Context?.AddComponent(set, 1, default(Padding1));
                     break;
                 case 2:
-                    Context.AddComponent(set, 2, default(Padding2));
+                    Context?.AddComponent(set, 2, default(Padding2));
                     break;
                 case 3:
-                    Context.AddComponent(set, 3, default(Padding3));
+                    Context?.AddComponent(set, 3, default(Padding3));
                     break;
                 case 4:
-                    Context.AddComponent(set, 4, default(Padding4));
+                    Context?.AddComponent(set, 4, default(Padding4));
                     break;
             }
         }
 
-        Context.Commit();
+        Context?.Commit();
 
         unsafe
         {
             // set up systems
-            Context.AddSystem<Component1>(&Update, 0);
+            Context?.AddSystem<Component1>(&Update, 0);
         }
 
-        Context.FinishSetup();
+        Context?.FinishSetup();
     }
 
     [IterationCleanup]
     public void Cleanup()
     {
-        Context.Cleanup();
-        Context.Dispose();
+        Context?.Cleanup();
+        Context?.Dispose();
         Context = default;
     }
 
@@ -79,7 +79,7 @@ public abstract class SystemWith1ComponentMultipleComposition<T> : IBenchmark<T>
     public void Run()
     {
         var i = Iterations;
-        while (i-- > 0) Context.Tick(0.1f);
+        while (i-- > 0) Context?.Tick(0.1f);
     }
 
     private static void Update(ref Component1 c1)

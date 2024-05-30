@@ -1,5 +1,6 @@
 using Benchmark;
 using Benchmark._Context;
+// ReSharper disable CyclomaticComplexity
 
 namespace Bentchmark.Tests;
 
@@ -21,7 +22,7 @@ public class TestContexts
         foreach (var contextType in BenchMap.Contexts.Keys)
         {
             var ctor = contextType.GetConstructors().First();
-            yield return ctor.Invoke([4096]) as IBenchmarkContext;
+            yield return ctor.Invoke([Constants.EntityCount]) as IBenchmarkContext;
         }
     }
 
@@ -75,9 +76,11 @@ public class TestContexts
         context.GetSingle(set.GetValue(0), 0, ref c1);
         Assert.That(c1.Value, Is.EqualTo(1));
 
-        context.Tick(0.1f);
-        context.Tick(0.1f);
-        context.Tick(0.1f);
+        for (var i = 0; i < Constants.IterationCount; i++)
+            context.Tick(0.1f);
+        
+        context.GetSingle(set.GetValue(0), 0, ref c1);
+        Assert.That(c1.Value, Is.EqualTo(Constants.IterationCount + 1));
 
         context.Lock();
         context.RemoveComponent<Component1>(set, 0);
@@ -97,10 +100,7 @@ public class TestContexts
 
         _context = context; // set to variable so TearDown will hook it and clean
 
-        static void Update(ref Component1 c1)
-        {
-            c1.Value++;
-        }
+        static void Update(ref Component1 c1) => c1.Value++;
     }
 
     [Test]
@@ -136,9 +136,12 @@ public class TestContexts
         Assert.That(c1.Value, Is.EqualTo(1));
         Assert.That(c2.Value, Is.EqualTo(1));
 
-        context.Tick(0.1f);
-        context.Tick(0.1f);
-        context.Tick(0.1f);
+        for (var i = 0; i < Constants.IterationCount; i++)
+            context.Tick(0.1f);
+        
+        context.GetSingle(set.GetValue(0), 2, ref c1, ref c2);
+        Assert.That(c1.Value, Is.EqualTo(Constants.IterationCount + 1));
+        Assert.That(c2.Value, Is.EqualTo(1));
 
         context.Lock();
         context.RemoveComponent<Component1>(set, 0);
@@ -169,10 +172,7 @@ public class TestContexts
 
         _context = context; // set to variable so TearDown will hook it and clean
 
-        static void Update(ref Component1 c1, ref Component2 c2)
-        {
-            c1.Value += c2.Value;
-        }
+        static void Update(ref Component1 c1, ref Component2 c2) => c1.Value += c2.Value;
     }
 
     [Test]
@@ -219,9 +219,8 @@ public class TestContexts
         Assert.That(c2.Value, Is.EqualTo(1));
         Assert.That(c3.Value, Is.EqualTo(1));
 
-        context.Tick(0.1f);
-        context.Tick(0.1f);
-        context.Tick(0.1f);
+        for (var i = 0; i < Constants.IterationCount; i++)
+            context.Tick(0.1f);
 
         context.Lock();
         context.RemoveComponent<Component1>(set, 0);
@@ -341,9 +340,8 @@ public class TestContexts
         Assert.That(c3.Value, Is.EqualTo(1));
         Assert.That(c4.Value, Is.EqualTo(1));
 
-        context.Tick(0.1f);
-        context.Tick(0.1f);
-        context.Tick(0.1f);
+        for (var i = 0; i < Constants.IterationCount; i++)
+            context.Tick(0.1f);
 
         context.Lock();
         context.RemoveComponent<Component1>(set, 0);

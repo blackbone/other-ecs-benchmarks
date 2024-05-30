@@ -10,7 +10,7 @@ namespace Benchmark.Benchmarks.Entities.CreateEntity;
 #if CHECK_CACHE_MISSES
 [HardwareCounters(BenchmarkDotNet.Diagnosers.HardwareCounter.CacheMisses)]
 #endif
-public abstract class CreateEntityWith2Components<T> : IBenchmark<T> where T : struct, IBenchmarkContext
+public abstract class CreateEntityWith2Components<T> : IBenchmark<T> where T : IBenchmarkContext
 {
     [Params(Constants.EntityCount)] public int EntityCount { get; set; }
     public T Context { get; set; }
@@ -20,26 +20,26 @@ public abstract class CreateEntityWith2Components<T> : IBenchmark<T> where T : s
     public void Setup()
     {
         Context = BenchmarkContext.Create<T>(EntityCount);
-        Context.Setup();
-        _entitySet = Context.PrepareSet(EntityCount);
-        Context.Warmup<Component1, Component2>(0);
-        Context.FinishSetup();
+        Context?.Setup();
+        _entitySet = Context?.PrepareSet(EntityCount);
+        Context?.Warmup<Component1, Component2>(0);
+        Context?.FinishSetup();
     }
 
     [IterationCleanup]
     public void Cleanup()
     {
-        Context.DeleteEntities(_entitySet);
-        Context.Cleanup();
-        Context.Dispose();
+        Context?.DeleteEntities(_entitySet);
+        Context?.Cleanup();
+        Context?.Dispose();
         Context = default;
     }
 
     [Benchmark]
     public void Run()
     {
-        Context.Lock();
-        Context.CreateEntities<Component1, Component2>(_entitySet, 0);
-        Context.Commit();
+        Context?.Lock();
+        Context?.CreateEntities<Component1, Component2>(_entitySet, 0);
+        Context?.Commit();
     }
 }

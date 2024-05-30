@@ -6,15 +6,12 @@ using Scellecs.Morpeh;
 
 namespace Benchmark.DragonECS;
 
-public readonly struct DragonECSContext(in int entityCount = 4096) : IBenchmarkContext
+public sealed class DragonECSContext(int entityCount = 4096) : IBenchmarkContext
 {
-    private readonly ManagedRef<EcsPipeline>? _pipeline = new();
     private readonly Dictionary<int, IEcsPool[]>? _pools = new();
     private readonly List<IEcsProcess>? _systems = new();
-
-    private readonly EcsWorld? _world = new(new EcsWorldConfig(
-        entityCount,
-        poolComponentsCapacity: entityCount));
+    private EcsPipeline? _pipeline;
+    private EcsWorld? _world;
 
     public bool DeletesEntityOnLastComponentDeletion => true;
 
@@ -22,6 +19,9 @@ public readonly struct DragonECSContext(in int entityCount = 4096) : IBenchmarkC
 
     public void Setup()
     {
+        _world = new(new EcsWorldConfig(
+            entityCount,
+            poolComponentsCapacity: entityCount));
     }
 
     public void FinishSetup()
@@ -30,10 +30,10 @@ public readonly struct DragonECSContext(in int entityCount = 4096) : IBenchmarkC
         foreach (var system in _systems!)
             builder.Add(system);
 
-        _pipeline!.V = builder
+        _pipeline = builder
             .Inject(_world)
             .Build();
-        _pipeline.V.Init();
+        _pipeline.Init();
     }
 
     public void Cleanup()
@@ -41,13 +41,17 @@ public readonly struct DragonECSContext(in int entityCount = 4096) : IBenchmarkC
         foreach (var pool in _pools!.Values.SelectMany(p => p))
             pool.ClearAll();
 
-        _pipeline!.V.Destroy();
+        _pipeline!.Destroy();
+        _pipeline = null;
+        
         _systems!.Clear();
+        
+        _world!.Destroy();
+        _world = null;
     }
 
     public void Dispose()
     {
-        _world!.Destroy();
     }
 
     public void Warmup<T1>(in int poolId) where T1 : struct, IComponent, IEcsComponent
@@ -391,7 +395,7 @@ public readonly struct DragonECSContext(in int entityCount = 4096) : IBenchmarkC
 
     public void Tick(float delta)
     {
-        _pipeline!.V.Run();
+        _pipeline!.Run();
     }
 
     public unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId)

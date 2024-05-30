@@ -7,12 +7,12 @@ using World = fennecs.World;
 
 namespace Benchmark.Fennecs;
 
-public readonly struct FennecsContext(in int entityCount = 4096) : IBenchmarkContext
+public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
 {
-    private readonly ManagedRef<World.WorldLock>? _lock = new();
     private readonly Dictionary<int, Query>? _queries = new();
     private readonly List<ISystem>? _systems = new();
-    private readonly World? _world = new(entityCount);
+    private World.WorldLock? _lock;
+    private World? _world = new();
 
     public bool DeletesEntityOnLastComponentDeletion => false;
 
@@ -20,6 +20,7 @@ public readonly struct FennecsContext(in int entityCount = 4096) : IBenchmarkCon
 
     public void Setup()
     {
+        _world = new World(entityCount);
     }
 
     public void FinishSetup()
@@ -31,11 +32,12 @@ public readonly struct FennecsContext(in int entityCount = 4096) : IBenchmarkCon
         _systems!.Clear();
         _queries!.Clear();
         _world!.GC();
+        _world!.Dispose();
+        _world = null;
     }
 
     public void Dispose()
     {
-        _world!.Dispose();
     }
 
     public void Warmup<T1>(in int poolId) where T1 : struct, IComponent, IEcsComponent
@@ -66,12 +68,12 @@ public readonly struct FennecsContext(in int entityCount = 4096) : IBenchmarkCon
 
     public void Lock()
     {
-        _lock.V = _world!.Lock();
+        _lock = _world!.Lock();
     }
 
     public void Commit()
     {
-        _lock.V.Dispose();
+        _lock!.Value.Dispose();
     }
 
     public void CreateEntities(in Array entitySet)

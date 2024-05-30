@@ -7,13 +7,12 @@ using IEcsPool = Leopotam.EcsLite.IEcsPool;
 
 namespace Benchmark.LeoEcsLite;
 
-public readonly struct LeoEcsLiteContext(in int entityCount = 4096) : IBenchmarkContext
+public sealed class LeoEcsLiteContext(int entityCount = 4096) : IBenchmarkContext
 {
-    private readonly int _maxEntityCount = entityCount;
     private readonly Dictionary<int, EcsFilter>? _filters = new();
     private readonly Dictionary<int, IEcsPool[]>? _pools = new();
     private readonly List<IEcsSystems>? _systems = new();
-    private readonly EcsWorld? _world = new(new EcsWorld.Config { Entities = entityCount });
+    private EcsWorld? _world;
 
     public bool DeletesEntityOnLastComponentDeletion => true;
 
@@ -21,6 +20,7 @@ public readonly struct LeoEcsLiteContext(in int entityCount = 4096) : IBenchmark
 
     public void Setup()
     {
+        _world = new(new EcsWorld.Config { Entities = entityCount });
     }
 
     public void FinishSetup()
@@ -33,27 +33,30 @@ public readonly struct LeoEcsLiteContext(in int entityCount = 4096) : IBenchmark
     {
         foreach (var system in _systems!)
             system.Destroy();
+        
         _systems!.Clear();
         _filters!.Clear();
         _pools!.Clear();
+        _world!.Destroy();
+        
+        _world = null;
     }
 
     public void Dispose()
     {
-        _world!.Destroy();
     }
 
     public void Warmup<T1>(in int poolId) where T1 : struct, IComponent, IEcsComponent
     {
         _pools![poolId] = [_world!.GetPool<T1>()];
-        _filters![poolId] = _world!.Filter<T1>().End(_maxEntityCount);
+        _filters![poolId] = _world!.Filter<T1>().End(entityCount);
     }
 
     public void Warmup<T1, T2>(in int poolId) where T1 : struct, IComponent, IEcsComponent
         where T2 : struct, IComponent, IEcsComponent
     {
         _pools![poolId] = [_world!.GetPool<T1>(), _world!.GetPool<T2>()];
-        _filters![poolId] = _world!.Filter<T1>().Inc<T2>().End(_maxEntityCount);
+        _filters![poolId] = _world!.Filter<T1>().Inc<T2>().End(entityCount);
     }
 
     public void Warmup<T1, T2, T3>(in int poolId) where T1 : struct, IComponent, IEcsComponent
@@ -61,7 +64,7 @@ public readonly struct LeoEcsLiteContext(in int entityCount = 4096) : IBenchmark
         where T3 : struct, IComponent, IEcsComponent
     {
         _pools![poolId] = [_world!.GetPool<T1>(), _world!.GetPool<T2>(), _world!.GetPool<T3>()];
-        _filters![poolId] = _world!.Filter<T1>().Inc<T2>().Inc<T3>().End(_maxEntityCount);
+        _filters![poolId] = _world!.Filter<T1>().Inc<T2>().Inc<T3>().End(entityCount);
     }
 
     public void Warmup<T1, T2, T3, T4>(in int poolId) where T1 : struct, IComponent, IEcsComponent
@@ -70,7 +73,7 @@ public readonly struct LeoEcsLiteContext(in int entityCount = 4096) : IBenchmark
         where T4 : struct, IComponent, IEcsComponent
     {
         _pools![poolId] = [_world!.GetPool<T1>(), _world!.GetPool<T2>(), _world!.GetPool<T3>(), _world!.GetPool<T4>()];
-        _filters![poolId] = _world!.Filter<T1>().Inc<T2>().Inc<T3>().Inc<T4>().End(_maxEntityCount);
+        _filters![poolId] = _world!.Filter<T1>().Inc<T2>().Inc<T3>().Inc<T4>().End(entityCount);
     }
 
     public void Lock()

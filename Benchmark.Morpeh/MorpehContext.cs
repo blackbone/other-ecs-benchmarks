@@ -8,50 +8,46 @@ using Scellecs.Morpeh.Workaround;
 
 namespace Benchmark.Morpeh;
 
-public readonly struct MorpehContext : IBenchmarkContext
+public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
 {
-    private readonly int _entityCount;
-    private readonly Dictionary<int, Filter>? _filters;
-    private readonly Dictionary<int, IStash[]>? _stashes;
-    private readonly SystemsGroup? _systems;
-    private readonly World? _world;
+    private readonly Dictionary<int, Filter>? _filters = new();
+    private readonly Dictionary<int, IStash[]>? _stashes = new();
+    private World? _world;
+    private SystemsGroup? _systems;
 
     public bool DeletesEntityOnLastComponentDeletion => true;
 
     public int EntityCount => _world!.EntityCount();
 
-    public MorpehContext(in int entityCount = 4096)
+    public void Setup()
     {
-        _entityCount = entityCount;
         _world = World.Create();
         _systems = _world.CreateSystemsGroup();
         _world.AddSystemsGroup(0, _systems);
-        _stashes = new Dictionary<int, IStash[]>();
-        _filters = new Dictionary<int, Filter>();
-    }
-
-    public void Setup()
-    {
     }
 
     public void FinishSetup()
     {
-        _world!.WarmupArchetypes(_entityCount);
+        _world!.WarmupArchetypes(entityCount);
     }
 
     public void Cleanup()
     {
+        _filters!.Clear();
+
         foreach (var stash in _stashes!.Values.SelectMany(s => s))
             stash.RemoveAll();
         _stashes!.Clear();
-
+        
         _systems!.Dispose();
-        _filters!.Clear();
+        _systems = null;
+        
+        _world?.Dispose();
+        _world = null;
     }
 
     public void Dispose()
     {
-        _world?.Dispose();
     }
 
     public void Lock()

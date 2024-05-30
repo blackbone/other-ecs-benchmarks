@@ -10,7 +10,7 @@ namespace Benchmark.Benchmarks.Entities.DeleteEntity;
 #if CHECK_CACHE_MISSES
 [HardwareCounters(BenchmarkDotNet.Diagnosers.HardwareCounter.CacheMisses)]
 #endif
-public abstract class DeleteEntityBenchmark<T> : IBenchmark<T> where T : struct, IBenchmarkContext
+public abstract class DeleteEntityBenchmark<T> : IBenchmark<T> where T : IBenchmarkContext
 {
     [Params(Constants.EntityCount)] public int EntityCount { get; set; }
     public T Context { get; set; }
@@ -20,27 +20,27 @@ public abstract class DeleteEntityBenchmark<T> : IBenchmark<T> where T : struct,
     public void Setup()
     {
         Context = BenchmarkContext.Create<T>(EntityCount);
-        Context.Setup();
-        _entitySet = Context.PrepareSet(EntityCount);
-        Context.Lock();
-        Context.CreateEntities(_entitySet);
-        Context.Commit();
-        Context.FinishSetup();
+        Context?.Setup();
+        _entitySet = Context?.PrepareSet(EntityCount);
+        Context?.Lock();
+        Context?.CreateEntities(_entitySet);
+        Context?.Commit();
+        Context?.FinishSetup();
     }
 
     [IterationCleanup]
     public void Cleanup()
     {
-        Context.Cleanup();
-        Context.Dispose();
+        Context?.Cleanup();
+        Context?.Dispose();
         Context = default;
     }
 
     [Benchmark]
     public void Run()
     {
-        Context.Lock();
-        Context.DeleteEntities(_entitySet);
-        Context.Commit();
+        Context?.Lock();
+        Context?.DeleteEntities(_entitySet);
+        Context?.Commit();
     }
 }

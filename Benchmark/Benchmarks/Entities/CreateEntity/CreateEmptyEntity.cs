@@ -10,7 +10,7 @@ namespace Benchmark.Benchmarks.Entities.CreateEntity;
 #if CHECK_CACHE_MISSES
 [HardwareCounters(BenchmarkDotNet.Diagnosers.HardwareCounter.CacheMisses)]
 #endif
-public abstract class CreateEmptyEntity<T> : IBenchmark<T> where T : struct, IBenchmarkContext
+public abstract class CreateEmptyEntity<T> : IBenchmark<T> where T : IBenchmarkContext
 {
     [Params(Constants.EntityCount)] public int EntityCount { get; set; }
     public T Context { get; set; }
@@ -20,25 +20,25 @@ public abstract class CreateEmptyEntity<T> : IBenchmark<T> where T : struct, IBe
     public void Setup()
     {
         Context = BenchmarkContext.Create<T>(EntityCount);
-        Context.Setup();
-        _entitySet = Context.PrepareSet(EntityCount);
-        Context.FinishSetup();
+        Context?.Setup();
+        _entitySet = Context?.PrepareSet(EntityCount);
+        Context?.FinishSetup();
     }
 
     [IterationCleanup]
     public void Cleanup()
     {
-        Context.DeleteEntities(_entitySet);
-        Context.Cleanup();
-        Context.Dispose();
+        Context?.DeleteEntities(_entitySet);
+        Context?.Cleanup();
+        Context?.Dispose();
         Context = default;
     }
 
     [Benchmark]
     public void Run()
     {
-        Context.Lock();
-        Context.CreateEntities(_entitySet);
-        Context.Commit();
+        Context?.Lock();
+        Context?.CreateEntities(_entitySet);
+        Context?.Commit();
     }
 }

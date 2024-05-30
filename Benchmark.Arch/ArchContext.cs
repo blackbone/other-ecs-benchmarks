@@ -1,6 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using Arch.Core;
 using Arch.Core.Extensions;
+using Arch.Core.Extensions.Dangerous;
 using Arch.Core.Utils;
 using Benchmark._Context;
 using DCFApixels.DragonECS;
@@ -12,13 +13,12 @@ using World = Arch.Core.World;
 
 namespace Benchmark.Arch;
 
-public readonly struct ArchContext(in int entityCount = 4096) : IBenchmarkContext
+public sealed class ArchContext(int entityCount = 4096) : IBenchmarkContext
 {
-    private readonly int _entityCount = entityCount;
     private readonly Dictionary<int, ComponentType[]>? _archetypes = new();
     private readonly Dictionary<int, QueryDescription>? _queries = new();
     private readonly List<Action<World>>? _systems = new();
-    private readonly World? _world = World.Create();
+    private World? _world;
 
     public bool DeletesEntityOnLastComponentDeletion => false;
 
@@ -26,20 +26,27 @@ public readonly struct ArchContext(in int entityCount = 4096) : IBenchmarkContex
 
     public void Setup()
     {
+        _world = World.Create();
+        _world!.EnsureCapacity(entityCount);
     }
 
     public void FinishSetup()
     {
+        _world!.EnsureCapacity(entityCount);
     }
 
     public void Cleanup()
     {
-        _world?.Clear();
+        _world!.Clear();
+        _world!.Dispose();
+        _world = null;
+        _systems!.Clear();
+        _archetypes!.Clear();
+        _queries!.Clear();
     }
 
     public void Dispose()
     {
-        _world?.Dispose();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -57,7 +64,7 @@ public readonly struct ArchContext(in int entityCount = 4096) : IBenchmarkContex
     {
         _archetypes![poolId] = [typeof(T1)];
         _queries![poolId] = new QueryDescription().WithAll<T1>();
-        _world!.Reserve(_archetypes[poolId], _entityCount);
+        _world!.Reserve(_archetypes[poolId], entityCount);
     }
 
     public void Warmup<T1, T2>(in int poolId) where T1 : struct, IComponent, IEcsComponent
@@ -65,7 +72,7 @@ public readonly struct ArchContext(in int entityCount = 4096) : IBenchmarkContex
     {
         _archetypes![poolId] = [typeof(T1), typeof(T2)];
         _queries![poolId] = new QueryDescription().WithAll<T1, T2>();
-        _world!.Reserve(_archetypes[poolId], _entityCount);
+        _world!.Reserve(_archetypes[poolId], entityCount);
     }
 
     public void Warmup<T1, T2, T3>(in int poolId) where T1 : struct, IComponent, IEcsComponent
@@ -74,7 +81,7 @@ public readonly struct ArchContext(in int entityCount = 4096) : IBenchmarkContex
     {
         _archetypes![poolId] = [typeof(T1), typeof(T2), typeof(T3)];
         _queries![poolId] = new QueryDescription().WithAll<T1, T2, T3>();
-        _world!.Reserve(_archetypes[poolId], _entityCount);
+        _world!.Reserve(_archetypes[poolId], entityCount);
     }
 
     public void Warmup<T1, T2, T3, T4>(in int poolId) where T1 : struct, IComponent, IEcsComponent
@@ -84,7 +91,7 @@ public readonly struct ArchContext(in int entityCount = 4096) : IBenchmarkContex
     {
         _archetypes![poolId] = [typeof(T1), typeof(T2), typeof(T3), typeof(T4)];
         _queries![poolId] = new QueryDescription().WithAll<T1, T2, T3, T4>();
-        _world!.Reserve(_archetypes[poolId], _entityCount);
+        _world!.Reserve(_archetypes[poolId], entityCount);
     }
 
     public void CreateEntities(in Array entitySet)
@@ -98,24 +105,16 @@ public readonly struct ArchContext(in int entityCount = 4096) : IBenchmarkContex
         where T1 : struct, IComponent, IEcsComponent
     {
         var entities = (Entity[])entitySet;
-        var archetype = _archetypes![poolId];
         for (var i = 0; i < entities.Length; i++)
-        {
-            entities[i] = _world!.Create(archetype);
-            entities[i].Add(c1);
-        }
+            entities[i] = _world!.Create(c1);
     }
 
     public void CreateEntities<T1, T2>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default)
         where T1 : struct, IComponent, IEcsComponent where T2 : struct, IComponent, IEcsComponent
     {
         var entities = (Entity[])entitySet;
-        var archetype = _archetypes![poolId];
         for (var i = 0; i < entities.Length; i++)
-        {
-            entities[i] = _world!.Create(archetype);
-            entities[i].Add(c1, c2);
-        }
+            entities[i] = _world!.Create(c1, c2);
     }
 
     public void CreateEntities<T1, T2, T3>(in Array entitySet, in int poolId = -1, in T1 c1 = default,
@@ -124,12 +123,8 @@ public readonly struct ArchContext(in int entityCount = 4096) : IBenchmarkContex
         where T3 : struct, IComponent, IEcsComponent
     {
         var entities = (Entity[])entitySet;
-        var archetype = _archetypes![poolId];
         for (var i = 0; i < entities.Length; i++)
-        {
-            entities[i] = _world!.Create(archetype);
-            entities[i].Add(c1, c2, c3);
-        }
+            entities[i] = _world!.Create(c1, c2, c3);
     }
 
     public void CreateEntities<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1, in T1 c1 = default,
@@ -139,13 +134,8 @@ public readonly struct ArchContext(in int entityCount = 4096) : IBenchmarkContex
         where T4 : struct, IComponent, IEcsComponent
     {
         var entities = (Entity[])entitySet;
-
-        var archetype = _archetypes![poolId];
         for (var i = 0; i < entities.Length; i++)
-        {
-            entities[i] = _world!.Create(archetype);
-            entities[i].Add(c1, c2, c3, c4);
-        }
+            entities[i] = _world!.Create(c1, c2, c3, c4);
     }
 
     public void DeleteEntities(in Array entitySet)
@@ -280,7 +270,7 @@ public readonly struct ArchContext(in int entityCount = 4096) : IBenchmarkContex
         if (entity == null) return false;
 
         var e = (Entity)entity;
-        c1 = e.Get<T1>();
+        c1 = _world!.Get<T1>(e);
         return true;
     }
 

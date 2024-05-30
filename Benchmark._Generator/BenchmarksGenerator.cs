@@ -16,8 +16,23 @@ public class BenchmarksGenerator : ISourceGenerator
 
     public void Execute(GeneratorExecutionContext context)
     {
-        var compilation = context.Compilation;
         var log = new StringBuilder();
+        try
+        {
+            ExecuteInner(context, log);
+        }
+        catch (Exception e)
+        {
+            log.AppendLine();
+            log.AppendLine(e.ToString());
+        }
+
+        context.AddSource("Log.g.cs", $"/*\n{log}*/");
+    }
+
+    public void ExecuteInner(GeneratorExecutionContext context, StringBuilder log)
+    {
+        var compilation = context.Compilation;
 
         // get base context type
         var contextInterfaceType = compilation.GetTypeByMetadataName("Benchmark._Context.IBenchmarkContext");
@@ -114,9 +129,6 @@ public class BenchmarksGenerator : ISourceGenerator
 
             context.AddSource("BenchMap.g.cs", SourceText.From(source, Encoding.UTF8));
         }
-
-
-        context.AddSource("Log.g.cs", $"/*\n{log}*/");
     }
 
     private static MemberDeclarationSyntax[] GenerateBenchmarkMapping(
@@ -128,14 +140,17 @@ public class BenchmarksGenerator : ISourceGenerator
         foreach (var (bench, impls) in byBenchmark.OrderBy(kv => kv.Key))
             sb.AppendLine($"{{typeof({bench}<>), [{string.Join(", ", impls.Select(i => $"typeof({i})"))}]}},");
         sb.AppendLine("};");
-        members[0] = ParseMemberDeclaration(sb.ToString()).NormalizeWhitespace();
+        var member = ParseMemberDeclaration(sb.ToString());
+        if (member != null) members[0] = member.NormalizeWhitespace();
 
         sb.Clear();
         sb.AppendLine("public static Dictionary<Type, Type[]> Contexts = new (){");
-        foreach (var (ctx, impls) in byContext.OrderBy(kv => kv.Key))
+        foreach (var (ctx, impls) in byContext?.OrderBy(kv => kv.Key).ToArray() ?? [])
             sb.AppendLine($"{{typeof({ctx}), [{string.Join(", ", impls.Select(i => $"typeof({i})"))}]}},");
         sb.AppendLine("};");
-        members[1] = ParseMemberDeclaration(sb.ToString()).NormalizeWhitespace();
+
+        member = ParseMemberDeclaration(sb.ToString());
+        if (member != null) members[1] = member.NormalizeWhitespace();
 
         return members;
     }
