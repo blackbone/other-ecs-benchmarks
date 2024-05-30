@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <LangVersion>12</LangVersion>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Benchmark._Context\Benchmark._Context.csproj" />
+      <ProjectReference Include="..\submodules\DefaultEcs\source\DefaultEcs\DefaultEcs.csproj" />
+      <ProjectReference Include="..\submodules\DefaultEcs.Analyzer\source\DefaultEcs.Analyzer\DefaultEcs.Analyzer.csproj"  OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
+    </ItemGroup>
+
+</Project>

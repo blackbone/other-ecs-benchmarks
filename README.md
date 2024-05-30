@@ -44,6 +44,7 @@ General flow of any benchmark execution is divided into 3 steps:
 | [DragonECS](https://github.com/DCFApixels/DragonECS) | [0.8.36](https://github.com/DCFApixels/DragonECS/commit/29f656f394984e738c7fc70bacca050ffea746d8) | ✅           | ❌        |
 |            [LeoECS](https://github.com/Leopotam/ecs) | [2023.6.22](https://github.com/Leopotam/ecs/releases/tag/2023.6.22)                               | ✅           | ❌        |
 |    [LeoECSLite](https://github.com/Leopotam/ecslite) | [2024.5.22](https://github.com/Leopotam/ecslite/releases/tag/2024.5.22)                           | ✅           | ❌        |
+|   [DefaultECS](https://github.com/Doraku/DefaultEcs) | [0.17.2](https://github.com/Doraku/DefaultEcs/releases/tag/0.17.2)                       | ✅           | ❌        |
 
 # Implemented benchmarks
 
