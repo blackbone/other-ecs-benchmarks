@@ -8,14 +8,20 @@ public class TestOverhead
     [TestCaseSource(nameof(GetBenchmarks))]
     public void _<T>(T benchmark) where T : IBenchmark, new()
     {
+        Console.WriteLine("Test started");
+        
         Assert.NotNull(benchmark);
 
+        Console.WriteLine("Assert pass");
         // because of repetative logic we need to check bench will clear and reuse correctly
         var i = 3;
         while (i-- > 0)
         {
+            Console.WriteLine($"Iteration {i} start");
             benchmark.Setup();
+            Console.WriteLine("Setup pass");
             benchmark.Cleanup();
+            Console.WriteLine("Cleanup pass");
         }
     }
 

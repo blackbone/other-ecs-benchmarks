@@ -6,7 +6,9 @@ using EcsWorld = Leopotam.Ecs.EcsWorld;
 
 namespace Benchmark.LeoEcs;
 
+#pragma warning disable CS9113 // Parameter is unread.
 public sealed class LeoEcsContext(int entityCount = 4096) : IBenchmarkContext
+#pragma warning restore CS9113 // Parameter is unread.
 {
     private readonly Dictionary<int, EcsFilter>? _filters = new();
     private readonly List<EcsSystems>? _systems = new();

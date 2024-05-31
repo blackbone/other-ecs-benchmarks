@@ -32,7 +32,6 @@ public sealed class ArchContext(int entityCount = 4096) : IBenchmarkContext
 
     public void FinishSetup()
     {
-        _world!.EnsureCapacity(entityCount);
     }
 
     public void Cleanup()
@@ -149,25 +148,17 @@ public sealed class ArchContext(int entityCount = 4096) : IBenchmarkContext
         where T1 : struct, IComponent, IEcsComponent
     {
         var entities = (Entity[])entitySet;
-        var archetype = _archetypes![poolId];
 
         for (var i = 0; i < entities.Length; i++)
-        {
-            _world!.AddRange(entities[i], archetype);
-            _world!.Set(entities[i], c1);
-        }
+            _world!.Add(entities[i], c1);
     }
 
     public void AddComponent<T1, T2>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default)
         where T1 : struct, IComponent, IEcsComponent where T2 : struct, IComponent, IEcsComponent
     {
         var entities = (Entity[])entitySet;
-        var archetype = _archetypes![poolId];
         for (var i = 0; i < entities.Length; i++)
-        {
-            _world!.AddRange(entities[i], archetype);
-            _world!.Set(entities[i], c1, c2);
-        }
+            _world!.Add(entities[i], c1, c2);
     }
 
     public void AddComponent<T1, T2, T3>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default,
@@ -176,12 +167,8 @@ public sealed class ArchContext(int entityCount = 4096) : IBenchmarkContext
         where T3 : struct, IComponent, IEcsComponent
     {
         var entities = (Entity[])entitySet;
-        var archetype = _archetypes![poolId];
         for (var i = 0; i < entities.Length; i++)
-        {
-            _world!.AddRange(entities[i], archetype);
-            _world!.Set(entities[i], c1, c2, c3);
-        }
+            _world!.Add(entities[i], c1, c2, c3);
     }
 
     public void AddComponent<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1, in T1 c1 = default,
@@ -191,12 +178,8 @@ public sealed class ArchContext(int entityCount = 4096) : IBenchmarkContext
         where T4 : struct, IComponent, IEcsComponent
     {
         var entities = (Entity[])entitySet;
-        var archetype = _archetypes![poolId];
         for (var i = 0; i < entities.Length; i++)
-        {
-            _world!.AddRange(entities[i], archetype);
-            _world!.Set(entities[i], c1, c2, c3, c4);
-        }
+            _world!.Add(entities[i], c1, c2, c3, c4);
     }
 
     public void RemoveComponent<T1>(in Array entitySet, in int poolId = -1) where T1 : struct, IComponent, IEcsComponent
@@ -204,7 +187,7 @@ public sealed class ArchContext(int entityCount = 4096) : IBenchmarkContext
         var entities = (Entity[])entitySet;
         var archetype = _archetypes![poolId];
         for (var i = 0; i < entities.Length; i++)
-            _world!.RemoveRange(entities[i], archetype);
+            if (entities[i].IsAlive()) _world!.RemoveRange(entities[i], archetype);
     }
 
     public void RemoveComponent<T1, T2>(in Array entitySet, in int poolId = -1)
@@ -213,7 +196,7 @@ public sealed class ArchContext(int entityCount = 4096) : IBenchmarkContext
         var entities = (Entity[])entitySet;
         var archetype = _archetypes![poolId];
         for (var i = 0; i < entities.Length; i++)
-            _world!.RemoveRange(entities[i], archetype);
+            if (entities[i].IsAlive()) _world!.RemoveRange(entities[i], archetype);
     }
 
     public void RemoveComponent<T1, T2, T3>(in Array entitySet, in int poolId = -1)
@@ -224,7 +207,7 @@ public sealed class ArchContext(int entityCount = 4096) : IBenchmarkContext
         var entities = (Entity[])entitySet;
         var archetype = _archetypes![poolId];
         for (var i = 0; i < entities.Length; i++)
-            _world!.RemoveRange(entities[i], archetype);
+            if (entities[i].IsAlive()) _world!.RemoveRange(entities[i], archetype);
     }
 
     public void RemoveComponent<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1)
@@ -236,7 +219,7 @@ public sealed class ArchContext(int entityCount = 4096) : IBenchmarkContext
         var entities = (Entity[])entitySet;
         var archetype = _archetypes![poolId];
         for (var i = 0; i < entities.Length; i++)
-            _world!.RemoveRange(entities[i], archetype);
+            if (entities[i].IsAlive()) _world!.RemoveRange(entities[i], archetype);
     }
 
     public int CountWith<T1>(in int poolId) where T1 : struct, IComponent, IEcsComponent

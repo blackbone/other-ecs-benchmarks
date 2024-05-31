@@ -7,7 +7,9 @@ using World = DefaultEcs.World;
 
 namespace Benchmark.DefaultECS;
 
+#pragma warning disable CS9113 // Parameter is unread.
 public sealed class DefaultECSContext(int entityCount = 4096) : IBenchmarkContext
+#pragma warning restore CS9113 // Parameter is unread.
 {
     private readonly List<ISystem<float>>? _systems = new();
     private World? _world;
@@ -22,6 +24,8 @@ public sealed class DefaultECSContext(int entityCount = 4096) : IBenchmarkContex
 
     public void FinishSetup()
     {
+        _world!.TrimExcess();
+        _world!.Optimize();
     }
 
     public void Cleanup()
@@ -51,8 +55,6 @@ public sealed class DefaultECSContext(int entityCount = 4096) : IBenchmarkContex
 
     public void Commit()
     {
-        _world!.TrimExcess();
-        _world!.Optimize();
     }
 
     public void DeleteEntities(in Array entitySet)

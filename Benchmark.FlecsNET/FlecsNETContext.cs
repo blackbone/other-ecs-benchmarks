@@ -7,7 +7,9 @@ using World = Flecs.NET.Core.World;
 
 namespace Benchmark.FlecsNET;
 
+#pragma warning disable CS9113 // Parameter is unread.
 public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
+#pragma warning restore CS9113 // Parameter is unread.
 {
     private readonly Dictionary<int, Query>? _queries = new();
     private readonly List<Action<float>>? _systems = new();
