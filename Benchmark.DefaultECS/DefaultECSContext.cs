@@ -25,7 +25,6 @@ public sealed class DefaultECSContext(int entityCount = 4096) : IBenchmarkContex
     public void FinishSetup()
     {
         _world!.TrimExcess();
-        _world!.Optimize();
     }
 
     public void Cleanup()
