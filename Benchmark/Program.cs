@@ -89,7 +89,8 @@ foreach (var baseBenchmarkType in baseBenchmarkTypes)
     var summaries = benchmarkSwitcher.RunAll(configuration.AddJob(shortJob)).ToArray();
 #else
     var summaries =
- benchmarkSwitcher.RunAll(configuration.AddJob(perInvocationSetup ? clearEachInvocationJob : precisionJob)).ToArray();
+        benchmarkSwitcher.RunAll(configuration.AddJob(perInvocationSetup ? clearEachInvocationJob : precisionJob))
+            .ToArray();
 #endif
 
     // post process benchmark reports

@@ -43,7 +43,7 @@ public abstract class DeleteEntityBenchmark<T> : IBenchmark<T> where T : IBenchm
         Context?.Lock();
         Context?.DeleteEntities(_entitySet);
         Context?.Commit();
-        
+
         // TIP: this needed to prevent deleting of deleted entities because some framework crashes on it
         _entitySet = Context.PrepareSet(0);
     }

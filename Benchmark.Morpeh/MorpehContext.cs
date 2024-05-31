@@ -12,8 +12,8 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
 {
     private readonly Dictionary<int, Filter>? _filters = new();
     private readonly Dictionary<int, IStash[]>? _stashes = new();
-    private World? _world;
     private SystemsGroup? _systems;
+    private World? _world;
 
     public bool DeletesEntityOnLastComponentDeletion => true;
 
@@ -38,10 +38,10 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
         foreach (var stash in _stashes!.Values.SelectMany(s => s))
             stash.RemoveAll();
         _stashes!.Clear();
-        
+
         _systems!.Dispose();
         _systems = null;
-        
+
         _world?.Dispose();
         _world = null;
     }
@@ -432,5 +432,8 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
         return entitySet;
     }
 
-    public Array PrepareSet(in int count) => count > 0 ? new Entity[count] : [];
+    public Array PrepareSet(in int count)
+    {
+        return count > 0 ? new Entity[count] : [];
+    }
 }

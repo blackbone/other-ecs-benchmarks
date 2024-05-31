@@ -9,7 +9,7 @@ public class TestOverhead
     public void _<T>(T benchmark) where T : IBenchmark, new()
     {
         Console.WriteLine("Test started");
-        
+
         Assert.NotNull(benchmark);
 
         Console.WriteLine("Assert pass");

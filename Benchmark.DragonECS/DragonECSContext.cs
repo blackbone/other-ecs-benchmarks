@@ -19,7 +19,7 @@ public sealed class DragonECSContext(int entityCount = 4096) : IBenchmarkContext
 
     public void Setup()
     {
-        _world = new(new EcsWorldConfig(
+        _world = new EcsWorld(new EcsWorldConfig(
             entityCount,
             poolComponentsCapacity: entityCount));
     }
@@ -43,9 +43,9 @@ public sealed class DragonECSContext(int entityCount = 4096) : IBenchmarkContext
 
         _pipeline!.Destroy();
         _pipeline = null;
-        
+
         _systems!.Clear();
-        
+
         _world!.Destroy();
         _world = null;
     }
@@ -433,5 +433,8 @@ public sealed class DragonECSContext(int entityCount = 4096) : IBenchmarkContext
         return entitySet;
     }
 
-    public Array PrepareSet(in int count) => count > 0 ? new int[count] : [];
+    public Array PrepareSet(in int count)
+    {
+        return count > 0 ? new int[count] : [];
+    }
 }

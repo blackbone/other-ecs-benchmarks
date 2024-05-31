@@ -125,7 +125,8 @@ public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
         var entities = (Entity[])entitySet;
         // TODO perform use overload which utilizes ReadOnlySpan<Identity>
         for (var i = 0; i < entities.Length; i++)
-            if (_world!.IsAlive(entities[i]))_world!.Despawn(entities[i].Id);
+            if (_world!.IsAlive(entities[i]))
+                _world!.Despawn(entities[i].Id);
     }
 
     public void AddComponent<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default)
@@ -331,5 +332,8 @@ public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
         return entitySet;
     }
 
-    public Array PrepareSet(in int count) => count > 0 ? new Entity[count] : [];
+    public Array PrepareSet(in int count)
+    {
+        return count > 0 ? new Entity[count] : [];
+    }
 }

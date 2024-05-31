@@ -144,7 +144,8 @@ public sealed class LeoEcsContext(int entityCount = 4096) : IBenchmarkContext
     {
         var entities = (EcsEntity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
-            if (entities[i].IsAlive()) entities[i].Destroy();
+            if (entities[i].IsAlive())
+                entities[i].Destroy();
     }
 
     public void AddComponent<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default)
@@ -200,7 +201,8 @@ public sealed class LeoEcsContext(int entityCount = 4096) : IBenchmarkContext
     {
         var entities = (EcsEntity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
-            if (entities[i].IsAlive() && entities[i].Has<T1>()) entities[i].Del<T1>();
+            if (entities[i].IsAlive() && entities[i].Has<T1>())
+                entities[i].Del<T1>();
     }
 
     public void RemoveComponent<T1, T2>(in Array entitySet, in int poolId = -1)
@@ -361,5 +363,8 @@ public sealed class LeoEcsContext(int entityCount = 4096) : IBenchmarkContext
         return entitySet;
     }
 
-    public Array PrepareSet(in int count) => count > 0 ? new EcsEntity[count] : [];
+    public Array PrepareSet(in int count)
+    {
+        return count > 0 ? new EcsEntity[count] : [];
+    }
 }

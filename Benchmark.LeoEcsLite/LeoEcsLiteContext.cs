@@ -20,7 +20,7 @@ public sealed class LeoEcsLiteContext(int entityCount = 4096) : IBenchmarkContex
 
     public void Setup()
     {
-        _world = new(new EcsWorld.Config { Entities = entityCount });
+        _world = new EcsWorld(new EcsWorld.Config { Entities = entityCount });
     }
 
     public void FinishSetup()
@@ -33,12 +33,12 @@ public sealed class LeoEcsLiteContext(int entityCount = 4096) : IBenchmarkContex
     {
         foreach (var system in _systems!)
             system.Destroy();
-        
+
         _systems!.Clear();
         _filters!.Clear();
         _pools!.Clear();
         _world!.Destroy();
-        
+
         _world = null;
     }
 
@@ -425,5 +425,8 @@ public sealed class LeoEcsLiteContext(int entityCount = 4096) : IBenchmarkContex
         return entitySet;
     }
 
-    public Array PrepareSet(in int count) => count > 0 ? new int[count] : [];
+    public Array PrepareSet(in int count)
+    {
+        return count > 0 ? new int[count] : [];
+    }
 }

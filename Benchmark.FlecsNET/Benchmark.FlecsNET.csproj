@@ -9,11 +9,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Flecs.NET.Release" Version="3.2.11" />
+        <PackageReference Include="Flecs.NET.Release" Version="3.2.11"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Benchmark._Context\Benchmark._Context.csproj" />
+        <ProjectReference Include="..\Benchmark._Context\Benchmark._Context.csproj"/>
     </ItemGroup>
 
 </Project>

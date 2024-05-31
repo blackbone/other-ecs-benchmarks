@@ -28,8 +28,8 @@
 
     <!-- SUPPORT REFERENCES -->
     <ItemGroup>
-        <ProjectReference Include="..\Benchmark.DefaultECS\Benchmark.DefaultECS.csproj" />
-        <ProjectReference Include="..\Benchmark.FlecsNET\Benchmark.FlecsNET.csproj" />
+        <ProjectReference Include="..\Benchmark.DefaultECS\Benchmark.DefaultECS.csproj"/>
+        <ProjectReference Include="..\Benchmark.FlecsNET\Benchmark.FlecsNET.csproj"/>
         <ProjectReference Include="..\Benchmark.LeoEcsLite\Benchmark.LeoEcsLite.csproj"/>
         <ProjectReference Include="..\Benchmark._Context\Benchmark._Context.csproj"/>
         <ProjectReference Include="..\Benchmark._Generator\Benchmark._Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
