@@ -24,13 +24,11 @@ public sealed class DefaultECSContext(int entityCount = 4096) : IBenchmarkContex
 
     public void FinishSetup()
     {
-        _world!.TrimExcess();
     }
 
     public void Cleanup()
     {
         _systems!.Clear();
-
         _world!.Dispose();
         _world = null;
     }
@@ -68,6 +66,7 @@ public sealed class DefaultECSContext(int entityCount = 4096) : IBenchmarkContex
 
     public void Commit()
     {
+        // no op
     }
 
     public void DeleteEntities(in Array entitySet)

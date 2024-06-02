@@ -47,8 +47,7 @@ public abstract class SystemWith3Components<T> : IBenchmark<T> where T : IBenchm
                         break;
                 }
 
-            Context?.CreateEntities(set, 3, default(Component1), new Component2 { Value = 1 },
-                new Component3 { Value = 1 });
+            Context?.CreateEntities(set, 3, default(Component1), new Component2 { Value = 1 }, new Component3 { Value = 1 });
         }
 
         Context?.Commit();

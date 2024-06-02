@@ -22,21 +22,21 @@ public abstract class SystemWith3ComponentsMultipleComposition<T> : IBenchmark<T
     {
         Context = BenchmarkContext.Create<T>(EntityCount);
         Context!.Setup();
-        Context?.Warmup<Component1>(0);
-        Context?.Warmup<Component2>(1);
-        Context?.Warmup<Component3>(2);
-        Context?.Warmup<Component1, Component2, Component3>(3);
-        Context?.Warmup<Padding1>(4);
-        Context?.Warmup<Padding2>(5);
-        Context?.Warmup<Padding3>(6);
-        Context?.Warmup<Padding4>(7);
+        Context!.Warmup<Component1>(0);
+        Context!.Warmup<Component2>(1);
+        Context!.Warmup<Component3>(2);
+        Context!.Warmup<Component1, Component2, Component3>(3);
+        Context!.Warmup<Padding1>(4);
+        Context!.Warmup<Padding2>(5);
+        Context!.Warmup<Padding3>(6);
+        Context!.Warmup<Padding4>(7);
         var set = Context?.PrepareSet(1);
         Context?.Lock();
         // set up entities
         for (var i = 0; i < EntityCount; ++i)
         {
             for (var j = 0; j < Padding; ++j)
-                switch (j % 2)
+                switch (j % 3)
                 {
                     case 0:
                         Context?.CreateEntities<Component1>(set, 0);
@@ -49,8 +49,7 @@ public abstract class SystemWith3ComponentsMultipleComposition<T> : IBenchmark<T
                         break;
                 }
 
-            Context?.CreateEntities(set, 3, default(Component1), new Component2 { Value = 1 },
-                new Component3 { Value = 1 });
+            Context?.CreateEntities(set, 3, default(Component1), new Component2 { Value = 1 }, new Component3 { Value = 1 });
 
             switch (i % 4)
             {

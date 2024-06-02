@@ -13,7 +13,6 @@ namespace Benchmark.Benchmarks.Entities.AddComponent;
 public abstract class Add1Component<T> : IBenchmark<T> where T : IBenchmarkContext
 {
     [Params(Constants.EntityCount)] public int EntityCount { get; set; }
-    [Params(true, false)] public bool RandomOrder { get; set; }
 
     public T Context { get; set; }
     private Array _entitySet;
@@ -25,7 +24,6 @@ public abstract class Add1Component<T> : IBenchmark<T> where T : IBenchmarkConte
         Context?.Setup();
         _entitySet = Context?.PrepareSet(EntityCount);
         Context?.CreateEntities(_entitySet);
-        if (RandomOrder) _entitySet = Context?.Shuffle(_entitySet);
         Context?.Warmup<Component1>(0);
         Context?.FinishSetup();
     }

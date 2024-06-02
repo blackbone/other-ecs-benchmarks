@@ -35,25 +35,23 @@ public abstract class SystemWith1ComponentMultipleComposition<T> : IBenchmark<T>
         for (var i = 0; i < EntityCount; ++i)
         {
             for (var j = 0; j < Padding; ++j)
-                Context?.CreateEntities(set);
-
+                switch (i % 4)
+                {
+                    case 0:
+                        Context?.CreateEntities(set, 1, default(Padding1));
+                        break;
+                    case 2:
+                        Context?.CreateEntities(set, 2, default(Padding2));
+                        break;
+                    case 3:
+                        Context?.CreateEntities(set, 3, default(Padding3));
+                        break;
+                    case 4:
+                        Context?.CreateEntities(set, 4, default(Padding4));
+                        break;
+                }
+            
             Context?.CreateEntities(set, 0, new Component1 { Value = 0 });
-
-            switch (i % 4)
-            {
-                case 0:
-                    Context?.AddComponent(set, 1, default(Padding1));
-                    break;
-                case 2:
-                    Context?.AddComponent(set, 2, default(Padding2));
-                    break;
-                case 3:
-                    Context?.AddComponent(set, 3, default(Padding3));
-                    break;
-                case 4:
-                    Context?.AddComponent(set, 4, default(Padding4));
-                    break;
-            }
         }
 
         Context?.Commit();

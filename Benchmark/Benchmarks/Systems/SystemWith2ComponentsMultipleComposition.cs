@@ -48,7 +48,7 @@ public abstract class SystemWith2ComponentsMultipleComposition<T> : IBenchmark<T
                 }
 
             Context?.CreateEntities(set, 2, default(Component1), new Component2 { Value = 1 });
-
+            
             switch (i % 4)
             {
                 case 0:

@@ -12,7 +12,6 @@ namespace Benchmark.Benchmarks.Entities.RemoveComponent;
 #endif
 public abstract class Remove2Components<T> : IBenchmark<T> where T : class, IBenchmarkContext
 {
-    [Params(true, false)] public bool Random { get; set; }
     [Params(Constants.EntityCount)] public int EntityCount { get; set; }
     public T Context { get; set; }
     private Array _entitySet;
@@ -26,7 +25,6 @@ public abstract class Remove2Components<T> : IBenchmark<T> where T : class, IBen
         Context?.Warmup<Component1, Component2>(0);
         _entitySet = Context?.PrepareSet(EntityCount);
         Context?.CreateEntities<Component1, Component2>(_entitySet, 0);
-        if (Random) _entitySet = Context?.Shuffle(_entitySet);
         Context?.FinishSetup();
     }
 

@@ -15,8 +15,8 @@ public static class Constants
     public const int SystemEntityCount = SmallEntityCount;
     public const int IterationCount = SmallIterationCount;
 #else
-    public const int EntityCount = MidEntityCount;
-    public const int SystemEntityCount = MidEntityCount;
+    public const int EntityCount = LargeEntityCount;
+    public const int SystemEntityCount = LargeEntityCount;
     public const int IterationCount = LargeIterationCount;
 #endif
 }

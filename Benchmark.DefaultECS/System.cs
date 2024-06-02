@@ -3,7 +3,7 @@ using DefaultEcs.System;
 
 namespace Benchmark.DefaultECS;
 
-public sealed partial class System<T1> : AEntitySetSystem<float>
+public sealed partial class System<T1> : AComponentSystem<float, T1>
 {
     private readonly unsafe delegate*<ref T1, void> _method;
 
@@ -11,11 +11,13 @@ public sealed partial class System<T1> : AEntitySetSystem<float>
     {
         _method = method;
     }
-
-    [Update]
-    private unsafe void Update(ref T1 component)
+    
+    protected override unsafe void Update(float state, Span<T1> components)
     {
-        _method(ref component);
+        foreach (ref T1 component in components)
+        {
+            _method(ref component);
+        }
     }
 }
 
