@@ -35,4 +35,4 @@
 	
 	
 	
-	<s:String x:Key="/Default/Monitoring/StartMode/@EntryValue">OnDebug</s:String></wpf:ResourceDictionary>
+	</wpf:ResourceDictionary>
