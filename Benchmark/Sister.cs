@@ -57,7 +57,8 @@ public static class Sister
         typeof(SystemWith3ComponentsMultipleComposition_Sister)
     ];
     
-    public static void InjectBenchmarks()
+    public static void InjectBenchmarks() { /* no op */}
+    static Sister()
     {
         // inject ctx benches
         BenchMap.Contexts.Add(typeof(SisterContext), SisterBenchmarks);

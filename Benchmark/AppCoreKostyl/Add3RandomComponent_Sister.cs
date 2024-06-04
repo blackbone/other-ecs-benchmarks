@@ -5,7 +5,7 @@ using BenchmarkDotNet.Attributes;
 
 namespace Benchmark.AppCoreKostyl
 {
-    [ArtifactsPath(".benchmark_results/Add3ComponentsRandomOrder")]
+    [ArtifactsPath(".benchmark_results/Add3RandomComponents")]
     [BenchmarkCategory(Categories.PerInvocationSetup)]
     [MemoryDiagnoser]
     public class Add3RandomComponents_Sister : IBenchmark
