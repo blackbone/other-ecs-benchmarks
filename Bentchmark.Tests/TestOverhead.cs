@@ -19,6 +19,8 @@ public class TestOverhead
         }
     }
 
+    static TestOverhead() => Sister.InjectBenchmarks();
+    
     public static IEnumerable<IBenchmark?> GetBenchmarks()
     {
         foreach (var benchmarkType in BenchMap.Runs.Values.SelectMany(v => v))

@@ -20,6 +20,8 @@ public class TestBenchmarks
         }
     }
 
+    static TestBenchmarks() => Sister.InjectBenchmarks();
+    
     public static IEnumerable<IBenchmark?> GetBenchmarks()
     {
         foreach (var benchmarkType in BenchMap.Runs.Values.SelectMany(v => v))

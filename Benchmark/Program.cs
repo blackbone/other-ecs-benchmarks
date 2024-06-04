@@ -7,6 +7,9 @@ using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using Benchmark;
+using Benchmark.AppCoreKostyl;
+using Benchmark.Benchmarks.Entities.AddComponent;
+using Benchmark.KremAppCore;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Columns;
 using BenchmarkDotNet.Configs;
@@ -14,6 +17,9 @@ using BenchmarkDotNet.Engines;
 using BenchmarkDotNet.Exporters;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
+
+// SETUP APP CORE SISTER CONTEXT
+Sister.InjectBenchmarks();
 
 // clear previous results
 if (Directory.Exists(".benchmark_results"))
