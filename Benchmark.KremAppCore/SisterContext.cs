@@ -1,8 +1,10 @@
-﻿using Krem.AppCore.Runtime.Implementation;
+﻿using Krem.AppCore.Runtime.Core.Interfaces;
+using Krem.AppCore.Runtime.Implementation;
 using Krem.AppCore.Runtime.Implementation.Builders;
 using Krem.AppCore.Runtime.Implementation.Contracts;
 using Krem.AppCore.Runtime.Implementation.Executors;
 using Krem.AppCore.Runtime.Implementation.Providers;
+using Krem.AppCore.Runtime.Implementation.States.AppStates;
 
 namespace Benchmark.KremAppCore;
 
@@ -22,12 +24,27 @@ public class SisterContext(int entityCount = 4096)
             AppCore.Construct();
         
         _world = new World(AppCore.App!.WorldContainer);
-        _entityProvider = _world.AddProvider<EntityProviderContract, EntityProvider>();
+        _world.AddProvider<EventBusProviderContract, FastEventBusProvider>();
         _executorProvider = _world.AddProvider<ExecutorProviderContract, ExecutorProvider>();
+        _entityProvider = _world.AddProvider<EntityProviderContract, EntityProvider>();
     }
 
     public void FinishSetup()
     {
+        AppCore.App.AppStateMachine
+            // Производим инжект
+            .AddState(new InjectServicesToServicesState())
+            .AddState(new InjectServicesToWorldsState())
+            .AddState(new InjectProvidersToWorldsState())
+            .AddState(new InjectServicesToProvidersState())
+            .AddState(new InjectProvidersToProvidersState())
+            .AddState(new InjectServicesToExecutorsState())
+            .AddState(new InjectProvidersToExecutorsState())
+            .AddState(new InjectFiltersToExecutorsState())
+            // Инициализируем
+            .AddState(new InitializeServiceContainerState())
+            .AddState(new InitializeWorldContainerState());
+
         AppCore.Initialize();
     }
 
@@ -282,21 +299,38 @@ public class SisterContext(int entityCount = 4096)
 
     public void Tick(float delta)
     {
-        for (int i = 0; i < _executors!.Count; i++)
-            _executors[i].Execute();
+        // for (int i = 0; i < _executors!.Count; i++)
+        //     _executors[i].Execute();
     }
 
     public unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId) where T1 : Component
-        => _executors!.Add(_executorProvider!.Add(new System<T1>(method)));
+    {
+        var s = _executorProvider!.Add<System<T1>>() as System<T1>;
+        s!.Method = method;
+        _executors!.Add(s);
+    }
 
     public unsafe void AddSystem<T1, T2>(delegate*<ref T1, ref T2, void> method, int poolId) where T1 : Component where T2 : Component
-        => _executors!.Add(_executorProvider!.Add(new System<T1, T2>(method)));
+    {
+        var s = _executorProvider!.Add<System<T1, T2>>() as System<T1, T2>;
+        s!.Method = method;
+        _executors!.Add(s);
+    }
 
     public unsafe void AddSystem<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> method, int poolId) where T1 : Component where T2 : Component where T3 : Component
-        => _executors!.Add(_executorProvider!.Add(new System<T1, T2, T3>(method)));
+    {
+        var s = _executorProvider!.Add<System<T1, T2, T3>>() as System<T1, T2, T3>;
+        s!.Method = method;
+        _executors!.Add(s);
+    }
 
     public unsafe void AddSystem<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> method, int poolId) where T1 : Component where T2 : Component where T3 : Component where T4 : Component
-        => _executors!.Add(_executorProvider!.Add(new System<T1, T2, T3, T4>(method)));
+    {
+        var s = _executorProvider!.Add<System<T1, T2, T3, T4>>() as System<T1, T2, T3, T4>;
+        s!.Method = method;
+        _executors!.Add(s);
+    }
+
     public void Dispose()
     {
         _world!.Dispose();
@@ -305,47 +339,56 @@ public class SisterContext(int entityCount = 4096)
         _world = null;
     }
 
-    public unsafe class System<T1>(delegate*<ref T1, void> method) : Executor
+    public unsafe class System<T1> : Executor
         where T1 : Component
     {
+        public delegate*<ref T1, void> Method;
         private readonly Filter _filter = FilterBuilder.Include<T1>().Create();
 
+        public System(ExecutorProvider container) : base(container) { }
+        
         protected override bool ExecutionBody()
         {
             _filter.Entities.ForEach(e =>
             {
                 var c1 = e.Get<T1>();
-                method(ref c1);
+                Method(ref c1);
             });
             return true;
         }
     }
     
-    public unsafe class System<T1, T2>(delegate*<ref T1, ref T2, void> method) : Executor
+    public unsafe class System<T1, T2> : SistemExecutor
         where T1 : Component
         where T2 : Component
     {
         private readonly Filter _filter = FilterBuilder.Include<T1>().Include<T2>().Create();
+        public delegate*<ref T1, ref T2, void> Method;
 
+        public System(ExecutorProvider container) : base(container) { }
+        
         protected override bool ExecutionBody()
         {
             _filter.Entities.ForEach(e =>
             {
                 var c1 = e.Get<T1>();
                 var c2 = e.Get<T2>();
-                method(ref c1, ref c2);
+                Method(ref c1, ref c2);
             });
             return true;
         }
     }
     
-    public unsafe class System<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> method) : Executor
+    public unsafe class System<T1, T2, T3> : SistemExecutor
         where T1 : Component
         where T2 : Component
         where T3 : Component
     {
         private readonly Filter _filter = FilterBuilder.Include<T1>().Include<T2>().Include<T3>().Create();
-
+        public delegate*<ref T1, ref T2, ref T3, void> Method;
+        
+        public System(ExecutorProvider container) : base(container) { }
+        
         protected override bool ExecutionBody()
         {
             _filter.Entities.ForEach(e =>
@@ -353,20 +396,23 @@ public class SisterContext(int entityCount = 4096)
                 var c1 = e.Get<T1>();
                 var c2 = e.Get<T2>();
                 var c3 = e.Get<T3>();
-                method(ref c1, ref c2, ref c3);
+                Method(ref c1, ref c2, ref c3);
             });
             return true;
         }
     }
     
-    public unsafe class System<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> method) : Executor
+    public unsafe class System<T1, T2, T3, T4> : SistemExecutor
         where T1 : Component
         where T2 : Component
         where T3 : Component
         where T4 : Component
     {
         private readonly Filter _filter = FilterBuilder.Include<T1>().Include<T2>().Include<T3>().Include<T4>().Create();
+        public delegate*<ref T1, ref T2, ref T3, ref T4, void> Method;
 
+        public System(ExecutorProvider container) : base(container) { }
+        
         protected override bool ExecutionBody()
         {
             _filter.Entities.ForEach(e =>
@@ -375,7 +421,7 @@ public class SisterContext(int entityCount = 4096)
                 var c2 = e.Get<T2>();
                 var c3 = e.Get<T3>();
                 var c4 = e.Get<T4>();
-                method(ref c1, ref c2, ref c3, ref c4);
+                Method(ref c1, ref c2, ref c3, ref c4);
             });
             return true;
         }
