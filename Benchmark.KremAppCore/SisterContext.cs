@@ -28,10 +28,7 @@ public class SisterContext(int entityCount = 4096)
         _world.AddProvider<ReactiveFilterBindingProviderContract, ReactiveFilterBindingProvider>();
         _executorProvider = _world.AddProvider<ExecutorProviderContract, ExecutorProvider>();
         _entityProvider = _world.AddProvider<EntityProviderContract, EntityProvider>();
-    }
-
-    public void FinishSetup()
-    {
+        
         AppCore.App.AppStateMachine
             // Производим инжект
             .AddState(new InjectServicesToServicesState())
@@ -47,6 +44,11 @@ public class SisterContext(int entityCount = 4096)
             .AddState(new InitializeWorldContainerState());
 
         AppCore.Initialize();
+    }
+
+    public void FinishSetup()
+    {
+
     }
 
     public void Warmup<T1>(in int poolId) where T1 : Component
@@ -251,16 +253,16 @@ public class SisterContext(int entityCount = 4096)
     }
 
     public int CountWith<T1>(in int poolId) where T1 : Component
-        => _filters[poolId].Entities.Count;
+        => _filters![poolId].Entities.Count;
 
     public int CountWith<T1, T2>(in int poolId) where T1 : Component where T2 : Component
-        => _filters[poolId].Entities.Count;
+        => _filters![poolId].Entities.Count;
 
     public int CountWith<T1, T2, T3>(in int poolId) where T1 : Component where T2 : Component where T3 : Component
-        => _filters[poolId].Entities.Count;
+        => _filters![poolId].Entities.Count;
 
     public int CountWith<T1, T2, T3, T4>(in int poolId) where T1 : Component where T2 : Component where T3 : Component where T4 : Component
-        => _filters[poolId].Entities.Count;
+        => _filters![poolId].Entities.Count;
 
     public bool GetSingle<T1>(in object? entity, in int poolId, ref T1 c1) where T1 : Component
     {
@@ -310,6 +312,7 @@ public class SisterContext(int entityCount = 4096)
     {
         var s = _executorProvider!.Add<System<T1>>() as System<T1>;
         s!.Method = method;
+        s.Filter = _filters![poolId];
         _executors!.Add(s);
     }
 
@@ -317,6 +320,7 @@ public class SisterContext(int entityCount = 4096)
     {
         var s = _executorProvider!.Add<System<T1, T2>>() as System<T1, T2>;
         s!.Method = method;
+        s.Filter = _filters![poolId];
         _executors!.Add(s);
     }
 
@@ -324,6 +328,7 @@ public class SisterContext(int entityCount = 4096)
     {
         var s = _executorProvider!.Add<System<T1, T2, T3>>() as System<T1, T2, T3>;
         s!.Method = method;
+        s.Filter = _filters![poolId];
         _executors!.Add(s);
     }
 
@@ -331,6 +336,7 @@ public class SisterContext(int entityCount = 4096)
     {
         var s = _executorProvider!.Add<System<T1, T2, T3, T4>>() as System<T1, T2, T3, T4>;
         s!.Method = method;
+        s.Filter = _filters![poolId];
         _executors!.Add(s);
     }
 
@@ -345,14 +351,14 @@ public class SisterContext(int entityCount = 4096)
     public unsafe class System<T1> : Executor
         where T1 : Component
     {
+        public Filter Filter;
         public delegate*<ref T1, void> Method;
-        private readonly Filter _filter = FilterBuilder.Include<T1>().Create();
 
         public System(ExecutorProvider container) : base(container) { }
         
         protected override bool ExecutionBody()
         {
-            _filter.Entities.ForEach(e =>
+            Filter.Entities.ForEach(e =>
             {
                 var c1 = e.Get<T1>();
                 Method(ref c1);
@@ -365,14 +371,14 @@ public class SisterContext(int entityCount = 4096)
         where T1 : Component
         where T2 : Component
     {
-        private readonly Filter _filter = FilterBuilder.Include<T1>().Include<T2>().Create();
+        public Filter Filter;
         public delegate*<ref T1, ref T2, void> Method;
 
         public System(ExecutorProvider container) : base(container) { }
         
         protected override bool ExecutionBody()
         {
-            _filter.Entities.ForEach(e =>
+            Filter.Entities.ForEach(e =>
             {
                 var c1 = e.Get<T1>();
                 var c2 = e.Get<T2>();
@@ -387,14 +393,14 @@ public class SisterContext(int entityCount = 4096)
         where T2 : Component
         where T3 : Component
     {
-        private readonly Filter _filter = FilterBuilder.Include<T1>().Include<T2>().Include<T3>().Create();
+        public Filter Filter;
         public delegate*<ref T1, ref T2, ref T3, void> Method;
         
         public System(ExecutorProvider container) : base(container) { }
         
         protected override bool ExecutionBody()
         {
-            _filter.Entities.ForEach(e =>
+            Filter.Entities.ForEach(e =>
             {
                 var c1 = e.Get<T1>();
                 var c2 = e.Get<T2>();
@@ -411,14 +417,14 @@ public class SisterContext(int entityCount = 4096)
         where T3 : Component
         where T4 : Component
     {
-        private readonly Filter _filter = FilterBuilder.Include<T1>().Include<T2>().Include<T3>().Include<T4>().Create();
+        public Filter Filter;
         public delegate*<ref T1, ref T2, ref T3, ref T4, void> Method;
 
         public System(ExecutorProvider container) : base(container) { }
         
         protected override bool ExecutionBody()
         {
-            _filter.Entities.ForEach(e =>
+            Filter.Entities.ForEach(e =>
             {
                 var c1 = e.Get<T1>();
                 var c2 = e.Get<T2>();
