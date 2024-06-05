@@ -8,7 +8,7 @@ public static class Helper
 {
     public static void InjectParameters(IBenchmark benchmark)
     {
-        benchmark.EntityCount = Constants.MidEntityCount;
+        benchmark.EntityCount = Constants.SmallEntityCount;
 
         var properties = benchmark.GetType()
             .GetProperties(BindingFlags.Instance | BindingFlags.Public)

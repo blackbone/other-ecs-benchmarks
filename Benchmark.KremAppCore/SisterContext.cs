@@ -68,6 +68,8 @@ public class SisterContext(int entityCount = 4096)
         _entityProvider!.RemoveAll();
         _entityProvider!.Dispose();
         _world!.Dispose();
+        
+        AppCore.Dispose();
     }
 
     public void Lock()
