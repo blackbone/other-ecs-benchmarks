@@ -1,5 +1,4 @@
-﻿using Krem.AppCore.Runtime.Core.Interfaces;
-using Krem.AppCore.Runtime.Implementation;
+﻿using Krem.AppCore.Runtime.Implementation;
 using Krem.AppCore.Runtime.Implementation.Builders;
 using Krem.AppCore.Runtime.Implementation.Contracts;
 using Krem.AppCore.Runtime.Implementation.Executors;
@@ -23,8 +22,10 @@ public class SisterContext(int entityCount = 4096)
         if (AppCore.App == null)
             AppCore.Construct();
         
-        _world = new World(AppCore.App!.WorldContainer);
+        _world = AppCore.AddWorld<World>();
         _world.AddProvider<EventBusProviderContract, FastEventBusProvider>();
+        _world.AddProvider<FilterProviderContract, FilterProvider>();
+        _world.AddProvider<ReactiveFilterBindingProviderContract, ReactiveFilterBindingProvider>();
         _executorProvider = _world.AddProvider<ExecutorProviderContract, ExecutorProvider>();
         _entityProvider = _world.AddProvider<EntityProviderContract, EntityProvider>();
     }
@@ -299,8 +300,8 @@ public class SisterContext(int entityCount = 4096)
 
     public void Tick(float delta)
     {
-        // for (int i = 0; i < _executors!.Count; i++)
-        //     _executors[i].Execute();
+        for (int i = 0; i < _executors!.Count; i++)
+            _executors[i].Execute();
     }
 
     public unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId) where T1 : Component
