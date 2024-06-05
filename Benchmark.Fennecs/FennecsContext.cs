@@ -9,7 +9,7 @@ namespace Benchmark.Fennecs;
 
 public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
 {
-    private readonly Dictionary<int, Query>? _queries = new();
+    private readonly Dictionary<int, Query>? _streams = new();
     private readonly List<ISystem>? _systems = new();
     private World.WorldLock? _lock;
     private World? _world = new();
@@ -30,7 +30,7 @@ public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
     public void Cleanup()
     {
         _systems!.Clear();
-        _queries!.Clear();
+        _streams!.Clear();
         _world!.GC();
         _world!.Dispose();
         _world = null;
@@ -42,20 +42,20 @@ public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
 
     public void Warmup<T1>(in int poolId) where T1 : struct, IComponent, IEcsComponent
     {
-        _queries![poolId] = _world!.Query<T1>().Compile().Warmup();
+        _streams![poolId] = _world.Query<T1>().Compile().Warmup();
     }
 
     public void Warmup<T1, T2>(in int poolId) where T1 : struct, IComponent, IEcsComponent
         where T2 : struct, IComponent, IEcsComponent
     {
-        _queries![poolId] = _world!.Query<T1, T2>().Compile().Warmup();
+        _streams![poolId] = _world!.Query<T1, T2>().Compile().Warmup();
     }
 
     public void Warmup<T1, T2, T3>(in int poolId) where T1 : struct, IComponent, IEcsComponent
         where T2 : struct, IComponent, IEcsComponent
         where T3 : struct, IComponent, IEcsComponent
     {
-        _queries![poolId] = _world!.Query<T1, T2, T3>().Compile().Warmup();
+        _streams![poolId] = _world!.Query<T1, T2, T3>().Compile().Warmup();
     }
 
     public void Warmup<T1, T2, T3, T4>(in int poolId) where T1 : struct, IComponent, IEcsComponent
@@ -63,7 +63,7 @@ public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
         where T3 : struct, IComponent, IEcsComponent
         where T4 : struct, IComponent, IEcsComponent
     {
-        _queries![poolId] = _world!.Query<T1, T2, T3, T4>().Compile().Warmup();
+        _streams![poolId] = _world!.Query<T1, T2, T3, T4>().Compile().Warmup();
     }
 
     public void Lock()
@@ -125,8 +125,8 @@ public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
         var entities = (Entity[])entitySet;
         // TODO perform use overload which utilizes ReadOnlySpan<Identity>
         for (var i = 0; i < entities.Length; i++)
-            if (_world!.IsAlive(entities[i]))
-                _world!.Despawn(entities[i].Id);
+            if (_world!.Contains(entities[i]))
+                _world!.Despawn(entities[i]);
     }
 
     public void AddComponent<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default)
@@ -217,20 +217,20 @@ public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
 
     public int CountWith<T1>(in int poolId) where T1 : struct, IComponent, IEcsComponent
     {
-        return _queries![poolId].Count;
+        return _streams![poolId].Count;
     }
 
     public int CountWith<T1, T2>(in int poolId) where T1 : struct, IComponent, IEcsComponent
         where T2 : struct, IComponent, IEcsComponent
     {
-        return _queries![poolId].Count;
+        return _streams![poolId].Count;
     }
 
     public int CountWith<T1, T2, T3>(in int poolId) where T1 : struct, IComponent, IEcsComponent
         where T2 : struct, IComponent, IEcsComponent
         where T3 : struct, IComponent, IEcsComponent
     {
-        return _queries![poolId].Count;
+        return _streams![poolId].Count;
     }
 
     public int CountWith<T1, T2, T3, T4>(in int poolId) where T1 : struct, IComponent, IEcsComponent
@@ -238,7 +238,7 @@ public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
         where T3 : struct, IComponent, IEcsComponent
         where T4 : struct, IComponent, IEcsComponent
     {
-        return _queries![poolId].Count;
+        return _streams![poolId].Count;
     }
 
     public bool GetSingle<T1>(in object? entity, in int poolId, ref T1 c1) where T1 : struct, IComponent, IEcsComponent
@@ -300,13 +300,13 @@ public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
     public unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId)
         where T1 : struct, IComponent, IEcsComponent
     {
-        _systems!.Add(new System<T1>(method, (Query<T1>)_queries![poolId]));
+        _systems!.Add(new System<T1>(method, _streams![poolId].Stream<T1>()));
     }
 
     public unsafe void AddSystem<T1, T2>(delegate*<ref T1, ref T2, void> method, int poolId)
         where T1 : struct, IComponent, IEcsComponent where T2 : struct, IComponent, IEcsComponent
     {
-        _systems!.Add(new System<T1, T2>(method, (Query<T1, T2>)_queries![poolId]));
+        _systems!.Add(new System<T1, T2>(method, _streams![poolId].Stream<T1, T2>()));
     }
 
     public unsafe void AddSystem<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> method, int poolId)
@@ -314,7 +314,7 @@ public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
         where T2 : struct, IComponent, IEcsComponent
         where T3 : struct, IComponent, IEcsComponent
     {
-        _systems!.Add(new System<T1, T2, T3>(method, (Query<T1, T2, T3>)_queries![poolId]));
+        _systems!.Add(new System<T1, T2, T3>(method, _streams![poolId].Stream<T1, T2, T3>()));
     }
 
     public unsafe void AddSystem<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> method, int poolId)
@@ -323,7 +323,7 @@ public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
         where T3 : struct, IComponent, IEcsComponent
         where T4 : struct, IComponent, IEcsComponent
     {
-        _systems!.Add(new System<T1, T2, T3, T4>(method, (Query<T1, T2, T3, T4>)_queries![poolId]));
+        _systems!.Add(new System<T1, T2, T3, T4>(method, _streams![poolId].Stream<T1, T2, T3, T4>()));
     }
 
     public Array Shuffle(in Array entitySet)

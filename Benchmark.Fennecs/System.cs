@@ -12,20 +12,20 @@ public interface ISystem
 public unsafe class System<T1> : ISystem
     where T1 : struct
 {
-    private readonly RefAction<T1> _del;
+    private readonly ComponentAction<T1> _del;
     private readonly delegate*<ref T1, void> _method;
-    private readonly Query<T1> _query;
+    private readonly Stream<T1> _stream;
 
-    public System(delegate*<ref T1, void> method, Query<T1> query)
+    public System(delegate*<ref T1, void> method, Stream<T1> stream)
     {
         _del = Invoke;
         _method = method;
-        _query = query;
+        _stream = stream;
     }
 
     public void Run(float delta)
     {
-        _query.For(_del);
+        _stream.For(_del);
     }
 
     private void Invoke(ref T1 c0)
@@ -38,20 +38,20 @@ public unsafe class System<T1, T2> : ISystem
     where T1 : struct
     where T2 : struct
 {
-    private readonly RefAction<T1, T2> _del;
+    private readonly ComponentAction<T1, T2> _del;
     private readonly delegate*<ref T1, ref T2, void> _method;
-    private readonly Query<T1, T2> _query;
+    private readonly Stream<T1, T2> _stream;
 
-    public System(delegate*<ref T1, ref T2, void> method, Query<T1, T2> query)
+    public System(delegate*<ref T1, ref T2, void> method, Stream<T1, T2> stream)
     {
         _del = Invoke;
         _method = method;
-        _query = query;
+        _stream = stream;
     }
 
     public void Run(float delta)
     {
-        _query.For(_del);
+        _stream.For(_del);
     }
 
     private void Invoke(ref T1 c0, ref T2 c1)
@@ -65,20 +65,20 @@ public unsafe class System<T1, T2, T3> : ISystem
     where T2 : struct
     where T3 : struct
 {
-    private readonly RefAction<T1, T2, T3> _del;
+    private readonly ComponentAction<T1, T2, T3> _del;
     private readonly delegate*<ref T1, ref T2, ref T3, void> _method;
-    private readonly Query<T1, T2, T3> _query;
+    private readonly Stream<T1, T2, T3> _stream;
 
-    public System(delegate*<ref T1, ref T2, ref T3, void> method, Query<T1, T2, T3> query)
+    public System(delegate*<ref T1, ref T2, ref T3, void> method, Stream<T1, T2, T3> stream)
     {
         _del = Invoke;
         _method = method;
-        _query = query;
+        _stream = stream;
     }
 
     public void Run(float delta)
     {
-        _query.For(_del);
+        _stream.For(_del);
     }
 
     private void Invoke(ref T1 c0, ref T2 c1, ref T3 c2)
@@ -93,20 +93,20 @@ public unsafe class System<T1, T2, T3, T4> : ISystem
     where T3 : struct
     where T4 : struct
 {
-    private readonly RefAction<T1, T2, T3, T4> _del;
+    private readonly ComponentAction<T1, T2, T3, T4> _del;
     private readonly delegate*<ref T1, ref T2, ref T3, ref T4, void> _method;
-    private readonly Query<T1, T2, T3, T4> _query;
+    private readonly Stream<T1, T2, T3, T4> _stream;
 
-    public System(delegate*<ref T1, ref T2, ref T3, ref T4, void> method, Query<T1, T2, T3, T4> query)
+    public System(delegate*<ref T1, ref T2, ref T3, ref T4, void> method, Stream<T1, T2, T3, T4> stream)
     {
         _del = Invoke;
         _method = method;
-        _query = query;
+        _stream = stream;
     }
 
     public void Run(float delta)
     {
-        _query.For(_del);
+        _stream.For(_del);
     }
 
     private void Invoke(ref T1 c0, ref T2 c1, ref T3 c2, ref T4 c3)
