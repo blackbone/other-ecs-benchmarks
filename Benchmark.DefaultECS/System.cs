@@ -3,68 +3,54 @@ using DefaultEcs.System;
 
 namespace Benchmark.DefaultECS;
 
-public sealed partial class System<T1> : AComponentSystem<float, T1>
+public sealed unsafe class System<T1>(EntityQueryBuilder query, delegate*<ref T1, void> method) : ISystem<float>
 {
-    private readonly unsafe delegate*<ref T1, void> _method;
+    public bool IsEnabled { get; set; } = true;
+    public void Dispose() { }
 
-    public unsafe System(World world, delegate*<ref T1, void> method) : base(world)
+    public void Update(float state)
     {
-        _method = method;
-    }
-    
-    protected override unsafe void Update(float state, Span<T1> components)
-    {
-        foreach (ref T1 component in components)
-        {
-            _method(ref component);
-        }
+        var entities = query.AsSet().GetEntities();
+        for (int i = 0; i < entities.Length; i++)
+            method(ref entities[i].Get<T1>());
     }
 }
 
-public sealed partial class System<T1, T2> : AEntitySetSystem<float>
+public sealed unsafe class System<T1, T2>(EntityQueryBuilder query, delegate*<ref T1, ref T2, void> method) : ISystem<float>
 {
-    private readonly unsafe delegate*<ref T1, ref T2, void> _method;
+    public bool IsEnabled { get; set; } = true;
+    public void Dispose() { }
 
-    public unsafe System(World world, delegate*<ref T1, ref T2, void> method) : base(world)
+    public void Update(float state)
     {
-        _method = method;
-    }
-
-    [Update]
-    private unsafe void Update(ref T1 c1, ref T2 c2)
-    {
-        _method(ref c1, ref c2);
+        var entities = query.AsSet().GetEntities();
+        for (int i = 0; i < entities.Length; i++)
+            method(ref entities[i].Get<T1>(), ref entities[i].Get<T2>());
     }
 }
 
-public sealed partial class System<T1, T2, T3> : AEntitySetSystem<float>
+public sealed unsafe class System<T1, T2, T3>(EntityQueryBuilder query, delegate*<ref T1, ref T2, ref T3, void> method) : ISystem<float>
 {
-    private readonly unsafe delegate*<ref T1, ref T2, ref T3, void> _method;
+    public bool IsEnabled { get; set; } = true;
+    public void Dispose() { }
 
-    public unsafe System(World world, delegate*<ref T1, ref T2, ref T3, void> method) : base(world)
+    public void Update(float state)
     {
-        _method = method;
-    }
-
-    [Update]
-    private unsafe void Update(ref T1 c1, ref T2 c2, ref T3 c3)
-    {
-        _method(ref c1, ref c2, ref c3);
+        var entities = query.AsSet().GetEntities();
+        for (int i = 0; i < entities.Length; i++)
+            method(ref entities[i].Get<T1>(), ref entities[i].Get<T2>(), ref entities[i].Get<T3>());
     }
 }
 
-public sealed partial class System<T1, T2, T3, T4> : AEntitySetSystem<float>
+public sealed unsafe class System<T1, T2, T3, T4>(EntityQueryBuilder query, delegate*<ref T1, ref T2, ref T3, ref T4, void> method) : ISystem<float>
 {
-    private readonly unsafe delegate*<ref T1, ref T2, ref T3, ref T4, void> _method;
+    public bool IsEnabled { get; set; } = true;
+    public void Dispose() { }
 
-    public unsafe System(World world, delegate*<ref T1, ref T2, ref T3, ref T4, void> method) : base(world)
+    public void Update(float state)
     {
-        _method = method;
-    }
-
-    [Update]
-    private unsafe void Update(ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4)
-    {
-        _method(ref c1, ref c2, ref c3, ref c4);
+        var entities = query.AsSet().GetEntities();
+        for (int i = 0; i < entities.Length; i++)
+            method(ref entities[i].Get<T1>(), ref entities[i].Get<T2>(), ref entities[i].Get<T3>(), ref entities[i].Get<T4>());
     }
 }

@@ -1,9 +1,10 @@
 ﻿
 using Benchmark.AppCoreKostyl;
+using Benchmark.Generated;
 
-var bench = new SystemWith1Component_Sister();
+var bench = new SystemWith3Components_DefaultECSContext();
 
-bench.EntityCount = 100_000;
+bench.EntityCount = 1_000;
 bench.Padding = 10;
 bench.Iterations = 10;
 
