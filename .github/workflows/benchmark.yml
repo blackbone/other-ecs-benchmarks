@@ -101,9 +101,20 @@ jobs:
           cat "$file" >> report.md
           echo -e "\n" >> report.md
           done
+      # upload main report
       - name: Update Gist
         uses: exuanbo/actions-deploy-gist@v1
         with:
           token: ${{ secrets.TOKEN }}
           gist_id: 6d254a684cf580441bf58690ad9485c3
           file_path: report.md
+          file_type: text
+      # upload timestamped report for history (revisions are not opens properly on gist)
+      - name: Update Gist
+        uses: exuanbo/actions-deploy-gist@v1
+        with:
+          token: ${{ secrets.TOKEN }}
+          gist_id: 6d254a684cf580441bf58690ad9485c3
+          gist_file_name: "report_${{ github.event.repository.updated_at }}.md"
+          file_path: report.md
+          file_type: text
