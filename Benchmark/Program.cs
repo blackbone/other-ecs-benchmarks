@@ -7,9 +7,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using Benchmark;
-using Benchmark.AppCoreKostyl;
-using Benchmark.Benchmarks.Entities.AddComponent;
-using Benchmark.KremAppCore;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Columns;
 using BenchmarkDotNet.Configs;
@@ -48,7 +45,7 @@ IConfig configuration = DefaultConfig.Instance
         .AddExporter(MarkdownExporter.GitHub)
         .WithOptions(ConfigOptions.DisableOptimizationsValidator)
         .WithOption(ConfigOptions.JoinSummary, true)
-        .HideColumns(Column.Gen0, Column.Gen1, Column.Gen2, Column.Type, Column.Error, Column.Method, Column.StdDev)
+        .HideColumns(Column.Gen0, Column.Gen1, Column.Gen2, Column.Type, Column.Error, Column.Method, Column.Namespace, Column.StdDev)
         .AddColumn(new ContextColumn())
     ;
 
