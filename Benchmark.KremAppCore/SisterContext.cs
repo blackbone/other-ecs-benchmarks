@@ -282,7 +282,8 @@ public class SisterContext(int entityCount = 4096)
 
     public void Tick(float delta)
     {
-        AppCore.RunAppStateMachine();
+        for (int i = 0; i < _executors!.Count; i++)
+            _executors[i].Execute();
     }
 
     public unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId) where T1 : Component
