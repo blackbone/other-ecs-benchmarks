@@ -4,7 +4,7 @@ using BenchmarkDotNet.Attributes;
 
 namespace Benchmark.AppCoreKostyl
 {
-    [ArtifactsPath(".benchmark_results/DeleteEntityBenchmark")]
+    [ArtifactsPath(".benchmark_results/DeleteEntity")]
     [BenchmarkCategory(Categories.PerInvocationSetup)]
     [MemoryDiagnoser]
     public class DeleteEntity_Sister : IBenchmark
