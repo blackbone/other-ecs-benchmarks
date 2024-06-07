@@ -41,41 +41,31 @@ public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
     {
     }
 
-    public void Warmup<T1>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-    {
-        _streams![poolId] = _world.Query<T1>().Compile().Warmup();
-    }
+    public void Warmup<T1>(in int poolId)
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        => _streams![poolId] = _world!.Query<T1>().Compile().Warmup();
 
-    public void Warmup<T1, T2>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+    public void Warmup<T1, T2>(in int poolId)
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
-    {
-        _streams![poolId] = _world!.Query<T1, T2>().Compile().Warmup();
-    }
+        => _streams![poolId] = _world!.Query<T1, T2>().Compile().Warmup();
 
-    public void Warmup<T1, T2, T3>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+    public void Warmup<T1, T2, T3>(in int poolId)
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
-    {
-        _streams![poolId] = _world!.Query<T1, T2, T3>().Compile().Warmup();
-    }
+        => _streams![poolId] = _world!.Query<T1, T2, T3>().Compile().Warmup();
 
-    public void Warmup<T1, T2, T3, T4>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+    public void Warmup<T1, T2, T3, T4>(in int poolId)
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T4 : struct, MorpehComponent, DragonComponent, XenoComponent
-    {
-        _streams![poolId] = _world!.Query<T1, T2, T3, T4>().Compile().Warmup();
-    }
+        => _streams![poolId] = _world!.Query<T1, T2, T3, T4>().Compile().Warmup();
 
-    public void Lock()
-    {
-        _lock = _world!.Lock();
-    }
+    public void Lock() => _lock = _world!.Lock();
 
-    public void Commit()
-    {
-        _lock!.Value.Dispose();
-    }
+    public void Commit() => _lock!.Value.Dispose();
 
     public void CreateEntities(in Array entitySet)
     {
