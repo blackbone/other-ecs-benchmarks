@@ -1,13 +1,18 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	
 	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer&gt;
   &lt;Assembly Path="/Users/scabr/.nuget/packages/scellecs.morpeh/2023.1.0/lib/netstandard2.1/Scellecs.Morpeh.dll" /&gt;
 &lt;/AssemblyExplorer&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=a445f2a5_002Dd648_002D4184_002Db5f2_002D49968a8594f7/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="Session" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=190bf258_002Ddd55_002D4289_002D9456_002D6b492e876d5a/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="Session" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;And&gt;
     &lt;Namespace&gt;Bentchmark.Tests&lt;/Namespace&gt;
     &lt;Project Location="/Users/scabr/git/other-ecs-benchmarks/Bentchmark.Tests" Presentation="&amp;lt;Bentchmark.Tests&amp;gt;" /&gt;
   &lt;/And&gt;
 &lt;/SessionState&gt;</s:String>
+	
+	
+	
+	
 	
 	
 	

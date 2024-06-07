@@ -13,3 +13,6 @@
 [submodule "submodules/AppCore-sistem"]
 	path = submodules/AppCore-sistem
 	url = https://git.krem.digital/appcore/AppCore.git
+[submodule "submodules/xeno"]
+	path = submodules/xeno
+	url = git@github.com:blackbone/xeno.git

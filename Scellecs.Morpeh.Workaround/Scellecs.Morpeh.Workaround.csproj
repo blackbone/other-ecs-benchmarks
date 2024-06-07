@@ -9,7 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Scellecs.Morpeh" Version="2023.1.0"/>
+      <ProjectReference Include="..\submodules\morpeh\Scellecs.Morpeh\Scellecs.Morpeh.csproj" />
     </ItemGroup>
 
 </Project>

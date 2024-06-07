@@ -1,9 +1,10 @@
 using Benchmark._Context;
-using DCFApixels.DragonECS;
 using Leopotam.EcsLite;
-using Scellecs.Morpeh;
 using EcsWorld = Leopotam.EcsLite.EcsWorld;
 using IEcsPool = Leopotam.EcsLite.IEcsPool;
+using MorpehComponent = Scellecs.Morpeh.IComponent;
+using DragonComponent = DCFApixels.DragonECS.IEcsComponent;
+using XenoComponent = Xeno.IComponent;
 
 namespace Benchmark.LeoEcsLite;
 
@@ -46,31 +47,31 @@ public sealed class LeoEcsLiteContext(int entityCount = 4096) : IBenchmarkContex
     {
     }
 
-    public void Warmup<T1>(in int poolId) where T1 : struct, IComponent, IEcsComponent
+    public void Warmup<T1>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         _pools![poolId] = [_world!.GetPool<T1>()];
         _filters![poolId] = _world!.Filter<T1>().End(entityCount);
     }
 
-    public void Warmup<T1, T2>(in int poolId) where T1 : struct, IComponent, IEcsComponent
-        where T2 : struct, IComponent, IEcsComponent
+    public void Warmup<T1, T2>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         _pools![poolId] = [_world!.GetPool<T1>(), _world!.GetPool<T2>()];
         _filters![poolId] = _world!.Filter<T1>().Inc<T2>().End(entityCount);
     }
 
-    public void Warmup<T1, T2, T3>(in int poolId) where T1 : struct, IComponent, IEcsComponent
-        where T2 : struct, IComponent, IEcsComponent
-        where T3 : struct, IComponent, IEcsComponent
+    public void Warmup<T1, T2, T3>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         _pools![poolId] = [_world!.GetPool<T1>(), _world!.GetPool<T2>(), _world!.GetPool<T3>()];
         _filters![poolId] = _world!.Filter<T1>().Inc<T2>().Inc<T3>().End(entityCount);
     }
 
-    public void Warmup<T1, T2, T3, T4>(in int poolId) where T1 : struct, IComponent, IEcsComponent
-        where T2 : struct, IComponent, IEcsComponent
-        where T3 : struct, IComponent, IEcsComponent
-        where T4 : struct, IComponent, IEcsComponent
+    public void Warmup<T1, T2, T3, T4>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         _pools![poolId] = [_world!.GetPool<T1>(), _world!.GetPool<T2>(), _world!.GetPool<T3>(), _world!.GetPool<T4>()];
         _filters![poolId] = _world!.Filter<T1>().Inc<T2>().Inc<T3>().Inc<T4>().End(entityCount);
@@ -94,11 +95,11 @@ public sealed class LeoEcsLiteContext(int entityCount = 4096) : IBenchmarkContex
     }
 
     public void CreateEntities<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default)
-        where T1 : struct, IComponent, IEcsComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         var entities = (int[])entitySet;
         var pools = _pools![poolId];
-        var p1 = (Leopotam.EcsLite.EcsPool<T1>)pools[0];
+        var p1 = (EcsPool<T1>)pools[0];
         for (var i = 0; i < entities.Length; i++)
         {
             entities[i] = _world!.NewEntity();
@@ -107,12 +108,12 @@ public sealed class LeoEcsLiteContext(int entityCount = 4096) : IBenchmarkContex
     }
 
     public void CreateEntities<T1, T2>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default)
-        where T1 : struct, IComponent, IEcsComponent where T2 : struct, IComponent, IEcsComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         var entities = (int[])entitySet;
         var pools = _pools![poolId];
-        var p1 = (Leopotam.EcsLite.EcsPool<T1>)pools[0];
-        var p2 = (Leopotam.EcsLite.EcsPool<T2>)pools[1];
+        var p1 = (EcsPool<T1>)pools[0];
+        var p2 = (EcsPool<T2>)pools[1];
         for (var i = 0; i < entities.Length; i++)
         {
             entities[i] = _world!.NewEntity();
@@ -122,15 +123,15 @@ public sealed class LeoEcsLiteContext(int entityCount = 4096) : IBenchmarkContex
     }
 
     public void CreateEntities<T1, T2, T3>(in Array entitySet, in int poolId = -1, in T1 c1 = default,
-        in T2 c2 = default, in T3 c3 = default) where T1 : struct, IComponent, IEcsComponent
-        where T2 : struct, IComponent, IEcsComponent
-        where T3 : struct, IComponent, IEcsComponent
+        in T2 c2 = default, in T3 c3 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         var entities = (int[])entitySet;
         var pools = _pools![poolId];
-        var p1 = (Leopotam.EcsLite.EcsPool<T1>)pools[0];
-        var p2 = (Leopotam.EcsLite.EcsPool<T2>)pools[1];
-        var p3 = (Leopotam.EcsLite.EcsPool<T3>)pools[2];
+        var p1 = (EcsPool<T1>)pools[0];
+        var p2 = (EcsPool<T2>)pools[1];
+        var p3 = (EcsPool<T3>)pools[2];
         for (var i = 0; i < entities.Length; i++)
         {
             entities[i] = _world!.NewEntity();
@@ -141,17 +142,17 @@ public sealed class LeoEcsLiteContext(int entityCount = 4096) : IBenchmarkContex
     }
 
     public void CreateEntities<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1, in T1 c1 = default,
-        in T2 c2 = default, in T3 c3 = default, in T4 c4 = default) where T1 : struct, IComponent, IEcsComponent
-        where T2 : struct, IComponent, IEcsComponent
-        where T3 : struct, IComponent, IEcsComponent
-        where T4 : struct, IComponent, IEcsComponent
+        in T2 c2 = default, in T3 c3 = default, in T4 c4 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         var entities = (int[])entitySet;
         var pools = _pools![poolId];
-        var p1 = (Leopotam.EcsLite.EcsPool<T1>)pools[0];
-        var p2 = (Leopotam.EcsLite.EcsPool<T2>)pools[1];
-        var p3 = (Leopotam.EcsLite.EcsPool<T3>)pools[2];
-        var p4 = (Leopotam.EcsLite.EcsPool<T4>)pools[3];
+        var p1 = (EcsPool<T1>)pools[0];
+        var p2 = (EcsPool<T2>)pools[1];
+        var p3 = (EcsPool<T3>)pools[2];
+        var p4 = (EcsPool<T4>)pools[3];
         for (var i = 0; i < entities.Length; i++)
         {
             entities[i] = _world!.NewEntity();
@@ -170,22 +171,22 @@ public sealed class LeoEcsLiteContext(int entityCount = 4096) : IBenchmarkContex
     }
 
     public void AddComponent<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default)
-        where T1 : struct, IComponent, IEcsComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         var entities = (int[])entitySet;
         var pools = _pools![poolId];
-        var p1 = (Leopotam.EcsLite.EcsPool<T1>)pools[0];
+        var p1 = (EcsPool<T1>)pools[0];
         for (var i = 0; i < entities.Length; i++)
             p1.Add(entities[i]) = c1;
     }
 
     public void AddComponent<T1, T2>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default)
-        where T1 : struct, IComponent, IEcsComponent where T2 : struct, IComponent, IEcsComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         var entities = (int[])entitySet;
         var pools = _pools![poolId];
-        var p1 = (Leopotam.EcsLite.EcsPool<T1>)pools[0];
-        var p2 = (Leopotam.EcsLite.EcsPool<T2>)pools[1];
+        var p1 = (EcsPool<T1>)pools[0];
+        var p2 = (EcsPool<T2>)pools[1];
         for (var i = 0; i < entities.Length; i++)
         {
             p1.Add(entities[i]) = c1;
@@ -194,15 +195,15 @@ public sealed class LeoEcsLiteContext(int entityCount = 4096) : IBenchmarkContex
     }
 
     public void AddComponent<T1, T2, T3>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default,
-        in T3 c3 = default) where T1 : struct, IComponent, IEcsComponent
-        where T2 : struct, IComponent, IEcsComponent
-        where T3 : struct, IComponent, IEcsComponent
+        in T3 c3 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         var entities = (int[])entitySet;
         var pools = _pools![poolId];
-        var p1 = (Leopotam.EcsLite.EcsPool<T1>)pools[0];
-        var p2 = (Leopotam.EcsLite.EcsPool<T2>)pools[1];
-        var p3 = (Leopotam.EcsLite.EcsPool<T3>)pools[2];
+        var p1 = (EcsPool<T1>)pools[0];
+        var p2 = (EcsPool<T2>)pools[1];
+        var p3 = (EcsPool<T3>)pools[2];
         for (var i = 0; i < entities.Length; i++)
         {
             p1.Add(entities[i]) = c1;
@@ -212,17 +213,17 @@ public sealed class LeoEcsLiteContext(int entityCount = 4096) : IBenchmarkContex
     }
 
     public void AddComponent<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1, in T1 c1 = default,
-        in T2 c2 = default, in T3 c3 = default, in T4 c4 = default) where T1 : struct, IComponent, IEcsComponent
-        where T2 : struct, IComponent, IEcsComponent
-        where T3 : struct, IComponent, IEcsComponent
-        where T4 : struct, IComponent, IEcsComponent
+        in T2 c2 = default, in T3 c3 = default, in T4 c4 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         var entities = (int[])entitySet;
         var pools = _pools![poolId];
-        var p1 = (Leopotam.EcsLite.EcsPool<T1>)pools[0];
-        var p2 = (Leopotam.EcsLite.EcsPool<T2>)pools[1];
-        var p3 = (Leopotam.EcsLite.EcsPool<T3>)pools[2];
-        var p4 = (Leopotam.EcsLite.EcsPool<T4>)pools[3];
+        var p1 = (EcsPool<T1>)pools[0];
+        var p2 = (EcsPool<T2>)pools[1];
+        var p3 = (EcsPool<T3>)pools[2];
+        var p4 = (EcsPool<T4>)pools[3];
         for (var i = 0; i < entities.Length; i++)
         {
             p1.Add(entities[i]) = c1;
@@ -232,22 +233,22 @@ public sealed class LeoEcsLiteContext(int entityCount = 4096) : IBenchmarkContex
         }
     }
 
-    public void RemoveComponent<T1>(in Array entitySet, in int poolId = -1) where T1 : struct, IComponent, IEcsComponent
+    public void RemoveComponent<T1>(in Array entitySet, in int poolId = -1) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         var entities = (int[])entitySet;
         var pools = _pools![poolId];
-        var p1 = (Leopotam.EcsLite.EcsPool<T1>)pools[0];
+        var p1 = (EcsPool<T1>)pools[0];
         for (var i = 0; i < entities.Length; i++)
             p1.Del(entities[i]);
     }
 
     public void RemoveComponent<T1, T2>(in Array entitySet, in int poolId = -1)
-        where T1 : struct, IComponent, IEcsComponent where T2 : struct, IComponent, IEcsComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         var entities = (int[])entitySet;
         var pools = _pools![poolId];
-        var p1 = (Leopotam.EcsLite.EcsPool<T1>)pools[0];
-        var p2 = (Leopotam.EcsLite.EcsPool<T2>)pools[1];
+        var p1 = (EcsPool<T1>)pools[0];
+        var p2 = (EcsPool<T2>)pools[1];
         for (var i = 0; i < entities.Length; i++)
         {
             p1.Del(entities[i]);
@@ -256,15 +257,15 @@ public sealed class LeoEcsLiteContext(int entityCount = 4096) : IBenchmarkContex
     }
 
     public void RemoveComponent<T1, T2, T3>(in Array entitySet, in int poolId = -1)
-        where T1 : struct, IComponent, IEcsComponent
-        where T2 : struct, IComponent, IEcsComponent
-        where T3 : struct, IComponent, IEcsComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         var entities = (int[])entitySet;
         var pools = _pools![poolId];
-        var p1 = (Leopotam.EcsLite.EcsPool<T1>)pools[0];
-        var p2 = (Leopotam.EcsLite.EcsPool<T2>)pools[1];
-        var p3 = (Leopotam.EcsLite.EcsPool<T3>)pools[2];
+        var p1 = (EcsPool<T1>)pools[0];
+        var p2 = (EcsPool<T2>)pools[1];
+        var p3 = (EcsPool<T3>)pools[2];
         for (var i = 0; i < entities.Length; i++)
         {
             p1.Del(entities[i]);
@@ -274,17 +275,17 @@ public sealed class LeoEcsLiteContext(int entityCount = 4096) : IBenchmarkContex
     }
 
     public void RemoveComponent<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1)
-        where T1 : struct, IComponent, IEcsComponent
-        where T2 : struct, IComponent, IEcsComponent
-        where T3 : struct, IComponent, IEcsComponent
-        where T4 : struct, IComponent, IEcsComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         var entities = (int[])entitySet;
         var pools = _pools![poolId];
-        var p1 = (Leopotam.EcsLite.EcsPool<T1>)pools[0];
-        var p2 = (Leopotam.EcsLite.EcsPool<T2>)pools[1];
-        var p3 = (Leopotam.EcsLite.EcsPool<T3>)pools[2];
-        var p4 = (Leopotam.EcsLite.EcsPool<T4>)pools[3];
+        var p1 = (EcsPool<T1>)pools[0];
+        var p2 = (EcsPool<T2>)pools[1];
+        var p3 = (EcsPool<T3>)pools[2];
+        var p4 = (EcsPool<T4>)pools[3];
         for (var i = 0; i < entities.Length; i++)
         {
             p1.Del(entities[i]);
@@ -294,69 +295,69 @@ public sealed class LeoEcsLiteContext(int entityCount = 4096) : IBenchmarkContex
         }
     }
 
-    public int CountWith<T1>(in int poolId) where T1 : struct, IComponent, IEcsComponent
+    public int CountWith<T1>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         return _filters![poolId].GetEntitiesCount();
     }
 
-    public int CountWith<T1, T2>(in int poolId) where T1 : struct, IComponent, IEcsComponent
-        where T2 : struct, IComponent, IEcsComponent
+    public int CountWith<T1, T2>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         return _filters![poolId].GetEntitiesCount();
     }
 
-    public int CountWith<T1, T2, T3>(in int poolId) where T1 : struct, IComponent, IEcsComponent
-        where T2 : struct, IComponent, IEcsComponent
-        where T3 : struct, IComponent, IEcsComponent
+    public int CountWith<T1, T2, T3>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         return _filters![poolId].GetEntitiesCount();
     }
 
-    public int CountWith<T1, T2, T3, T4>(in int poolId) where T1 : struct, IComponent, IEcsComponent
-        where T2 : struct, IComponent, IEcsComponent
-        where T3 : struct, IComponent, IEcsComponent
-        where T4 : struct, IComponent, IEcsComponent
+    public int CountWith<T1, T2, T3, T4>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         return _filters![poolId].GetEntitiesCount();
     }
 
-    public bool GetSingle<T1>(in object? entity, in int poolId, ref T1 c1) where T1 : struct, IComponent, IEcsComponent
+    public bool GetSingle<T1>(in object? entity, in int poolId, ref T1 c1) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         if (entity == null) return false;
 
         var e = (int)entity;
         var pools = _pools![poolId];
-        var p1 = (Leopotam.EcsLite.EcsPool<T1>)pools[0];
+        var p1 = (EcsPool<T1>)pools[0];
         c1 = p1.Get(e);
         return true;
     }
 
     public bool GetSingle<T1, T2>(in object? entity, in int poolId, ref T1 c1, ref T2 c2)
-        where T1 : struct, IComponent, IEcsComponent where T2 : struct, IComponent, IEcsComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         if (entity == null) return false;
 
         var e = (int)entity;
         var pools = _pools![poolId];
-        var p1 = (Leopotam.EcsLite.EcsPool<T1>)pools[0];
-        var p2 = (Leopotam.EcsLite.EcsPool<T2>)pools[1];
+        var p1 = (EcsPool<T1>)pools[0];
+        var p2 = (EcsPool<T2>)pools[1];
         c1 = p1.Get(e);
         c2 = p2.Get(e);
         return true;
     }
 
     public bool GetSingle<T1, T2, T3>(in object? entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3)
-        where T1 : struct, IComponent, IEcsComponent
-        where T2 : struct, IComponent, IEcsComponent
-        where T3 : struct, IComponent, IEcsComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         if (entity == null) return false;
 
         var e = (int)entity;
         var pools = _pools![poolId];
-        var p1 = (Leopotam.EcsLite.EcsPool<T1>)pools[0];
-        var p2 = (Leopotam.EcsLite.EcsPool<T2>)pools[1];
-        var p3 = (Leopotam.EcsLite.EcsPool<T3>)pools[2];
+        var p1 = (EcsPool<T1>)pools[0];
+        var p2 = (EcsPool<T2>)pools[1];
+        var p3 = (EcsPool<T3>)pools[2];
         c1 = p1.Get(e);
         c2 = p2.Get(e);
         c3 = p3.Get(e);
@@ -364,19 +365,19 @@ public sealed class LeoEcsLiteContext(int entityCount = 4096) : IBenchmarkContex
     }
 
     public bool GetSingle<T1, T2, T3, T4>(in object? entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4)
-        where T1 : struct, IComponent, IEcsComponent
-        where T2 : struct, IComponent, IEcsComponent
-        where T3 : struct, IComponent, IEcsComponent
-        where T4 : struct, IComponent, IEcsComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         if (entity == null) return false;
 
         var e = (int)entity;
         var pools = _pools![poolId];
-        var p1 = (Leopotam.EcsLite.EcsPool<T1>)pools[0];
-        var p2 = (Leopotam.EcsLite.EcsPool<T2>)pools[1];
-        var p3 = (Leopotam.EcsLite.EcsPool<T3>)pools[2];
-        var p4 = (Leopotam.EcsLite.EcsPool<T4>)pools[3];
+        var p1 = (EcsPool<T1>)pools[0];
+        var p2 = (EcsPool<T2>)pools[1];
+        var p3 = (EcsPool<T3>)pools[2];
+        var p4 = (EcsPool<T4>)pools[3];
         c1 = p1.Get(e);
         c2 = p2.Get(e);
         c3 = p3.Get(e);
@@ -391,30 +392,30 @@ public sealed class LeoEcsLiteContext(int entityCount = 4096) : IBenchmarkContex
     }
 
     public unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId)
-        where T1 : struct, IComponent, IEcsComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         _systems!.Add(new EcsSystems(_world!).Add(new System<T1>(method)));
     }
 
     public unsafe void AddSystem<T1, T2>(delegate*<ref T1, ref T2, void> method, int poolId)
-        where T1 : struct, IComponent, IEcsComponent where T2 : struct, IComponent, IEcsComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         _systems!.Add(new EcsSystems(_world!).Add(new System<T1, T2>(method)));
     }
 
     public unsafe void AddSystem<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> method, int poolId)
-        where T1 : struct, IComponent, IEcsComponent
-        where T2 : struct, IComponent, IEcsComponent
-        where T3 : struct, IComponent, IEcsComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         _systems!.Add(new EcsSystems(_world!).Add(new System<T1, T2, T3>(method)));
     }
 
     public unsafe void AddSystem<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> method, int poolId)
-        where T1 : struct, IComponent, IEcsComponent
-        where T2 : struct, IComponent, IEcsComponent
-        where T3 : struct, IComponent, IEcsComponent
-        where T4 : struct, IComponent, IEcsComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         _systems!.Add(new EcsSystems(_world!).Add(new System<T1, T2, T3, T4>(method)));
     }

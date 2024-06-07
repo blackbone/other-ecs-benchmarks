@@ -6,12 +6,12 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-        <InvariantGlobalization>true</InvariantGlobalization>
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Benchmark._Context\Benchmark._Context.csproj"/>
-        <ProjectReference Include="..\submodules\DragonECS\DragonECS.csproj" />
+      <ProjectReference Include="..\Benchmark._Context\Benchmark._Context.csproj" />
+      <ProjectReference Include="..\submodules\xeno\Xeno.csproj" />
+      <ProjectReference Include="..\submodules\xeno\src~\Xeno.SourceGenerator\Xeno.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
     </ItemGroup>
 
 </Project>

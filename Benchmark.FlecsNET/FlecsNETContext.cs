@@ -1,9 +1,10 @@
 ﻿using Benchmark._Context;
-using DCFApixels.DragonECS;
 using Flecs.NET.Core;
-using Scellecs.Morpeh;
 using Entity = Flecs.NET.Core.Entity;
 using World = Flecs.NET.Core.World;
+using MorpehComponent = Scellecs.Morpeh.IComponent;
+using DragonComponent = DCFApixels.DragonECS.IEcsComponent;
+using XenoComponent = Xeno.IComponent;
 
 namespace Benchmark.FlecsNET;
 
@@ -48,28 +49,28 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
         _world.DeferEnd();
     }
 
-    public void Warmup<T1>(in int poolId) where T1 : struct, IComponent, IEcsComponent
+    public void Warmup<T1>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         _queries![poolId] = _world.QueryBuilder().With<T1>().Build();
     }
 
-    public void Warmup<T1, T2>(in int poolId) where T1 : struct, IComponent, IEcsComponent
-        where T2 : struct, IComponent, IEcsComponent
+    public void Warmup<T1, T2>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         _queries![poolId] = _world.QueryBuilder().With<T1>().With<T2>().Build();
     }
 
-    public void Warmup<T1, T2, T3>(in int poolId) where T1 : struct, IComponent, IEcsComponent
-        where T2 : struct, IComponent, IEcsComponent
-        where T3 : struct, IComponent, IEcsComponent
+    public void Warmup<T1, T2, T3>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         _queries![poolId] = _world.QueryBuilder().With<T1>().With<T2>().With<T3>().Build();
     }
 
-    public void Warmup<T1, T2, T3, T4>(in int poolId) where T1 : struct, IComponent, IEcsComponent
-        where T2 : struct, IComponent, IEcsComponent
-        where T3 : struct, IComponent, IEcsComponent
-        where T4 : struct, IComponent, IEcsComponent
+    public void Warmup<T1, T2, T3, T4>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         _queries![poolId] = _world.QueryBuilder().With<T1>().With<T2>().With<T3>().With<T4>().Build();
     }
@@ -105,7 +106,7 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
     }
 
     public void CreateEntities<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default)
-        where T1 : struct, IComponent, IEcsComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
@@ -115,7 +116,7 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
     }
 
     public void CreateEntities<T1, T2>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default)
-        where T1 : struct, IComponent, IEcsComponent where T2 : struct, IComponent, IEcsComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
@@ -126,9 +127,9 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
 
     public void CreateEntities<T1, T2, T3>(in Array entitySet, in int poolId = -1, in T1 c1 = default,
         in T2 c2 = default,
-        in T3 c3 = default) where T1 : struct, IComponent, IEcsComponent
-        where T2 : struct, IComponent, IEcsComponent
-        where T3 : struct, IComponent, IEcsComponent
+        in T3 c3 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
@@ -139,10 +140,10 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
 
     public void CreateEntities<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1, in T1 c1 = default,
         in T2 c2 = default,
-        in T3 c3 = default, in T4 c4 = default) where T1 : struct, IComponent, IEcsComponent
-        where T2 : struct, IComponent, IEcsComponent
-        where T3 : struct, IComponent, IEcsComponent
-        where T4 : struct, IComponent, IEcsComponent
+        in T3 c3 = default, in T4 c4 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
@@ -152,7 +153,7 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
     }
 
     public void AddComponent<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default)
-        where T1 : struct, IComponent, IEcsComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
@@ -160,7 +161,7 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
     }
 
     public void AddComponent<T1, T2>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default)
-        where T1 : struct, IComponent, IEcsComponent where T2 : struct, IComponent, IEcsComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
@@ -168,9 +169,9 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
     }
 
     public void AddComponent<T1, T2, T3>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default,
-        in T3 c3 = default) where T1 : struct, IComponent, IEcsComponent
-        where T2 : struct, IComponent, IEcsComponent
-        where T3 : struct, IComponent, IEcsComponent
+        in T3 c3 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
@@ -179,17 +180,17 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
 
     public void AddComponent<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1, in T1 c1 = default,
         in T2 c2 = default,
-        in T3 c3 = default, in T4 c4 = default) where T1 : struct, IComponent, IEcsComponent
-        where T2 : struct, IComponent, IEcsComponent
-        where T3 : struct, IComponent, IEcsComponent
-        where T4 : struct, IComponent, IEcsComponent
+        in T3 c3 = default, in T4 c4 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i].Set(c1).Set(c2).Set(c3).Set(c4);
     }
 
-    public void RemoveComponent<T1>(in Array entitySet, in int poolId = -1) where T1 : struct, IComponent, IEcsComponent
+    public void RemoveComponent<T1>(in Array entitySet, in int poolId = -1) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
@@ -198,7 +199,7 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
     }
 
     public void RemoveComponent<T1, T2>(in Array entitySet, in int poolId = -1)
-        where T1 : struct, IComponent, IEcsComponent where T2 : struct, IComponent, IEcsComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
@@ -209,9 +210,9 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
     }
 
     public void RemoveComponent<T1, T2, T3>(in Array entitySet, in int poolId = -1)
-        where T1 : struct, IComponent, IEcsComponent
-        where T2 : struct, IComponent, IEcsComponent
-        where T3 : struct, IComponent, IEcsComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
@@ -223,10 +224,10 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
     }
 
     public void RemoveComponent<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1)
-        where T1 : struct, IComponent, IEcsComponent
-        where T2 : struct, IComponent, IEcsComponent
-        where T3 : struct, IComponent, IEcsComponent
-        where T4 : struct, IComponent, IEcsComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
@@ -238,41 +239,41 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
         }
     }
 
-    public int CountWith<T1>(in int poolId) where T1 : struct, IComponent, IEcsComponent
+    public int CountWith<T1>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         var n = 0;
         _queries![poolId].Each(_ => n++);
         return n;
     }
 
-    public int CountWith<T1, T2>(in int poolId) where T1 : struct, IComponent, IEcsComponent
-        where T2 : struct, IComponent, IEcsComponent
+    public int CountWith<T1, T2>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         var n = 0;
         _queries![poolId].Each(_ => n++);
         return n;
     }
 
-    public int CountWith<T1, T2, T3>(in int poolId) where T1 : struct, IComponent, IEcsComponent
-        where T2 : struct, IComponent, IEcsComponent
-        where T3 : struct, IComponent, IEcsComponent
+    public int CountWith<T1, T2, T3>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         var n = 0;
         _queries![poolId].Each(_ => n++);
         return n;
     }
 
-    public int CountWith<T1, T2, T3, T4>(in int poolId) where T1 : struct, IComponent, IEcsComponent
-        where T2 : struct, IComponent, IEcsComponent
-        where T3 : struct, IComponent, IEcsComponent
-        where T4 : struct, IComponent, IEcsComponent
+    public int CountWith<T1, T2, T3, T4>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         var n = 0;
         _queries![poolId].Each(_ => n++);
         return n;
     }
 
-    public bool GetSingle<T1>(in object? entity, in int poolId, ref T1 c1) where T1 : struct, IComponent, IEcsComponent
+    public bool GetSingle<T1>(in object? entity, in int poolId, ref T1 c1) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         if (entity == null) return false;
         var e = (Entity)entity;
@@ -281,7 +282,7 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
     }
 
     public bool GetSingle<T1, T2>(in object? entity, in int poolId, ref T1 c1, ref T2 c2)
-        where T1 : struct, IComponent, IEcsComponent where T2 : struct, IComponent, IEcsComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         if (entity == null) return false;
         var e = (Entity)entity;
@@ -292,9 +293,9 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
     }
 
     public bool GetSingle<T1, T2, T3>(in object? entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3)
-        where T1 : struct, IComponent, IEcsComponent
-        where T2 : struct, IComponent, IEcsComponent
-        where T3 : struct, IComponent, IEcsComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         if (entity == null) return false;
         var e = (Entity)entity;
@@ -306,10 +307,10 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
     }
 
     public bool GetSingle<T1, T2, T3, T4>(in object? entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4)
-        where T1 : struct, IComponent, IEcsComponent
-        where T2 : struct, IComponent, IEcsComponent
-        where T3 : struct, IComponent, IEcsComponent
-        where T4 : struct, IComponent, IEcsComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         if (entity == null) return false;
         var e = (Entity)entity;
@@ -328,7 +329,7 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
     }
 
     public unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId)
-        where T1 : struct, IComponent, IEcsComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         _systems!.Add(_ => _queries![poolId].Iter((Iter iter, Column<T1> c1) =>
         {
@@ -338,7 +339,7 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
     }
 
     public unsafe void AddSystem<T1, T2>(delegate*<ref T1, ref T2, void> method, int poolId)
-        where T1 : struct, IComponent, IEcsComponent where T2 : struct, IComponent, IEcsComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         _systems!.Add(_ => _queries![poolId].Iter((Iter iter, Column<T1> c1, Column<T2> c2) =>
         {
@@ -348,9 +349,9 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
     }
 
     public unsafe void AddSystem<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> method, int poolId)
-        where T1 : struct, IComponent, IEcsComponent
-        where T2 : struct, IComponent, IEcsComponent
-        where T3 : struct, IComponent, IEcsComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         _systems!.Add(_ => _queries![poolId].Iter((Iter iter, Column<T1> c1, Column<T2> c2, Column<T3> c3) =>
         {
@@ -360,10 +361,10 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
     }
 
     public unsafe void AddSystem<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> method, int poolId)
-        where T1 : struct, IComponent, IEcsComponent
-        where T2 : struct, IComponent, IEcsComponent
-        where T3 : struct, IComponent, IEcsComponent
-        where T4 : struct, IComponent, IEcsComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         _systems!.Add(_ => _queries![poolId].Iter(
             (Iter iter, Column<T1> c1, Column<T2> c2, Column<T3> c3, Column<T4> c4) =>
