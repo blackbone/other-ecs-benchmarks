@@ -40,19 +40,23 @@ public sealed class DefaultECSContext(int entityCount = 4096) : IBenchmarkContex
     {
     }
 
-    public void Warmup<T1>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+    public void Warmup<T1>(in int poolId)
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
         => _queries![poolId] = _world!.GetEntities().With<T1>();
 
-    public void Warmup<T1, T2>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+    public void Warmup<T1, T2>(in int poolId)
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
         => _queries![poolId] = _world!.GetEntities().With<T1>().With<T2>();
 
-    public void Warmup<T1, T2, T3>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+    public void Warmup<T1, T2, T3>(in int poolId)
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
         => _queries![poolId] = _world!.GetEntities().With<T1>().With<T2>().With<T3>();
 
-    public void Warmup<T1, T2, T3, T4>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+    public void Warmup<T1, T2, T3, T4>(in int poolId)
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T4 : struct, MorpehComponent, DragonComponent, XenoComponent
@@ -72,8 +76,7 @@ public sealed class DefaultECSContext(int entityCount = 4096) : IBenchmarkContex
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
-            if (entities[i].IsAlive)
-                entities[i].Dispose();
+            if (entities[i].IsAlive) entities[i].Dispose();
     }
 
     public Array Shuffle(in Array entitySet)

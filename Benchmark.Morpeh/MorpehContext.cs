@@ -64,14 +64,22 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
 
     public void Warmup<T1>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
-        _stashes![poolId] = [_world!.GetStash<T1>()];
+        var s1 = _world!.GetStash<T1>();
+        s1.data = new T1[EntityCount];
+        
+        _stashes![poolId] = [s1];
         _filters![poolId] = _world!.Filter.With<T1>().Build();
     }
 
     public void Warmup<T1, T2>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
-        _stashes![poolId] = [_world!.GetStash<T1>(), _world!.GetStash<T2>()];
+        var s1 = _world!.GetStash<T1>();
+        s1.data = new T1[EntityCount];
+        var s2 = _world!.GetStash<T2>();
+        s2.data = new T2[EntityCount];
+        
+        _stashes![poolId] = [s1, s2];
         _filters![poolId] = _world!.Filter.With<T1>().With<T2>().Build();
     }
 
@@ -79,7 +87,14 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
-        _stashes![poolId] = [_world!.GetStash<T1>(), _world!.GetStash<T2>(), _world!.GetStash<T3>()];
+        var s1 = _world!.GetStash<T1>();
+        s1.data = new T1[EntityCount];
+        var s2 = _world!.GetStash<T2>();
+        s2.data = new T2[EntityCount];
+        var s3 = _world!.GetStash<T3>();
+        s3.data = new T3[EntityCount];
+        
+        _stashes![poolId] = [s1, s2, s3];
         _filters![poolId] = _world!.Filter.With<T1>().With<T2>().With<T3>().Build();
     }
 
@@ -88,8 +103,16 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T4 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
-        _stashes![poolId] =
-            [_world!.GetStash<T1>(), _world!.GetStash<T2>(), _world!.GetStash<T3>(), _world!.GetStash<T4>()];
+        var s1 = _world!.GetStash<T1>();
+        s1.data = new T1[EntityCount];
+        var s2 = _world!.GetStash<T2>();
+        s2.data = new T2[EntityCount];
+        var s3 = _world!.GetStash<T3>();
+        s3.data = new T3[EntityCount];
+        var s4 = _world!.GetStash<T3>();
+        s4.data = new T3[EntityCount];
+        
+        _stashes![poolId] = [s1, s2, s3, s4];
         _filters![poolId] = _world!.Filter.With<T1>().With<T2>().With<T3>().With<T4>().Build();
     }
 

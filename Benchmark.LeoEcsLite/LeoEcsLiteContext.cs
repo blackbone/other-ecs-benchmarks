@@ -21,7 +21,13 @@ public sealed class LeoEcsLiteContext(int entityCount = 4096) : IBenchmarkContex
 
     public void Setup()
     {
-        _world = new EcsWorld(new EcsWorld.Config { Entities = entityCount });
+        _world = new EcsWorld(new EcsWorld.Config
+        {
+            Entities = entityCount,
+            PoolDenseSize = entityCount,
+            PoolRecycledSize = entityCount,
+            EntityComponentsSize = entityCount
+        });
     }
 
     public void FinishSetup()

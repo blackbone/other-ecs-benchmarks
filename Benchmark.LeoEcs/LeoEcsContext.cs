@@ -46,12 +46,15 @@ public sealed class LeoEcsContext(int entityCount = 4096) : IBenchmarkContext
     public void Warmup<T1>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         _filters![poolId] = _world!.GetFilter(typeof(EcsFilter<T1>));
+        _world!.GetPool<T1>().SetCapacity(EntityCount);
     }
 
     public void Warmup<T1, T2>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         _filters![poolId] = _world!.GetFilter(typeof(EcsFilter<T1, T2>));
+        _world!.GetPool<T1>().SetCapacity(EntityCount);
+        _world!.GetPool<T2>().SetCapacity(EntityCount);
     }
 
     public void Warmup<T1, T2, T3>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
@@ -59,6 +62,9 @@ public sealed class LeoEcsContext(int entityCount = 4096) : IBenchmarkContext
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         _filters![poolId] = _world!.GetFilter(typeof(EcsFilter<T1, T2, T3>));
+        _world!.GetPool<T1>().SetCapacity(EntityCount);
+        _world!.GetPool<T2>().SetCapacity(EntityCount);
+        _world!.GetPool<T3>().SetCapacity(EntityCount);
     }
 
     public void Warmup<T1, T2, T3, T4>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
@@ -67,6 +73,10 @@ public sealed class LeoEcsContext(int entityCount = 4096) : IBenchmarkContext
         where T4 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         _filters![poolId] = _world!.GetFilter(typeof(EcsFilter<T1, T2, T3, T4>));
+        _world!.GetPool<T1>().SetCapacity(EntityCount);
+        _world!.GetPool<T2>().SetCapacity(EntityCount);
+        _world!.GetPool<T3>().SetCapacity(EntityCount);
+        _world!.GetPool<T4>().SetCapacity(EntityCount);
     }
 
     public void Lock()
