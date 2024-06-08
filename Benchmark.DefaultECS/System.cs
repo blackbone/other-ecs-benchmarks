@@ -10,9 +10,8 @@ public sealed unsafe class System<T1>(EntityQueryBuilder query, delegate*<ref T1
 
     public void Update(float state)
     {
-        var entities = query.AsSet().GetEntities();
-        for (int i = 0; i < entities.Length; i++)
-            method(ref entities[i].Get<T1>());
+        foreach (var entity in query.AsEnumerable())
+            method(ref entity.Get<T1>());
     }
 }
 
@@ -23,9 +22,8 @@ public sealed unsafe class System<T1, T2>(EntityQueryBuilder query, delegate*<re
 
     public void Update(float state)
     {
-        var entities = query.AsSet().GetEntities();
-        for (int i = 0; i < entities.Length; i++)
-            method(ref entities[i].Get<T1>(), ref entities[i].Get<T2>());
+        foreach (var entity in query.AsEnumerable())
+            method(ref entity.Get<T1>(), ref entity.Get<T2>());
     }
 }
 
@@ -36,9 +34,8 @@ public sealed unsafe class System<T1, T2, T3>(EntityQueryBuilder query, delegate
 
     public void Update(float state)
     {
-        var entities = query.AsSet().GetEntities();
-        for (int i = 0; i < entities.Length; i++)
-            method(ref entities[i].Get<T1>(), ref entities[i].Get<T2>(), ref entities[i].Get<T3>());
+        foreach (var entity in query.AsEnumerable())
+            method(ref entity.Get<T1>(), ref entity.Get<T2>(), ref entity.Get<T3>());
     }
 }
 
@@ -49,8 +46,7 @@ public sealed unsafe class System<T1, T2, T3, T4>(EntityQueryBuilder query, dele
 
     public void Update(float state)
     {
-        var entities = query.AsSet().GetEntities();
-        for (int i = 0; i < entities.Length; i++)
-            method(ref entities[i].Get<T1>(), ref entities[i].Get<T2>(), ref entities[i].Get<T3>(), ref entities[i].Get<T4>());
+        foreach (var entity in query.AsEnumerable())
+            method(ref entity.Get<T1>(), ref entity.Get<T2>(), ref entity.Get<T3>(), ref entity.Get<T4>());
     }
 }
