@@ -100,7 +100,7 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
         var s1 = _world!.GetStash<T1>();
         var s2 = _world!.GetStash<T2>();
         var s3 = _world!.GetStash<T3>();
-        var s4 = _world!.GetStash<T3>();
+        var s4 = _world!.GetStash<T4>();
         
         _stashes![poolId] = [s1, s2, s3, s4];
         _filters![poolId] = _world!.Filter.With<T1>().With<T2>().With<T3>().With<T4>().Build();
