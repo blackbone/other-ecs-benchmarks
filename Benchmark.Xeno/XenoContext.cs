@@ -21,6 +21,7 @@ public class XenoContext(int entityCount = 4096) : IBenchmarkContext
     public void Setup()
     {
         _world = Worlds.Create($"xeno_world_{DateTimeOffset.UtcNow.Ticks}");
+        _world!.EnsureCapacity(EntityCount);
     }
 
     public void FinishSetup()
@@ -28,19 +29,26 @@ public class XenoContext(int entityCount = 4096) : IBenchmarkContext
         _world!.Start();
     }
 
-    public void Warmup<T1>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+    public void Warmup<T1>(in int poolId)
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
+        _world!.EnsureCapacity<T1>(entityCount);
     }
 
     public void Warmup<T1, T2>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
+        _world!.EnsureCapacity<T1>(entityCount);
+        _world!.EnsureCapacity<T2>(entityCount);
     }
 
     public void Warmup<T1, T2, T3>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
+        _world!.EnsureCapacity<T1>(entityCount);
+        _world!.EnsureCapacity<T2>(entityCount);
+        _world!.EnsureCapacity<T3>(entityCount);
     }
 
     public void Warmup<T1, T2, T3, T4>(in int poolId)
@@ -49,6 +57,10 @@ public class XenoContext(int entityCount = 4096) : IBenchmarkContext
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T4 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
+        _world!.EnsureCapacity<T1>(entityCount);
+        _world!.EnsureCapacity<T2>(entityCount);
+        _world!.EnsureCapacity<T3>(entityCount);
+        _world!.EnsureCapacity<T4>(entityCount);
     }
 
     public void Cleanup()
@@ -370,5 +382,5 @@ public unsafe partial class System4<C1, C2, C3, C4>
     public System4(delegate*<ref C1, ref C2, ref C3, ref C4, void> method) : this() => _method = method;
     
     [SystemMethod(SystemMethodType.Update)]
-    private void Update_2(ref C1 c1, ref C2 c2, ref C3 c3, ref C4 c4) => _method(ref c1, ref c2, ref c3, ref c4);
+    private void Update(ref C1 c1, ref C2 c2, ref C3 c3, ref C4 c4) => _method(ref c1, ref c2, ref c3, ref c4);
 }
