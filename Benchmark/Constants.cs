@@ -17,6 +17,6 @@ public static class Constants
 #else
     public const int EntityCount = LargeEntityCount;
     public const int SystemEntityCount = LargeEntityCount;
-    public const int IterationCount = LargeIterationCount;
+    public const int IterationCount = SmallIterationCount;
 #endif
 }

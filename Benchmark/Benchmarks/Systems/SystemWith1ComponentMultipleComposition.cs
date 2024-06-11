@@ -4,7 +4,6 @@ using BenchmarkDotNet.Attributes;
 namespace Benchmark.Benchmarks.Systems;
 
 [ArtifactsPath(".benchmark_results/" + nameof(SystemWith1ComponentMultipleComposition<T>))]
-[BenchmarkCategory(Categories.PerInvocationSetup)]
 [MemoryDiagnoser]
 #if CHECK_CACHE_MISSES
 [HardwareCounters(BenchmarkDotNet.Diagnosers.HardwareCounter.CacheMisses)]
@@ -13,13 +12,15 @@ public abstract class SystemWith1ComponentMultipleComposition<T> : IBenchmark<T>
 {
     [Params(Constants.SystemEntityCount)] public int EntityCount { get; set; }
     [Params(0, 10)] public int Padding { get; set; }
-    [Params(100)] public int Iterations { get; set; }
+    [Params(Constants.IterationCount)]  public int Iterations { get; set; }
 
     public T Context { get; set; }
 
     [IterationSetup]
     public void Setup()
     {
+        if (!System.Diagnostics.Debugger.IsAttached) System.Threading.Thread.Sleep(100);
+
         Context = BenchmarkContext.Create<T>(EntityCount);
         Context?.Setup();
 

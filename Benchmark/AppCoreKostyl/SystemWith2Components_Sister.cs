@@ -12,7 +12,7 @@ public class SystemWith2Components_Sister : IBenchmark
 
     [Params(0, 10)] public int Padding { get; set; }
 
-    [Params(100)] public int Iterations { get; set; }
+    [Params(Constants.IterationCount)]  public int Iterations { get; set; }
     public SisterContext Context { get; set; }
 
     [IterationSetup]

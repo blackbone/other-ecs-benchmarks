@@ -14,7 +14,7 @@ namespace Benchmark.AppCoreKostyl
         [Params(0, 10)]
         public int Padding { get; set; }
 
-        [Params(100)]
+        [Params(Constants.IterationCount)] 
         public int Iterations { get; set; }
         public SisterContext Context { get; set; }
 

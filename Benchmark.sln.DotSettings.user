@@ -3,12 +3,10 @@
 	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer&gt;
   &lt;Assembly Path="/Users/scabr/.nuget/packages/scellecs.morpeh/2023.1.0/lib/netstandard2.1/Scellecs.Morpeh.dll" /&gt;
 &lt;/AssemblyExplorer&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=190bf258_002Ddd55_002D4289_002D9456_002D6b492e876d5a/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="Session" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
-  &lt;And&gt;
-    &lt;Namespace&gt;Bentchmark.Tests&lt;/Namespace&gt;
-    &lt;Project Location="/Users/scabr/git/other-ecs-benchmarks/Bentchmark.Tests" Presentation="&amp;lt;Bentchmark.Tests&amp;gt;" /&gt;
-  &lt;/And&gt;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=c592c06d_002Dba2c_002D4425_002D8120_002Dc45d365402ea/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="All tests from Solution" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;Solution /&gt;
 &lt;/SessionState&gt;</s:String>
+	
 	
 	
 	
