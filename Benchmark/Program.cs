@@ -14,6 +14,7 @@ using BenchmarkDotNet.Engines;
 using BenchmarkDotNet.Exporters;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
+using BenchmarkDotNet.Toolchains.InProcess.Emit;
 
 // clear previous results
 if (Directory.Exists(".benchmark_results"))
@@ -24,27 +25,36 @@ var options = ParseCommandLineArgs(args);
 
 // configure jobs
 var shortJob = Job.ShortRun
+#if DEBUG
+    .WithToolchain(InProcessEmitToolchain.DontLogOutput)
+#endif
     .WithStrategy(RunStrategy.Monitoring)
     .Apply();
 
 var clearEachInvocationJob = Job.Dry
+#if DEBUG
+    .WithToolchain(InProcessEmitToolchain.DontLogOutput)
+#endif
     .WithInvocationCount(1)
-    .WithIterationCount(1)
+    .WithIterationCount(32)
     .WithStrategy(RunStrategy.Throughput)
     .Apply();
+
 var precisionJob = Job.Default
+#if DEBUG
+    .WithToolchain(InProcessEmitToolchain.DontLogOutput)
+#endif
     .WithUnrollFactor(16)
     .WithStrategy(RunStrategy.Throughput)
     .Apply();
 
 // configure runner
 IConfig configuration = DefaultConfig.Instance
-        .AddExporter(MarkdownExporter.GitHub)
-        .WithOptions(ConfigOptions.DisableOptimizationsValidator)
-        .WithOption(ConfigOptions.JoinSummary, true)
-        .HideColumns(Column.Gen0, Column.Gen1, Column.Gen2, Column.Type, Column.Error, Column.Method, Column.Namespace, Column.StdDev)
-        .AddColumn(new ContextColumn())
-    ;
+    .AddExporter(MarkdownExporter.GitHub)
+    .WithOptions(ConfigOptions.DisableOptimizationsValidator)
+    .WithOption(ConfigOptions.JoinSummary, true)
+    .HideColumns(Column.Gen0, Column.Gen1, Column.Gen2, Column.Type, Column.Error, Column.Method, Column.Namespace, Column.StdDev)
+    .AddColumn(new ContextColumn());
 
 if (options.PrintList)
 {

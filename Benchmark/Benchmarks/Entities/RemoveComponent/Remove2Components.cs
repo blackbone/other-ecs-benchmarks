@@ -6,6 +6,7 @@ namespace Benchmark.Benchmarks.Entities.RemoveComponent;
 
 [ArtifactsPath(".benchmark_results/" + nameof(Remove2Components<T>))]
 [MemoryDiagnoser]
+[BenchmarkCategory(Categories.PerInvocationSetup)]
 #if CHECK_CACHE_MISSES
 [HardwareCounters(BenchmarkDotNet.Diagnosers.HardwareCounter.CacheMisses)]
 #endif

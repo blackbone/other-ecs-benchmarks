@@ -6,6 +6,7 @@ namespace Benchmark.Benchmarks.Entities.AddComponent;
 
 [ArtifactsPath(".benchmark_results/" + nameof(Add1Component<T>))]
 [MemoryDiagnoser]
+[BenchmarkCategory(Categories.PerInvocationSetup)]
 #if CHECK_CACHE_MISSES
 [HardwareCounters(BenchmarkDotNet.Diagnosers.HardwareCounter.CacheMisses)]
 #endif
@@ -30,7 +31,6 @@ public abstract class Add1Component<T> : IBenchmark<T> where T : IBenchmarkConte
     [IterationCleanup]
     public void Cleanup()
     {
-        Context?.RemoveComponent<Component1>(_entitySet, 0);
         Context?.DeleteEntities(_entitySet);
         Context?.Cleanup();
         Context?.Dispose();

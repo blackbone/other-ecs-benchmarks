@@ -14,7 +14,7 @@
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-        <DefineConstants>TRACE;SHORT_RUN</DefineConstants>
+        <DefineConstants>TRACE;</DefineConstants>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
@@ -24,7 +24,6 @@
     <!-- NUGET REFERENCES -->
     <ItemGroup>
         <PackageReference Include="BenchmarkDotNet" Version="0.13.12"/>
-        <PackageReference Include="BenchmarkDotNet.Diagnostics.dotTrace" Version="0.13.12" />
     </ItemGroup>
 
     <!-- SUPPORT REFERENCES -->
