@@ -12,7 +12,7 @@ public abstract class SystemWith3ComponentsMultipleComposition<T> : IBenchmark<T
 {
     [Params(Constants.SystemEntityCount)] public int EntityCount { get; set; }
     [Params(0, 10)] public int Padding { get; set; }
-    [Params(Constants.IterationCount)]  public int Iterations { get; set; }
+    [Params(Constants.IterationCount)] public int Iterations { get; set; }
 
     public T Context { get; set; }
 
@@ -48,7 +48,8 @@ public abstract class SystemWith3ComponentsMultipleComposition<T> : IBenchmark<T
                         break;
                 }
 
-            Context?.CreateEntities(set, 3, default(Component1), new Component2 { Value = 1 }, new Component3 { Value = 1 });
+            Context?.CreateEntities(set, 3, default(Component1), new Component2 { Value = 1 },
+                new Component3 { Value = 1 });
 
             switch (i % 4)
             {

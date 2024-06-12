@@ -12,7 +12,7 @@ public abstract class SystemWith2Components<T> : IBenchmark<T> where T : IBenchm
 {
     [Params(Constants.SystemEntityCount)] public int EntityCount { get; set; }
     [Params(0, 10)] public int Padding { get; set; }
-    [Params(Constants.IterationCount)]  public int Iterations { get; set; }
+    [Params(Constants.IterationCount)] public int Iterations { get; set; }
 
     public T Context { get; set; }
 

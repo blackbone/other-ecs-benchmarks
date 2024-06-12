@@ -5,7 +5,6 @@ using BenchmarkDotNet.Attributes;
 namespace Benchmark.Benchmarks.Entities.CreateEntity;
 
 [ArtifactsPath(".benchmark_results/" + nameof(CreateEntityWith3Components<T>))]
-[BenchmarkCategory(Categories.PerInvocationSetup)]
 [MemoryDiagnoser]
 #if CHECK_CACHE_MISSES
 [HardwareCounters(BenchmarkDotNet.Diagnosers.HardwareCounter.CacheMisses)]

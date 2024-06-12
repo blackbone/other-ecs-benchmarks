@@ -12,7 +12,7 @@ public abstract class SystemWith2ComponentsMultipleComposition<T> : IBenchmark<T
 {
     [Params(Constants.SystemEntityCount)] public int EntityCount { get; set; }
     [Params(0, 10)] public int Padding { get; set; }
-    [Params(Constants.IterationCount)]  public int Iterations { get; set; }
+    [Params(Constants.IterationCount)] public int Iterations { get; set; }
 
     public T Context { get; set; }
 
@@ -47,7 +47,7 @@ public abstract class SystemWith2ComponentsMultipleComposition<T> : IBenchmark<T
                 }
 
             Context?.CreateEntities(set, 2, default(Component1), new Component2 { Value = 1 });
-            
+
             switch (i % 4)
             {
                 case 0:

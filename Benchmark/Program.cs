@@ -32,7 +32,7 @@ var clearEachInvocationJob = Job.Dry
     .WithIterationCount(1)
     .WithStrategy(RunStrategy.Throughput)
     .Apply();
-var precisionJob = Job.Dry
+var precisionJob = Job.Default
     .WithUnrollFactor(16)
     .WithStrategy(RunStrategy.Throughput)
     .Apply();

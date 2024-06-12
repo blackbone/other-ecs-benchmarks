@@ -4,7 +4,6 @@ using BenchmarkDotNet.Attributes;
 
 namespace Benchmark.Benchmarks.Entities.RemoveComponent;
 
-[BenchmarkCategory(Categories.PerInvocationSetup)]
 [ArtifactsPath(".benchmark_results/" + nameof(Remove2ComponentsRandomOrder<T>))]
 [MemoryDiagnoser]
 #if CHECK_CACHE_MISSES
