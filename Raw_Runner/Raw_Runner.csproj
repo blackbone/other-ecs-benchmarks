@@ -8,10 +8,10 @@
         <Nullable>enable</Nullable>
         <PublishAot>true</PublishAot>
         <InvariantGlobalization>true</InvariantGlobalization>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Benchmark.KremAppCore\Benchmark.KremAppCore.csproj" />
       <ProjectReference Include="..\Benchmark\Benchmark.csproj" />
     </ItemGroup>
 
