@@ -16,7 +16,7 @@ public abstract class SystemWith2Components<T> : IBenchmark<T> where T : IBenchm
 
     public T Context { get; set; }
 
-    [IterationSetup]
+    [GlobalSetup]
     public void Setup()
     {
         Context = BenchmarkContext.Create<T>(EntityCount);
@@ -56,7 +56,7 @@ public abstract class SystemWith2Components<T> : IBenchmark<T> where T : IBenchm
         Context?.FinishSetup();
     }
 
-    [IterationCleanup]
+    [GlobalCleanup]
     public void Cleanup()
     {
         Context?.Cleanup();

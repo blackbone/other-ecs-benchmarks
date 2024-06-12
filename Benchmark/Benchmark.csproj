@@ -43,7 +43,6 @@
         <ProjectReference Include="..\Benchmark.Morpeh\Benchmark.Morpeh.csproj"/>
         <ProjectReference Include="..\Benchmark.DefaultECS\Benchmark.DefaultECS.csproj"/>
         <ProjectReference Include="..\Benchmark.FlecsNET\Benchmark.FlecsNET.csproj"/>
-        <ProjectReference Include="..\Benchmark.KremAppCore\Benchmark.KremAppCore.csproj" />
         <ProjectReference Include="..\Benchmark.LeoEcsLite\Benchmark.LeoEcsLite.csproj"/>
     </ItemGroup>
 

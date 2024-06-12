@@ -1,6 +1,5 @@
 using Benchmark;
 using Benchmark._Context;
-using Benchmark.KremAppCore;
 
 // ReSharper disable CyclomaticComplexity
 
@@ -23,8 +22,6 @@ public class TestContexts
     {
         foreach (var contextType in BenchMap.Contexts.Keys)
         {
-            if (contextType == typeof(SisterContext)) continue;
-            
             var ctor = contextType.GetConstructors().First();
             yield return ctor.Invoke([Constants.EntityCount]) as IBenchmarkContext;
         }

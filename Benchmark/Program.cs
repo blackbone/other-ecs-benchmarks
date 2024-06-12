@@ -15,9 +15,6 @@ using BenchmarkDotNet.Exporters;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
 
-// SETUP APP CORE SISTER CONTEXT
-Sister.InjectBenchmarks();
-
 // clear previous results
 if (Directory.Exists(".benchmark_results"))
     Directory.Delete(".benchmark_results", true);

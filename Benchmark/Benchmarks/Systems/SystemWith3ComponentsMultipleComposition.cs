@@ -16,7 +16,7 @@ public abstract class SystemWith3ComponentsMultipleComposition<T> : IBenchmark<T
 
     public T Context { get; set; }
 
-    [IterationSetup]
+    [GlobalSetup]
     public void Setup()
     {
         Context = BenchmarkContext.Create<T>(EntityCount);
@@ -78,7 +78,7 @@ public abstract class SystemWith3ComponentsMultipleComposition<T> : IBenchmark<T
         Context?.FinishSetup();
     }
 
-    [IterationCleanup]
+    [GlobalCleanup]
     public void Cleanup()
     {
         Context?.Cleanup();

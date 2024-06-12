@@ -38,7 +38,7 @@ General flow of any benchmark execution is divided into 3 steps:
 
 |                                                        ECS | Version                                                                                           |  Implemented  |  Verified  |       Notes       |
 |-----------------------------------------------------------:|:--------------------------------------------------------------------------------------------------|:-------------:|:----------:|:-----------------:|
-|                    [Arch](https://github.com/genaray/Arch) | [1.2.8](https://www.nuget.org/packages/Arch/1.2.8)                                                |       ✅       |     ❌      |        N/A        |
+|                    [Arch](https://github.com/genaray/Arch) | [1.2.8.1-alpha](https://www.nuget.org/packages/Arch/1.2.8.1-alpha)                                |       ✅       |     ❌      |        N/A        |
 |                           [fennecs](https://fennecs.tech/) | [0.5.4-beta](https://www.nuget.org/packages/fennecs/0.5.4-beta)                                   |       ✅       |     ❌      |        N/A        |
 |               [Morpeh](https://github.com/scellecs/morpeh) | [2024.1.0-rc48](https://github.com/scellecs/morpeh/releases/tag/2024.1.0-rc48)                    |       ✅       |     ❌      |        N/A        |
 |       [DragonECS](https://github.com/DCFApixels/DragonECS) | [0.8.36](https://github.com/DCFApixels/DragonECS/commit/29f656f394984e738c7fc70bacca050ffea746d8) |       ✅       |     ❌      |        N/A        |

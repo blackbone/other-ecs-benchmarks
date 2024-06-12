@@ -5,6 +5,7 @@ namespace Benchmark.Benchmarks.Systems;
 
 [ArtifactsPath(".benchmark_results/" + nameof(SystemWith1ComponentMultipleComposition<T>))]
 [MemoryDiagnoser]
+[BenchmarkDotNet.Diagnostics.dotTrace.DotTraceDiagnoser]
 #if CHECK_CACHE_MISSES
 [HardwareCounters(BenchmarkDotNet.Diagnosers.HardwareCounter.CacheMisses)]
 #endif
@@ -16,11 +17,9 @@ public abstract class SystemWith1ComponentMultipleComposition<T> : IBenchmark<T>
 
     public T Context { get; set; }
 
-    [IterationSetup]
+    [GlobalSetup]
     public void Setup()
     {
-        if (!System.Diagnostics.Debugger.IsAttached) System.Threading.Thread.Sleep(100);
-
         Context = BenchmarkContext.Create<T>(EntityCount);
         Context?.Setup();
 
@@ -66,7 +65,7 @@ public abstract class SystemWith1ComponentMultipleComposition<T> : IBenchmark<T>
         Context?.FinishSetup();
     }
 
-    [IterationCleanup]
+    [GlobalCleanup]
     public void Cleanup()
     {
         Context?.Cleanup();
