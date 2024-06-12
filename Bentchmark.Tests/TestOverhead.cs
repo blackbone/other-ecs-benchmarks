@@ -1,4 +1,6 @@
+using System.Reflection;
 using Benchmark;
+using BenchmarkDotNet.Attributes;
 
 namespace Bentchmark.Tests;
 
@@ -10,13 +12,20 @@ public class TestOverhead
     {
         Assert.NotNull(benchmark);
 
+        var isGlobalSetup = typeof(T).GetMethod(nameof(IBenchmark.Setup))?.GetCustomAttribute(typeof(GlobalSetupAttribute)) != null;
+        var isGlobalCleanup = typeof(T).GetMethod(nameof(IBenchmark.Cleanup))?.GetCustomAttribute(typeof(GlobalCleanupAttribute)) != null;
+
+        if (isGlobalSetup) benchmark.Setup();
+        
         // because of repetative logic we need to check bench will clear and reuse correctly
         var i = 3;
         while (i-- > 0)
         {
-            benchmark.Setup();
-            benchmark.Cleanup();
+            if (!isGlobalSetup) benchmark.Setup();
+            if (!isGlobalCleanup) benchmark.Cleanup();
         }
+        
+        if (isGlobalCleanup) benchmark.Cleanup();
     }
 
     public static IEnumerable<IBenchmark?> GetBenchmarks()

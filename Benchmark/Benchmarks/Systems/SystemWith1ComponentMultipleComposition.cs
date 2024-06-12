@@ -1,12 +1,10 @@
 using Benchmark._Context;
 using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Diagnostics.dotTrace;
 
 namespace Benchmark.Benchmarks.Systems;
 
 [ArtifactsPath(".benchmark_results/" + nameof(SystemWith1ComponentMultipleComposition<T>))]
 [MemoryDiagnoser]
-[DotTraceDiagnoser]
 #if CHECK_CACHE_MISSES
 [HardwareCounters(BenchmarkDotNet.Diagnosers.HardwareCounter.CacheMisses)]
 #endif
