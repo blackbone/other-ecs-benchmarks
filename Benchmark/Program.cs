@@ -26,14 +26,14 @@ var options = ParseCommandLineArgs(args);
 // configure jobs
 var shortJob = Job.ShortRun
 #if DEBUG
-    .WithToolchain(InProcessEmitToolchain.DontLogOutput)
+    .WithToolchain(InProcessEmitToolchain.Instance)
 #endif
     .WithStrategy(RunStrategy.Monitoring)
     .Apply();
 
 var clearEachInvocationJob = Job.Dry
 #if DEBUG
-    .WithToolchain(InProcessEmitToolchain.DontLogOutput)
+    .WithToolchain(InProcessEmitToolchain.Instance)
 #endif
     .WithInvocationCount(1)
     .WithIterationCount(32)
@@ -42,9 +42,8 @@ var clearEachInvocationJob = Job.Dry
 
 var precisionJob = Job.Default
 #if DEBUG
-    .WithToolchain(InProcessEmitToolchain.DontLogOutput)
+    .WithToolchain(InProcessEmitToolchain.Instance)
 #endif
-    .WithUnrollFactor(16)
     .WithStrategy(RunStrategy.Throughput)
     .Apply();
 

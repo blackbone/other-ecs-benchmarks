@@ -12,7 +12,7 @@ public sealed class LeoEcsLiteContext(int entityCount = 4096) : IBenchmarkContex
 {
     private readonly Dictionary<int, EcsFilter>? _filters = new();
     private readonly Dictionary<int, IEcsPool[]>? _pools = new();
-    private readonly List<IEcsSystems>? _systems = new();
+    private IEcsSystems? _systems;
     private EcsWorld? _world;
 
     public bool DeletesEntityOnLastComponentDeletion => true;
@@ -26,20 +26,18 @@ public sealed class LeoEcsLiteContext(int entityCount = 4096) : IBenchmarkContex
             PoolDenseSize = entityCount,
             PoolRecycledSize = entityCount
         });
+        _systems = new EcsSystems(_world!);
     }
 
     public void FinishSetup()
     {
-        foreach (var system in _systems!)
-            system.Init();
+        _systems!.Init();
     }
 
     public void Cleanup()
     {
-        foreach (var system in _systems!)
-            system.Destroy();
-
-        _systems!.Clear();
+        _systems!.Destroy();
+        _systems = null;
         _filters!.Clear();
         _pools!.Clear();
         _world!.Destroy();
@@ -391,20 +389,19 @@ public sealed class LeoEcsLiteContext(int entityCount = 4096) : IBenchmarkContex
 
     public void Tick(float delta)
     {
-        foreach (var system in _systems!)
-            system.Run();
+        _systems!.Run();
     }
 
     public unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
-        _systems!.Add(new EcsSystems(_world!).Add(new System<T1>(method)));
+        _systems!.Add(new System<T1>(method));
     }
 
     public unsafe void AddSystem<T1, T2>(delegate*<ref T1, ref T2, void> method, int poolId)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
-        _systems!.Add(new EcsSystems(_world!).Add(new System<T1, T2>(method)));
+        _systems!.Add(new System<T1, T2>(method));
     }
 
     public unsafe void AddSystem<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> method, int poolId)
@@ -412,7 +409,7 @@ public sealed class LeoEcsLiteContext(int entityCount = 4096) : IBenchmarkContex
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
-        _systems!.Add(new EcsSystems(_world!).Add(new System<T1, T2, T3>(method)));
+        _systems!.Add(new System<T1, T2, T3>(method));
     }
 
     public unsafe void AddSystem<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> method, int poolId)
@@ -421,7 +418,7 @@ public sealed class LeoEcsLiteContext(int entityCount = 4096) : IBenchmarkContex
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T4 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
-        _systems!.Add(new EcsSystems(_world!).Add(new System<T1, T2, T3, T4>(method)));
+        _systems!.Add(new System<T1, T2, T3, T4>(method));
     }
 
     public Array Shuffle(in Array entitySet)
