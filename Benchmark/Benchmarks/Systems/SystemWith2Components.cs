@@ -12,7 +12,6 @@ public abstract class SystemWith2Components<T> : IBenchmark<T> where T : IBenchm
 {
     [Params(Constants.SystemEntityCount)] public int EntityCount { get; set; }
     [Params(0, 10)] public int Padding { get; set; }
-    [Params(Constants.IterationCount)] public int Iterations { get; set; }
 
     public T Context { get; set; }
 
@@ -65,11 +64,7 @@ public abstract class SystemWith2Components<T> : IBenchmark<T> where T : IBenchm
     }
 
     [Benchmark]
-    public void Run()
-    {
-        var i = Iterations;
-        while (i-- > 0) Context?.Tick(0.1f);
-    }
+    public void Run() => Context?.Tick(0.1f);
 
     private static void Update(ref Component1 c1, ref Component2 c2)
     {

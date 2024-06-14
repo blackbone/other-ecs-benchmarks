@@ -3,9 +3,10 @@
 	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer&gt;
   &lt;Assembly Path="/Users/scabr/.nuget/packages/scellecs.morpeh/2023.1.0/lib/netstandard2.1/Scellecs.Morpeh.dll" /&gt;
 &lt;/AssemblyExplorer&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=c592c06d_002Dba2c_002D4425_002D8120_002Dc45d365402ea/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="All tests from Solution" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=f3c1bd52_002Db1ca_002D45fe_002Db3d2_002Df11720920e39/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="All tests from Solution" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;Solution /&gt;
 &lt;/SessionState&gt;</s:String>
+	
 	
 	
 	

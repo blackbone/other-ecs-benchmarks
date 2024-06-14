@@ -77,11 +77,11 @@ public class TestContexts
         context.GetSingle(set.GetValue(0), 0, ref c1);
         Assert.That(c1.Value, Is.EqualTo(1));
 
-        for (var i = 0; i < Constants.IterationCount; i++)
+        for (var i = 0; i < 1000; i++)
             context.Tick(0.1f);
 
         context.GetSingle(set.GetValue(0), 0, ref c1);
-        Assert.That(c1.Value, Is.EqualTo(Constants.IterationCount + 1));
+        Assert.That(c1.Value, Is.EqualTo(1001));
 
         context.Lock();
         context.RemoveComponent<Component1>(set, 0);
@@ -140,11 +140,11 @@ public class TestContexts
         Assert.That(c1.Value, Is.EqualTo(1));
         Assert.That(c2.Value, Is.EqualTo(1));
 
-        for (var i = 0; i < Constants.IterationCount; i++)
+        for (var i = 0; i < 1000; i++)
             context.Tick(0.1f);
 
         context.GetSingle(set.GetValue(0), 2, ref c1, ref c2);
-        Assert.That(c1.Value, Is.EqualTo(Constants.IterationCount + 1));
+        Assert.That(c1.Value, Is.EqualTo(1001));
         Assert.That(c2.Value, Is.EqualTo(1));
 
         context.Lock();
@@ -226,7 +226,7 @@ public class TestContexts
         Assert.That(c2.Value, Is.EqualTo(1));
         Assert.That(c3.Value, Is.EqualTo(1));
 
-        for (var i = 0; i < Constants.IterationCount; i++)
+        for (var i = 0; i < 1000; i++)
             context.Tick(0.1f);
 
         context.Lock();
@@ -347,7 +347,7 @@ public class TestContexts
         Assert.That(c3.Value, Is.EqualTo(1));
         Assert.That(c4.Value, Is.EqualTo(1));
 
-        for (var i = 0; i < Constants.IterationCount; i++)
+        for (var i = 0; i < 1001; i++)
             context.Tick(0.1f);
 
         context.Lock();
