@@ -25,7 +25,7 @@ public unsafe class System<T1> : ISystem
 
     public void Run(float delta)
     {
-        _stream.For(_del);
+        _stream.Job(_del);
     }
 
     private void Invoke(ref T1 c0)
@@ -51,7 +51,7 @@ public unsafe class System<T1, T2> : ISystem
 
     public void Run(float delta)
     {
-        _stream.For(_del);
+        _stream.Job(_del);
     }
 
     private void Invoke(ref T1 c0, ref T2 c1)
@@ -78,7 +78,7 @@ public unsafe class System<T1, T2, T3> : ISystem
 
     public void Run(float delta)
     {
-        _stream.For(_del);
+        _stream.Job(_del);
     }
 
     private void Invoke(ref T1 c0, ref T2 c1, ref T3 c2)
@@ -106,7 +106,7 @@ public unsafe class System<T1, T2, T3, T4> : ISystem
 
     public void Run(float delta)
     {
-        _stream.For(_del);
+        _stream.Job(_del);
     }
 
     private void Invoke(ref T1 c0, ref T2 c1, ref T3 c2, ref T4 c3)
