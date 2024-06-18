@@ -15,7 +15,9 @@ using BenchmarkDotNet.Exporters;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Reports;
 using BenchmarkDotNet.Running;
+#if DEBUG
 using BenchmarkDotNet.Toolchains.InProcess.Emit;
+#endif
 
 // clear previous results
 if (Directory.Exists(".benchmark_results"))
