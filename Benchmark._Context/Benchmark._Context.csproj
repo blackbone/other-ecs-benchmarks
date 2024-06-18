@@ -12,7 +12,6 @@
     <ItemGroup>
       <ProjectReference Include="..\submodules\DragonECS\DragonECS.csproj" />
       <ProjectReference Include="..\submodules\morpeh\Scellecs.Morpeh\Scellecs.Morpeh.csproj" />
-      <ProjectReference Include="..\submodules\xeno\Xeno.csproj" />
     </ItemGroup>
 
 </Project>

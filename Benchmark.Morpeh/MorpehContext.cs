@@ -3,7 +3,6 @@ using Scellecs.Morpeh;
 using Scellecs.Morpeh.Workaround;
 using MorpehComponent = Scellecs.Morpeh.IComponent;
 using DragonComponent = DCFApixels.DragonECS.IEcsComponent;
-using XenoComponent = Xeno.IComponent;
 
 // ReSharper disable ForCanBeConvertedToForeach
 // ReSharper disable InconsistentNaming
@@ -62,7 +61,7 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
         _world!.Commit();
     }
 
-    public void Warmup<T1>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+    public void Warmup<T1>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent
     {
         var s1 = _world!.GetStash<T1>();
         
@@ -70,8 +69,8 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
         _filters![poolId] = _world!.Filter.With<T1>().Build();
     }
 
-    public void Warmup<T1, T2>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+    public void Warmup<T1, T2>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent
     {
         var s1 = _world!.GetStash<T1>();
         var s2 = _world!.GetStash<T2>();
@@ -80,9 +79,9 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
         _filters![poolId] = _world!.Filter.With<T1>().With<T2>().Build();
     }
 
-    public void Warmup<T1, T2, T3>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
+    public void Warmup<T1, T2, T3>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent
+        where T3 : struct, MorpehComponent, DragonComponent
     {
         var s1 = _world!.GetStash<T1>();
         var s2 = _world!.GetStash<T2>();
@@ -92,10 +91,10 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
         _filters![poolId] = _world!.Filter.With<T1>().With<T2>().With<T3>().Build();
     }
 
-    public void Warmup<T1, T2, T3, T4>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent
+    public void Warmup<T1, T2, T3, T4>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent
+        where T3 : struct, MorpehComponent, DragonComponent
+        where T4 : struct, MorpehComponent, DragonComponent
     {
         var s1 = _world!.GetStash<T1>();
         var s2 = _world!.GetStash<T2>();
@@ -106,33 +105,33 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
         _filters![poolId] = _world!.Filter.With<T1>().With<T2>().With<T3>().With<T4>().Build();
     }
 
-    public int CountWith<T1>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+    public int CountWith<T1>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent
     {
         return _filters![poolId].GetLengthSlow();
     }
 
-    public int CountWith<T1, T2>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+    public int CountWith<T1, T2>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent
     {
         return _filters![poolId].GetLengthSlow();
     }
 
-    public int CountWith<T1, T2, T3>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
+    public int CountWith<T1, T2, T3>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent
+        where T3 : struct, MorpehComponent, DragonComponent
     {
         return _filters![poolId].GetLengthSlow();
     }
 
-    public int CountWith<T1, T2, T3, T4>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent
+    public int CountWith<T1, T2, T3, T4>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent
+        where T3 : struct, MorpehComponent, DragonComponent
+        where T4 : struct, MorpehComponent, DragonComponent
     {
         return _filters![poolId].GetLengthSlow();
     }
 
-    public bool GetSingle<T1>(in object? entity, in int poolId, ref T1 c1) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+    public bool GetSingle<T1>(in object? entity, in int poolId, ref T1 c1) where T1 : struct, MorpehComponent, DragonComponent
     {
         if (entity == null) return false;
 
@@ -145,7 +144,7 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
     }
 
     public bool GetSingle<T1, T2>(in object? entity, in int poolId, ref T1 c1, ref T2 c2)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T1 : struct, MorpehComponent, DragonComponent where T2 : struct, MorpehComponent, DragonComponent
     {
         if (entity == null) return false;
 
@@ -160,9 +159,9 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
     }
 
     public bool GetSingle<T1, T2, T3>(in object? entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent
+        where T3 : struct, MorpehComponent, DragonComponent
     {
         if (entity == null) return false;
 
@@ -179,10 +178,10 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
     }
 
     public bool GetSingle<T1, T2, T3, T4>(in object? entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent
+        where T3 : struct, MorpehComponent, DragonComponent
+        where T4 : struct, MorpehComponent, DragonComponent
     {
         if (entity == null) return false;
 
@@ -206,30 +205,30 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
     }
 
     public unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T1 : struct, MorpehComponent, DragonComponent
     {
         _systems.AddSystem(new PointerInvocationStashSystem<T1>(method));
     }
 
     public unsafe void AddSystem<T1, T2>(delegate*<ref T1, ref T2, void> method, int poolId)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T1 : struct, MorpehComponent, DragonComponent where T2 : struct, MorpehComponent, DragonComponent
     {
         _systems.AddSystem(new PointerInvocationStashSystem<T1, T2>(method));
     }
 
     public unsafe void AddSystem<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> method, int poolId)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent
+        where T3 : struct, MorpehComponent, DragonComponent
     {
         _systems.AddSystem(new PointerInvocationStashSystem<T1, T2, T3>(method));
     }
 
     public unsafe void AddSystem<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> method, int poolId)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent
+        where T3 : struct, MorpehComponent, DragonComponent
+        where T4 : struct, MorpehComponent, DragonComponent
     {
         _systems.AddSystem(new PointerInvocationStashSystem<T1, T2, T3, T4>(method));
     }
@@ -242,7 +241,7 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
     }
 
     public void CreateEntities<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T1 : struct, MorpehComponent, DragonComponent
     {
         var entities = (Entity[])entitySet;
         var s1 = (Stash<T1>)_stashes![poolId][0];
@@ -254,7 +253,7 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
     }
 
     public void CreateEntities<T1, T2>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T1 : struct, MorpehComponent, DragonComponent where T2 : struct, MorpehComponent, DragonComponent
     {
         var entities = (Entity[])entitySet;
         var pool = _stashes![poolId];
@@ -269,9 +268,9 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
     }
 
     public void CreateEntities<T1, T2, T3>(in Array entitySet, in int poolId = -1, in T1 c1 = default,
-        in T2 c2 = default, in T3 c3 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
+        in T2 c2 = default, in T3 c3 = default) where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent
+        where T3 : struct, MorpehComponent, DragonComponent
     {
         var entities = (Entity[])entitySet;
         var pool = _stashes![poolId];
@@ -288,10 +287,10 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
     }
 
     public void CreateEntities<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1, in T1 c1 = default,
-        in T2 c2 = default, in T3 c3 = default, in T4 c4 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent
+        in T2 c2 = default, in T3 c3 = default, in T4 c4 = default) where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent
+        where T3 : struct, MorpehComponent, DragonComponent
+        where T4 : struct, MorpehComponent, DragonComponent
     {
         var entities = (Entity[])entitySet;
         var pool = _stashes![poolId];
@@ -317,7 +316,7 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
     }
 
     public void AddComponent<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T1 : struct, MorpehComponent, DragonComponent
     {
         var entities = (Entity[])entitySet;
         var pool = _stashes![poolId];
@@ -327,7 +326,7 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
     }
 
     public void AddComponent<T1, T2>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T1 : struct, MorpehComponent, DragonComponent where T2 : struct, MorpehComponent, DragonComponent
     {
         var entities = (Entity[])entitySet;
         var pool = _stashes![poolId];
@@ -341,9 +340,9 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
     }
 
     public void AddComponent<T1, T2, T3>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default,
-        in T3 c3 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
+        in T3 c3 = default) where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent
+        where T3 : struct, MorpehComponent, DragonComponent
     {
         var entities = (Entity[])entitySet;
         var pool = _stashes![poolId];
@@ -359,10 +358,10 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
     }
 
     public void AddComponent<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1, in T1 c1 = default,
-        in T2 c2 = default, in T3 c3 = default, in T4 c4 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent
+        in T2 c2 = default, in T3 c3 = default, in T4 c4 = default) where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent
+        where T3 : struct, MorpehComponent, DragonComponent
+        where T4 : struct, MorpehComponent, DragonComponent
     {
         var entities = (Entity[])entitySet;
         var pool = _stashes![poolId];
@@ -379,7 +378,7 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
         }
     }
 
-    public void RemoveComponent<T1>(in Array entitySet, in int poolId = -1) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+    public void RemoveComponent<T1>(in Array entitySet, in int poolId = -1) where T1 : struct, MorpehComponent, DragonComponent
     {
         var entities = (Entity[])entitySet;
         var pool = _stashes![poolId];
@@ -389,7 +388,7 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
     }
 
     public void RemoveComponent<T1, T2>(in Array entitySet, in int poolId = -1)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T1 : struct, MorpehComponent, DragonComponent where T2 : struct, MorpehComponent, DragonComponent
     {
         var entities = (Entity[])entitySet;
         var pool = _stashes![poolId];
@@ -403,9 +402,9 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
     }
 
     public void RemoveComponent<T1, T2, T3>(in Array entitySet, in int poolId = -1)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent
+        where T3 : struct, MorpehComponent, DragonComponent
     {
         var entities = (Entity[])entitySet;
         var pool = _stashes![poolId];
@@ -421,10 +420,10 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
     }
 
     public void RemoveComponent<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent
+        where T3 : struct, MorpehComponent, DragonComponent
+        where T4 : struct, MorpehComponent, DragonComponent
     {
         var entities = (Entity[])entitySet;
         var pool = _stashes![poolId];

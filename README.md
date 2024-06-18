@@ -39,14 +39,13 @@ General flow of any benchmark execution is divided into 3 steps:
 |                                                        ECS | Version                                                                                           |  Implemented  |  Verified  |       Notes       |
 |-----------------------------------------------------------:|:--------------------------------------------------------------------------------------------------|:-------------:|:----------:|:-----------------:|
 |                    [Arch](https://github.com/genaray/Arch) | [1.2.8.1-alpha](https://www.nuget.org/packages/Arch/1.2.8.1-alpha)                                |       ✅       |     ❌      |        N/A        |
-|                           [fennecs](https://fennecs.tech/) | [0.5.5-beta](https://www.nuget.org/packages/fennecs/0.5.5-beta)                                   |       ✅       |     ❌      |        N/A        |
+|                           [fennecs](https://fennecs.tech/) | [0.5.7-beta](https://www.nuget.org/packages/fennecs/0.5.7-beta)                                   |       ✅       |     ❌      |        N/A        |
 |               [Morpeh](https://github.com/scellecs/morpeh) | [2024.1.0-rc48](https://github.com/scellecs/morpeh/releases/tag/2024.1.0-rc48)                    |       ✅       |     ❌      |        N/A        |
-|       [DragonECS](https://github.com/DCFApixels/DragonECS) | [0.8.36](https://github.com/DCFApixels/DragonECS/commit/29f656f394984e738c7fc70bacca050ffea746d8) |       ✅       |     ❌      |        N/A        |
+|       [DragonECS](https://github.com/DCFApixels/DragonECS) | [0.8.37](https://github.com/DCFApixels/DragonECS/commit/a9e3580f375a9729662682061e85cb7a873cd6f8) |       ✅       |     ❌      |        N/A        |
 |                  [LeoECS](https://github.com/Leopotam/ecs) | [2023.6.22](https://github.com/Leopotam/ecs/releases/tag/2023.6.22)                               |       ✅       |     ❌      |        N/A        |
 |          [LeoECSLite](https://github.com/Leopotam/ecslite) | [2024.5.22](https://github.com/Leopotam/ecslite/releases/tag/2024.5.22)                           |       ✅       |     ❌      |        N/A        |
 |         [DefaultECS](https://github.com/Doraku/DefaultEcs) | [0.18.0-beta01](https://github.com/Doraku/DefaultEcs/releases/tag/0.18.0-beta01)                  |       ✅       |     ❌      |  Analyzer 0.17.8  |
 | [FlecsNET](https://github.com/BeanCheeseBurrito/Flecs.NET) | [3.2.11](https://www.nuget.org/packages/Flecs.NET.Release/3.2.11)                                 |       ✅       |     ❌      |        N/A        |
-|                                                       Xeno | 0.1.0-internal                                                                                    |       ✅       |     ✅      |        N/A        |
 
 # Implemented benchmarks
 

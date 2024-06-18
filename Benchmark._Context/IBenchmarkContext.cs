@@ -1,6 +1,5 @@
 using MorpehComponent = Scellecs.Morpeh.IComponent;
 using DragonComponent = DCFApixels.DragonECS.IEcsComponent;
-using XenoComponent = Xeno.IComponent;
 
 namespace Benchmark._Context;
 
@@ -36,7 +35,7 @@ public interface IBenchmarkContext : IDisposable
     ///     <see cref="AddComponent{T1}" />, <see cref="RemoveComponent{T1}" />.
     /// </param>
     public void Warmup<T1>(in int poolId)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent;
+        where T1 : struct, MorpehComponent, DragonComponent;
 
     /// <summary>
     ///     Place where you can set up your stashes, caches, etc.
@@ -46,8 +45,8 @@ public interface IBenchmarkContext : IDisposable
     ///     <see cref="AddComponent{T1, T2}" />, <see cref="RemoveComponent{T1, T2}" />.
     /// </param>
     public void Warmup<T1, T2>(in int poolId)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent;
+        where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent;
 
     /// <summary>
     ///     Place where you can set up your stashes, caches, etc.
@@ -57,9 +56,9 @@ public interface IBenchmarkContext : IDisposable
     ///     <see cref="AddComponent{T1, T2, T3}" />, <see cref="RemoveComponent{T1, T2, T3}" />.
     /// </param>
     public void Warmup<T1, T2, T3>(in int poolId)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent;
+        where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent
+        where T3 : struct, MorpehComponent, DragonComponent;
 
     /// <summary>
     ///     Place where you can set up your stashes, caches, etc.
@@ -69,10 +68,10 @@ public interface IBenchmarkContext : IDisposable
     ///     <see cref="AddComponent{T1, T2, T3, T4}" />, <see cref="RemoveComponent{T1, T2, T3, T4}" />.
     /// </param>
     public void Warmup<T1, T2, T3, T4>(in int poolId)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent;
+        where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent
+        where T3 : struct, MorpehComponent, DragonComponent
+        where T4 : struct, MorpehComponent, DragonComponent;
 
     /// <summary>
     ///     Clean up the world.
@@ -131,7 +130,7 @@ public interface IBenchmarkContext : IDisposable
     ///     argument in <see cref="AddComponent{T1}" />, <see cref="RemoveComponent{T1}" />, <see cref="DeleteEntities" />
     /// </returns>
     public void CreateEntities<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent;
+        where T1 : struct, MorpehComponent, DragonComponent;
 
     /// <summary>
     ///     Create entity with components.
@@ -143,8 +142,8 @@ public interface IBenchmarkContext : IDisposable
     ///     argument in <see cref="AddComponent{T1}" />, <see cref="RemoveComponent{T1}" />, <see cref="DeleteEntities" />
     /// </returns>
     public void CreateEntities<T1, T2>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent;
+        where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent;
 
     /// <summary>
     ///     Create entity with components.
@@ -156,9 +155,9 @@ public interface IBenchmarkContext : IDisposable
     ///     argument in <see cref="AddComponent{T1}" />, <see cref="RemoveComponent{T1}" />, <see cref="DeleteEntities" />
     /// </returns>
     public void CreateEntities<T1, T2, T3>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default, in T3 c3 = default)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent;
+        where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent
+        where T3 : struct, MorpehComponent, DragonComponent;
 
     /// <summary>
     ///     Create entity with components.
@@ -170,10 +169,10 @@ public interface IBenchmarkContext : IDisposable
     ///     argument in <see cref="AddComponent{T1}" />, <see cref="RemoveComponent{T1}" />, <see cref="DeleteEntities" />
     /// </returns>
     public void CreateEntities<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default, in T3 c3 = default, in T4 c4 = default)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent;
+        where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent
+        where T3 : struct, MorpehComponent, DragonComponent
+        where T4 : struct, MorpehComponent, DragonComponent;
 
     #endregion
 
@@ -185,7 +184,7 @@ public interface IBenchmarkContext : IDisposable
     /// <param name="entitySet"> Entity set object returned by <see cref="CreateEntities" /> </param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1}" /></param>
     public void AddComponent<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent;
+        where T1 : struct, MorpehComponent, DragonComponent;
 
     /// <summary>
     ///     Add components to entity.
@@ -193,8 +192,8 @@ public interface IBenchmarkContext : IDisposable
     /// <param name="entitySet"> Entity set object returned by <see cref="CreateEntities" /> </param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1, T2}" /></param>
     public void AddComponent<T1, T2>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent;
+        where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent;
 
     /// <summary>
     ///     Add components to entity.
@@ -202,9 +201,9 @@ public interface IBenchmarkContext : IDisposable
     /// <param name="entitySet"> Entity set object returned by <see cref="CreateEntities" /> </param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1, T2, T3}" /></param>
     public void AddComponent<T1, T2, T3>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default, in T3 c3 = default)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent;
+        where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent
+        where T3 : struct, MorpehComponent, DragonComponent;
 
     /// <summary>
     ///     Add components to entity.
@@ -212,10 +211,10 @@ public interface IBenchmarkContext : IDisposable
     /// <param name="entitySet"> Entity set object returned by <see cref="CreateEntities" /> </param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1, T2, T3, T4}" /></param>
     public void AddComponent<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default, in T3 c3 = default, in T4 c4 = default)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent;
+        where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent
+        where T3 : struct, MorpehComponent, DragonComponent
+        where T4 : struct, MorpehComponent, DragonComponent;
 
     #endregion
 
@@ -227,7 +226,7 @@ public interface IBenchmarkContext : IDisposable
     /// <param name="entitySet"> Entity set object returned by <see cref="CreateEntities" /> </param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1}" /></param>
     public void RemoveComponent<T1>(in Array entitySet, in int poolId = -1)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent;
+        where T1 : struct, MorpehComponent, DragonComponent;
 
     /// <summary>
     ///     Removes component to entity.
@@ -235,8 +234,8 @@ public interface IBenchmarkContext : IDisposable
     /// <param name="entitySet"> Entity set object returned by <see cref="CreateEntities" /> </param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1, T2}" /></param>
     public void RemoveComponent<T1, T2>(in Array entitySet, in int poolId = -1)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent;
+        where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent;
 
     /// <summary>
     ///     Removes component to entity.
@@ -244,9 +243,9 @@ public interface IBenchmarkContext : IDisposable
     /// <param name="entitySet"> Entity set object returned by <see cref="CreateEntities" /> </param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1, T2, T3}" /></param>
     public void RemoveComponent<T1, T2, T3>(in Array entitySet, in int poolId = -1)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent;
+        where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent
+        where T3 : struct, MorpehComponent, DragonComponent;
 
     /// <summary>
     ///     Removes component to entity.
@@ -254,54 +253,54 @@ public interface IBenchmarkContext : IDisposable
     /// <param name="entitySet"> Entity set object returned by <see cref="CreateEntities" /> </param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1, T2, T3, T4}" /></param>
     public void RemoveComponent<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent;
+        where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent
+        where T3 : struct, MorpehComponent, DragonComponent
+        where T4 : struct, MorpehComponent, DragonComponent;
 
     #endregion
 
     #region Entity - Count
 
     public int CountWith<T1>(in int poolId)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent;
+        where T1 : struct, MorpehComponent, DragonComponent;
 
     public int CountWith<T1, T2>(in int poolId)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent;
+        where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent;
 
     public int CountWith<T1, T2, T3>(in int poolId)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent;
+        where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent
+        where T3 : struct, MorpehComponent, DragonComponent;
 
     public int CountWith<T1, T2, T3, T4>(in int poolId)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent;
+        where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent
+        where T3 : struct, MorpehComponent, DragonComponent
+        where T4 : struct, MorpehComponent, DragonComponent;
 
     #endregion
 
     #region Entities - Get With
 
     public bool GetSingle<T1>(in object? entity, in int poolId, ref T1 c1)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent;
+        where T1 : struct, MorpehComponent, DragonComponent;
 
     public bool GetSingle<T1, T2>(in object? entity, in int poolId, ref T1 c1, ref T2 c2)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent;
+        where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent;
 
     public bool GetSingle<T1, T2, T3>(in object? entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent;
+        where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent
+        where T3 : struct, MorpehComponent, DragonComponent;
 
     public bool GetSingle<T1, T2, T3, T4>(in object? entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent;
+        where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent
+        where T3 : struct, MorpehComponent, DragonComponent
+        where T4 : struct, MorpehComponent, DragonComponent;
 
     #endregion
 
@@ -314,22 +313,22 @@ public interface IBenchmarkContext : IDisposable
     public void Tick(float delta);
 
     public unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent;
+        where T1 : struct, MorpehComponent, DragonComponent;
 
     public unsafe void AddSystem<T1, T2>(delegate*<ref T1, ref T2, void> method, int poolId)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent;
+        where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent;
 
     public unsafe void AddSystem<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> method, int poolId)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent;
+        where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent
+        where T3 : struct, MorpehComponent, DragonComponent;
 
     public unsafe void AddSystem<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> method, int poolId)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent;
+        where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent
+        where T3 : struct, MorpehComponent, DragonComponent
+        where T4 : struct, MorpehComponent, DragonComponent;
 
     #endregion
 }

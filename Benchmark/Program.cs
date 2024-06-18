@@ -13,6 +13,7 @@ using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Engines;
 using BenchmarkDotNet.Exporters;
 using BenchmarkDotNet.Jobs;
+using BenchmarkDotNet.Reports;
 using BenchmarkDotNet.Running;
 using BenchmarkDotNet.Toolchains.InProcess.Emit;
 
@@ -52,8 +53,9 @@ IConfig configuration = DefaultConfig.Instance
     .AddExporter(MarkdownExporter.GitHub)
     .WithOptions(ConfigOptions.DisableOptimizationsValidator)
     .WithOption(ConfigOptions.JoinSummary, true)
-    .HideColumns(Column.Gen0, Column.Gen1, Column.Gen2, Column.Type, Column.Error, Column.Method, Column.Namespace, Column.StdDev)
-    .AddColumn(new ContextColumn());
+    .HideColumns(Column.Gen0, Column.Gen1, Column.Gen2, Column.Type, Column.Method, Column.Namespace)
+    .AddColumn(new ContextColumn())
+    .WithSummaryStyle(SummaryStyle.Default.WithRatioStyle(RatioStyle.Trend));
 
 if (options.PrintList)
 {
