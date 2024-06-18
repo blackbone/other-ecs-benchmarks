@@ -78,8 +78,7 @@ public class BenchmarksGenerator : ISourceGenerator
                         .WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword)))
                         .AddMembers(benchmarkType.GetTypeDeclarationSyntax().Members.ToArray()) // copy contents
                         .WithBaseList(BaseList(SeparatedList<BaseTypeSyntax>(new[]
-                            { SimpleBaseType(ParseTypeName($"IBenchmark<{contextFullName}>")) })))
-                    ;
+                            { SimpleBaseType(ParseTypeName($"IBenchmark<{contextFullName}>")) })));
 
                 var namespaceSyntax = NamespaceDeclaration(ParseName("Benchmark.Generated"))
                     .AddMembers(typeSyntax);
@@ -93,6 +92,9 @@ public class BenchmarksGenerator : ISourceGenerator
                     .AddMembers(namespaceSyntax)
                     .NormalizeWhitespace()
                     .ToFullString();
+
+                if (contextType.Name == "ArchContext")
+                    source = source.Replace("[Benchmark]", "[Benchmark(Baseline = true)]");
 
                 source = source
                     .Replace($"\" + nameof({benchmarkType.Name}<T>)", $"{benchmarkType.Name}\"")
