@@ -14,8 +14,6 @@ namespace Benchmark.Benchmarks.Entities.AddComponent;
 public abstract class Add1RandomComponent<T> : IBenchmark<T> where T : IBenchmarkContext
 {
     [Params(Constants.EntityCount)] public int EntityCount { get; set; }
-    [Params(true, false)] public bool RandomOrder { get; set; }
-    [Params(1, 32)] public int ChunkSize { get; set; }
     public T Context { get; set; }
     private Array[] _entitySets;
     private Random _rnd;
@@ -25,15 +23,13 @@ public abstract class Add1RandomComponent<T> : IBenchmark<T> where T : IBenchmar
     {
         Context = BenchmarkContext.Create<T>(EntityCount);
         Context?.Setup();
-        var setsCount = EntityCount / ChunkSize + 1;
-        _entitySets = new Array[setsCount];
-        for (var i = 0; i < setsCount; i++)
+        _entitySets = new Array[EntityCount];
+        for (var i = 0; i < EntityCount; i++)
         {
-            _entitySets[i] = Context?.PrepareSet(ChunkSize);
+            _entitySets[i] = Context?.PrepareSet(1);
             Context?.CreateEntities(_entitySets[i]);
         }
 
-        if (RandomOrder) _entitySets.Shuffle();
         Context?.Warmup<Component1>(0);
         Context?.Warmup<Component2>(1);
         Context?.Warmup<Component3>(2);
@@ -46,7 +42,7 @@ public abstract class Add1RandomComponent<T> : IBenchmark<T> where T : IBenchmar
     [IterationCleanup]
     public void Cleanup()
     {
-        var setsCount = EntityCount / ChunkSize + 1;
+        var setsCount = EntityCount;
         for (var i = 0; i < setsCount; i++)
             Context?.DeleteEntities(_entitySets[i]);
 

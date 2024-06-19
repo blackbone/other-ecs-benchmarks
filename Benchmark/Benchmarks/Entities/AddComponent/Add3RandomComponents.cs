@@ -14,8 +14,6 @@ namespace Benchmark.Benchmarks.Entities.AddComponent;
 public abstract class Add3RandomComponents<T> : IBenchmark<T> where T : IBenchmarkContext
 {
     [Params(Constants.EntityCount)] public int EntityCount { get; set; }
-    [Params(true, false)] public bool RandomOrder { get; set; }
-    [Params(1, 32)] public int ChunkSize { get; set; }
     public T Context { get; set; }
     private Array[] _entitySets;
     private Random _rnd;
@@ -25,15 +23,13 @@ public abstract class Add3RandomComponents<T> : IBenchmark<T> where T : IBenchma
     {
         Context = BenchmarkContext.Create<T>(EntityCount);
         Context?.Setup();
-        var setsCount = EntityCount / ChunkSize + 1;
-        _entitySets = new Array[setsCount];
-        for (var i = 0; i < setsCount; i++)
+        _entitySets = new Array[EntityCount];
+        for (var i = 0; i < EntityCount; i++)
         {
-            _entitySets[i] = Context?.PrepareSet(ChunkSize);
+            _entitySets[i] = Context?.PrepareSet(1);
             Context?.CreateEntities(_entitySets[i]);
         }
 
-        if (RandomOrder) _entitySets.Shuffle();
         Context?.Warmup<Component1, Component2, Component3>(0);
         Context?.Warmup<Component2, Component3, Component4>(1);
         Context?.Warmup<Component3, Component4, Component1>(2);
@@ -46,8 +42,7 @@ public abstract class Add3RandomComponents<T> : IBenchmark<T> where T : IBenchma
     [IterationCleanup]
     public void Cleanup()
     {
-        var setsCount = EntityCount / ChunkSize + 1;
-        for (var i = 0; i < setsCount; i++)
+        for (var i = 0; i < EntityCount; i++)
             Context?.DeleteEntities(_entitySets[i]);
 
         Context?.Cleanup();
@@ -58,7 +53,7 @@ public abstract class Add3RandomComponents<T> : IBenchmark<T> where T : IBenchma
     [Benchmark]
     public void Run()
     {
-        for (var i = 0; i < _entitySets.Length; i += ChunkSize)
+        for (var i = 0; i < _entitySets.Length; i++)
         {
             Context?.Lock();
             switch (_rnd.Next() % 4)
