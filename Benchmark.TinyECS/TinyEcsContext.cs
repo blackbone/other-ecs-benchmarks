@@ -11,8 +11,8 @@ public sealed class TinyEcsContext(int entityCount = 4096) : IBenchmarkContext
     private readonly Dictionary<int, Query>? _queries = new();
 
     public bool DeletesEntityOnLastComponentDeletion => false;
-    public int EntityCount => _world!.EntityCount;
-    
+    public int EntityCount { get; private set; }
+
     public void Setup()
     {
         _world = new World();
@@ -51,6 +51,8 @@ public sealed class TinyEcsContext(int entityCount = 4096) : IBenchmarkContext
         var entities = (EntityView[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i].Delete();
+
+        EntityCount -= entities.Length;
     }
 
     public Array Shuffle(in Array entitySet)
@@ -66,6 +68,8 @@ public sealed class TinyEcsContext(int entityCount = 4096) : IBenchmarkContext
         var entities = (EntityView[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i] = _world!.Entity();
+
+        EntityCount += entities.Length;
     }
 
     public void CreateEntities<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default) where T1 : struct, MorpehComponent, DragonComponent
@@ -73,6 +77,8 @@ public sealed class TinyEcsContext(int entityCount = 4096) : IBenchmarkContext
         var entities = (EntityView[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i] = _world!.Entity().Set(c1);
+
+        EntityCount += entities.Length;
     }
 
     public void CreateEntities<T1, T2>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default) where T1 : struct, MorpehComponent, DragonComponent where T2 : struct, MorpehComponent, DragonComponent
@@ -80,6 +86,8 @@ public sealed class TinyEcsContext(int entityCount = 4096) : IBenchmarkContext
         var entities = (EntityView[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i] = _world!.Entity().Set(c1).Set(c2);
+
+        EntityCount += entities.Length;
     }
 
     public void CreateEntities<T1, T2, T3>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default,
@@ -88,6 +96,8 @@ public sealed class TinyEcsContext(int entityCount = 4096) : IBenchmarkContext
         var entities = (EntityView[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i] = _world!.Entity().Set(c1).Set(c2).Set(c3);
+
+        EntityCount += entities.Length;
     }
 
     public void CreateEntities<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default,
@@ -96,6 +106,8 @@ public sealed class TinyEcsContext(int entityCount = 4096) : IBenchmarkContext
         var entities = (EntityView[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i] = _world!.Entity().Set(c1).Set(c2).Set(c3).Set(c4);
+
+        EntityCount += entities.Length;
     }
 
     public void AddComponent<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default) where T1 : struct, MorpehComponent, DragonComponent
@@ -212,27 +224,27 @@ public sealed class TinyEcsContext(int entityCount = 4096) : IBenchmarkContext
 
     public void Tick(float delta)
     {
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
 
     public unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId) where T1 : struct, MorpehComponent, DragonComponent
     {
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
 
     public unsafe void AddSystem<T1, T2>(delegate*<ref T1, ref T2, void> method, int poolId) where T1 : struct, MorpehComponent, DragonComponent where T2 : struct, MorpehComponent, DragonComponent
     {
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
 
     public unsafe void AddSystem<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> method, int poolId) where T1 : struct, MorpehComponent, DragonComponent where T2 : struct, MorpehComponent, DragonComponent where T3 : struct, MorpehComponent, DragonComponent
     {
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
 
     public unsafe void AddSystem<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> method, int poolId) where T1 : struct, MorpehComponent, DragonComponent where T2 : struct, MorpehComponent, DragonComponent where T3 : struct, MorpehComponent, DragonComponent where T4 : struct, MorpehComponent, DragonComponent
     {
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
     
     public void Dispose()
