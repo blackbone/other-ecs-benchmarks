@@ -11,7 +11,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Benchmark._Context\Benchmark._Context.csproj"/>
-        <PackageReference Include="fennecs" Version="0.5.7-beta" />
+        <PackageReference Include="fennecs" Version="0.5.8-beta" />
     </ItemGroup>
 
 </Project>
