@@ -8,14 +8,16 @@ namespace Benchmark.TinyECS;
 public sealed class TinyEcsContext(int entityCount = 4096) : IBenchmarkContext
 {
     private World? _world;
+    private Scheduler? _scheduler;
     private readonly Dictionary<int, Query>? _queries = new();
 
     public bool DeletesEntityOnLastComponentDeletion => false;
-    public int EntityCount => _world!.EntityCount;
+    public int EntityCount { get; private set; }
     
     public void Setup()
     {
         _world = new World();
+        _scheduler = new Scheduler(_world);
     }
 
     public void FinishSetup()
@@ -37,6 +39,8 @@ public sealed class TinyEcsContext(int entityCount = 4096) : IBenchmarkContext
     public void Cleanup()
     {
         _queries!.Clear();
+
+        _scheduler = null;
         
         _world!.Dispose();
         _world = null;
@@ -50,7 +54,10 @@ public sealed class TinyEcsContext(int entityCount = 4096) : IBenchmarkContext
     {
         var entities = (EntityView[])entitySet;
         for (var i = 0; i < entities.Length; i++)
-            entities[i].Delete();
+            if (entities[i] != default)
+                entities[i].Delete();
+        
+        EntityCount -= entitySet.Length;
     }
 
     public Array Shuffle(in Array entitySet)
@@ -66,6 +73,8 @@ public sealed class TinyEcsContext(int entityCount = 4096) : IBenchmarkContext
         var entities = (EntityView[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i] = _world!.Entity();
+
+        EntityCount += entitySet.Length;
     }
 
     public void CreateEntities<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default) where T1 : struct, MorpehComponent, DragonComponent
@@ -73,6 +82,8 @@ public sealed class TinyEcsContext(int entityCount = 4096) : IBenchmarkContext
         var entities = (EntityView[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i] = _world!.Entity().Set(c1);
+        
+        EntityCount += entitySet.Length;
     }
 
     public void CreateEntities<T1, T2>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default) where T1 : struct, MorpehComponent, DragonComponent where T2 : struct, MorpehComponent, DragonComponent
@@ -80,6 +91,8 @@ public sealed class TinyEcsContext(int entityCount = 4096) : IBenchmarkContext
         var entities = (EntityView[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i] = _world!.Entity().Set(c1).Set(c2);
+        
+        EntityCount += entitySet.Length;
     }
 
     public void CreateEntities<T1, T2, T3>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default,
@@ -88,6 +101,8 @@ public sealed class TinyEcsContext(int entityCount = 4096) : IBenchmarkContext
         var entities = (EntityView[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i] = _world!.Entity().Set(c1).Set(c2).Set(c3);
+        
+        EntityCount += entitySet.Length;
     }
 
     public void CreateEntities<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default,
@@ -96,6 +111,8 @@ public sealed class TinyEcsContext(int entityCount = 4096) : IBenchmarkContext
         var entities = (EntityView[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i] = _world!.Entity().Set(c1).Set(c2).Set(c3).Set(c4);
+        
+        EntityCount += entitySet.Length;
     }
 
     public void AddComponent<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default) where T1 : struct, MorpehComponent, DragonComponent
@@ -157,16 +174,16 @@ public sealed class TinyEcsContext(int entityCount = 4096) : IBenchmarkContext
     }
 
     public int CountWith<T1>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent
-        => _world!.Query<T1>().Count();
+        => _queries![poolId].Count();
 
     public int CountWith<T1, T2>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent where T2 : struct, MorpehComponent, DragonComponent
-        => _world!.Query<(T1, T2)>().Count();
+        => _queries![poolId].Count();
 
     public int CountWith<T1, T2, T3>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent where T2 : struct, MorpehComponent, DragonComponent where T3 : struct, MorpehComponent, DragonComponent
-        => _world!.Query<(T1, T2, T3)>().Count();
+        => _queries![poolId].Count();
 
     public int CountWith<T1, T2, T3, T4>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent where T2 : struct, MorpehComponent, DragonComponent where T3 : struct, MorpehComponent, DragonComponent where T4 : struct, MorpehComponent, DragonComponent
-        => _world!.Query<(T1, T2, T3, T4)>().Count();
+        => _queries![poolId].Count();
 
     public bool GetSingle<T1>(in object? entity, in int poolId, ref T1 c1) where T1 : struct, MorpehComponent, DragonComponent
     {
@@ -210,31 +227,52 @@ public sealed class TinyEcsContext(int entityCount = 4096) : IBenchmarkContext
         return true;
     }
 
-    public void Tick(float delta)
-    {
-        throw new NotImplementedException();
-    }
+    public void Tick(float delta) => _scheduler!.Run();
 
     public unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId) where T1 : struct, MorpehComponent, DragonComponent
     {
-        throw new NotImplementedException();
+        _scheduler!.AddSystem((Query<T1> query) => {
+            foreach (var (e, c1) in query.Iter<T1>())
+                for (var i = 0; i < e.Length; i++)
+                    method(ref c1[i]);
+        });
     }
 
-    public unsafe void AddSystem<T1, T2>(delegate*<ref T1, ref T2, void> method, int poolId) where T1 : struct, MorpehComponent, DragonComponent where T2 : struct, MorpehComponent, DragonComponent
+    public unsafe void AddSystem<T1, T2>(delegate*<ref T1, ref T2, void> method, int poolId)
+        where T1 : struct, MorpehComponent, DragonComponent where T2 : struct, MorpehComponent, DragonComponent
     {
-        throw new NotImplementedException();
+        _scheduler!.AddSystem((Query<(T1, T2)> query) => {
+            foreach (var (e, c1, c2) in query.Iter<T1, T2>())
+                for (var i = 0; i < e.Length; i++)
+                    method(ref c1[i], ref c2[i]);
+        });
     }
 
-    public unsafe void AddSystem<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> method, int poolId) where T1 : struct, MorpehComponent, DragonComponent where T2 : struct, MorpehComponent, DragonComponent where T3 : struct, MorpehComponent, DragonComponent
+    public unsafe void AddSystem<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> method, int poolId)
+        where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent
+        where T3 : struct, MorpehComponent, DragonComponent
     {
-        throw new NotImplementedException();
+        _scheduler!.AddSystem((Query<(T1, T2, T3)> query) => {
+            foreach (var (e, c1, c2, c3) in query.Iter<T1, T2, T3>())
+                for (var i = 0; i < e.Length; i++)
+                    method(ref c1[i], ref c2[i], ref c3[i]);
+        });
     }
 
-    public unsafe void AddSystem<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> method, int poolId) where T1 : struct, MorpehComponent, DragonComponent where T2 : struct, MorpehComponent, DragonComponent where T3 : struct, MorpehComponent, DragonComponent where T4 : struct, MorpehComponent, DragonComponent
+    public unsafe void AddSystem<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> method, int poolId)
+        where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent
+        where T3 : struct, MorpehComponent, DragonComponent
+        where T4 : struct, MorpehComponent, DragonComponent
     {
-        throw new NotImplementedException();
+        _scheduler!.AddSystem((Query<(T1, T2, T3, T4)> query) => {
+            foreach (var (e, c1, c2, c3, c4) in query.Iter<T1, T2, T3, T4>())
+                for (var i = 0; i < e.Length; i++)
+                    method(ref c1[i], ref c2[i], ref c3[i], ref c4[i]);
+        });
     }
-    
+
     public void Dispose()
     {
     }
