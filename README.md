@@ -46,6 +46,7 @@ General flow of any benchmark execution is divided into 3 steps:
 |          [LeoECSLite](https://github.com/Leopotam/ecslite) | [2024.5.22](https://github.com/Leopotam/ecslite/releases/tag/2024.5.22)                           |       ✅       |     ❌      |        N/A        |
 |         [DefaultECS](https://github.com/Doraku/DefaultEcs) | [0.18.0-beta01](https://github.com/Doraku/DefaultEcs/releases/tag/0.18.0-beta01)                  |       ✅       |     ❌      |  Analyzer 0.17.8  |
 | [FlecsNET](https://github.com/BeanCheeseBurrito/Flecs.NET) | [3.2.11](https://www.nuget.org/packages/Flecs.NET.Release/3.2.11)                                 |       ✅       |     ❌      |        N/A        |
+|        [TinyEcs](https://github.com/andreakarasho/TinyEcs) | [1.3.0](https://www.nuget.org/packages/TinyEcs.Main/1.3.0)                                        |       ❌       |     ❌      |        N/A        |
 
 # Implemented benchmarks
 
@@ -87,17 +88,16 @@ Command line args:
 
 1. Because of nature of BenchmarkDotNet there's sequential iteration of creating entities happening.
    This leads to case where, for example we creating 100k entities in benchmark, it's properly cleared
-   in Setup and Cleanup but benchmark itself will be called multiple times which will lead to creating
-2. 100k entities,
+   in Setup and Cleanup but benchmark itself will be called multiple times which will lead to creating 100k entities,
    then another 100k and in some cases lead to millions of entities in the world which can affect perfomance of creation
    and deletion on certain ECS implementations.
-3. System benchmarks which uses *Padding* property produces up to 1.100.000 entities each because of logic of padding
+2. System benchmarks which uses *Padding* property produces up to 1.100.000 entities each because of logic of padding
    generation. It affects runs duration but for now i'm not sure about correct way do fix that (maybe keep entire
    entities
    count up to *EntityCount* so it'll not affect speed but it'll reduce actual entity count to about 9.9k so archetype
    ecs
    implementation will gain significant boost).
-4. Because some framework deleting entity on delete last components there are differences in behaviours in tests and
+3. Because some framework deleting entity on delete last components there are differences in behaviours in tests and
    benchmarks.
    For example **RemoveComponent** benchmark will work faster with Arch and FennECS because they're not deleting entity.
    Because of that special property called `DeletesEntityOnLastComponentDeletion` is required to be implemented in each
