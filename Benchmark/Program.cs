@@ -55,9 +55,9 @@ IConfig configuration = DefaultConfig.Instance
     .AddExporter(MarkdownExporter.GitHub)
     .WithOptions(ConfigOptions.DisableOptimizationsValidator)
     .WithOption(ConfigOptions.JoinSummary, true)
-    .HideColumns(Column.Gen0, Column.Gen1, Column.Gen2, Column.Type, Column.Method, Column.Namespace)
     .AddColumn(new ContextColumn())
-    .WithSummaryStyle(SummaryStyle.Default.WithRatioStyle(RatioStyle.Trend));
+    .WithSummaryStyle(SummaryStyle.Default.WithRatioStyle(RatioStyle.Trend))
+    .HideColumns(Column.Gen0, Column.Gen1, Column.Gen2, Column.Type, Column.Method, Column.Namespace);
 
 if (options.PrintList)
 {
