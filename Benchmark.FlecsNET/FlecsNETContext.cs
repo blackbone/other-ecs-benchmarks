@@ -21,6 +21,7 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
     public void Setup()
     {
         _world = World.Create();
+        _world.SetThreads(4);
     }
 
     public void FinishSetup()
@@ -321,30 +322,25 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
         return true;
     }
 
-    public void Tick(float delta)
-    {
-        foreach (var system in _systems!)
-            system(delta);
-    }
+    public void Tick(float delta) => _world.Progress(delta);
 
     public unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId)
         where T1 : struct, MorpehComponent, DragonComponent
     {
-        _systems!.Add(_ => _queries![poolId].Iter((Iter iter, Field<T1> c1) =>
-        {
-            foreach (var i in iter)
-                method(ref c1[i]);
-        }));
+        _world.Routine<T1>()
+            .MultiThreaded()
+            .Write<T1>()
+            .Each(method);
     }
 
     public unsafe void AddSystem<T1, T2>(delegate*<ref T1, ref T2, void> method, int poolId)
         where T1 : struct, MorpehComponent, DragonComponent where T2 : struct, MorpehComponent, DragonComponent
     {
-        _systems!.Add(_ => _queries![poolId].Iter((Iter iter, Field<T1> c1, Field<T2> c2) =>
-        {
-            foreach (var i in iter)
-                method(ref c1[i], ref c2[i]);
-        }));
+        _world.Routine<T1, T2>()
+            .MultiThreaded()
+            .Write<T1>()
+            .Write<T2>()
+            .Each(method);
     }
 
     public unsafe void AddSystem<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> method, int poolId)
@@ -352,11 +348,12 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
         where T2 : struct, MorpehComponent, DragonComponent
         where T3 : struct, MorpehComponent, DragonComponent
     {
-        _systems!.Add(_ => _queries![poolId].Iter((Iter iter, Field<T1> c1, Field<T2> c2, Field<T3> c3) =>
-        {
-            foreach (var i in iter)
-                method(ref c1[i], ref c2[i], ref c3[i]);
-        }));
+        _world.Routine<T1, T2, T3>()
+            .MultiThreaded()
+            .Write<T1>()
+            .Write<T2>()
+            .Write<T3>()
+            .Each(method);
     }
 
     public unsafe void AddSystem<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> method, int poolId)
@@ -365,11 +362,12 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
         where T3 : struct, MorpehComponent, DragonComponent
         where T4 : struct, MorpehComponent, DragonComponent
     {
-        _systems!.Add(_ => _queries![poolId].Iter(
-            (Iter iter, Field<T1> c1, Field<T2> c2, Field<T3> c3, Field<T4> c4) =>
-            {
-                foreach (var i in iter)
-                    method(ref c1[i], ref c2[i], ref c3[i], ref c4[i]);
-            }));
+        _world.Routine<T1, T2, T3, T4>()
+            .MultiThreaded()
+            .Write<T1>()
+            .Write<T2>()
+            .Write<T3>()
+            .Write<T4>()
+            .Each(method);
     }
 }
