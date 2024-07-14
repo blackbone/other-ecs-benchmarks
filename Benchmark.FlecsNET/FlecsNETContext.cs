@@ -12,7 +12,6 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
 #pragma warning restore CS9113 // Parameter is unread.
 {
     private readonly Dictionary<int, Query>? _queries = new();
-    private readonly List<Action<float>>? _systems = new();
     private World _world;
 
     public bool DeletesEntityOnLastComponentDeletion => false;
@@ -204,8 +203,9 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
         {
-            if (entities[i].IsAlive() && entities[i].Has<T1>()) entities[i].Remove<T1>();
-            if (entities[i].IsAlive() && entities[i].Has<T2>()) entities[i].Remove<T2>();
+            if (!entities[i].IsAlive()) return;
+            if (entities[i].Has<T1>()) entities[i].Remove<T1>();
+            if (entities[i].Has<T2>()) entities[i].Remove<T2>();
         }
     }
 
@@ -217,9 +217,10 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
         {
-            if (entities[i].IsAlive() && entities[i].Has<T1>()) entities[i].Remove<T1>();
-            if (entities[i].IsAlive() && entities[i].Has<T2>()) entities[i].Remove<T2>();
-            if (entities[i].IsAlive() && entities[i].Has<T3>()) entities[i].Remove<T3>();
+            if (!entities[i].IsAlive()) return;
+            if (entities[i].Has<T1>()) entities[i].Remove<T1>();
+            if (entities[i].Has<T2>()) entities[i].Remove<T2>();
+            if (entities[i].Has<T3>()) entities[i].Remove<T3>();
         }
     }
 
@@ -232,10 +233,11 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
         {
-            if (entities[i].IsAlive() && entities[i].Has<T1>()) entities[i].Remove<T1>();
-            if (entities[i].IsAlive() && entities[i].Has<T2>()) entities[i].Remove<T2>();
-            if (entities[i].IsAlive() && entities[i].Has<T3>()) entities[i].Remove<T3>();
-            if (entities[i].IsAlive() && entities[i].Has<T4>()) entities[i].Remove<T4>();
+            if (!entities[i].IsAlive()) return;
+            if (entities[i].Has<T1>()) entities[i].Remove<T1>();
+            if (entities[i].Has<T2>()) entities[i].Remove<T2>();
+            if (entities[i].Has<T3>()) entities[i].Remove<T3>();
+            if (entities[i].Has<T4>()) entities[i].Remove<T4>();
         }
     }
 
