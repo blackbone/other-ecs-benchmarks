@@ -330,7 +330,7 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
     public unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId)
         where T1 : struct, MorpehComponent, DragonComponent
     {
-        _systems!.Add(_ => _queries![poolId].Iter((Iter iter, Column<T1> c1) =>
+        _systems!.Add(_ => _queries![poolId].Iter((Iter iter, Field<T1> c1) =>
         {
             foreach (var i in iter)
                 method(ref c1[i]);
@@ -340,7 +340,7 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
     public unsafe void AddSystem<T1, T2>(delegate*<ref T1, ref T2, void> method, int poolId)
         where T1 : struct, MorpehComponent, DragonComponent where T2 : struct, MorpehComponent, DragonComponent
     {
-        _systems!.Add(_ => _queries![poolId].Iter((Iter iter, Column<T1> c1, Column<T2> c2) =>
+        _systems!.Add(_ => _queries![poolId].Iter((Iter iter, Field<T1> c1, Field<T2> c2) =>
         {
             foreach (var i in iter)
                 method(ref c1[i], ref c2[i]);
@@ -352,7 +352,7 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
         where T2 : struct, MorpehComponent, DragonComponent
         where T3 : struct, MorpehComponent, DragonComponent
     {
-        _systems!.Add(_ => _queries![poolId].Iter((Iter iter, Column<T1> c1, Column<T2> c2, Column<T3> c3) =>
+        _systems!.Add(_ => _queries![poolId].Iter((Iter iter, Field<T1> c1, Field<T2> c2, Field<T3> c3) =>
         {
             foreach (var i in iter)
                 method(ref c1[i], ref c2[i], ref c3[i]);
@@ -366,7 +366,7 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
         where T4 : struct, MorpehComponent, DragonComponent
     {
         _systems!.Add(_ => _queries![poolId].Iter(
-            (Iter iter, Column<T1> c1, Column<T2> c2, Column<T3> c3, Column<T4> c4) =>
+            (Iter iter, Field<T1> c1, Field<T2> c2, Field<T3> c3, Field<T4> c4) =>
             {
                 foreach (var i in iter)
                     method(ref c1[i], ref c2[i], ref c3[i], ref c4[i]);

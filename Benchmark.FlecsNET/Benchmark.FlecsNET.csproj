@@ -9,7 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Flecs.NET.Release" Version="3.2.11"/>
+        <PackageReference Include="Flecs.NET.Release" Version="4.0.0" />
     </ItemGroup>
 
     <ItemGroup>

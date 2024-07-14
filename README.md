@@ -45,7 +45,7 @@ General flow of any benchmark execution is divided into 3 steps:
 |                  [LeoECS](https://github.com/Leopotam/ecs) | [2023.6.22](https://github.com/Leopotam/ecs/releases/tag/2023.6.22)                               |       ✅       |     ❌      |        N/A        |
 |          [LeoECSLite](https://github.com/Leopotam/ecslite) | [2024.5.22](https://github.com/Leopotam/ecslite/releases/tag/2024.5.22)                           |       ✅       |     ❌      |        N/A        |
 |         [DefaultECS](https://github.com/Doraku/DefaultEcs) | [0.18.0-beta01](https://github.com/Doraku/DefaultEcs/releases/tag/0.18.0-beta01)                  |       ✅       |     ❌      |  Analyzer 0.17.8  |
-| [FlecsNET](https://github.com/BeanCheeseBurrito/Flecs.NET) | [3.2.11](https://www.nuget.org/packages/Flecs.NET.Release/3.2.11)                                 |       ✅       |     ❌      |        N/A        |
+| [FlecsNET](https://github.com/BeanCheeseBurrito/Flecs.NET) | [4.0.0](https://www.nuget.org/packages/Flecs.NET.Release/4.0.0)                                   |       ✅       |     ❌      |        N/A        |
 |        [TinyEcs](https://github.com/andreakarasho/TinyEcs) | [1.3.0](https://www.nuget.org/packages/TinyEcs.Main/1.3.0)                                        |       ✅       |     ❌      |        N/A        |
 
 # Implemented benchmarks
