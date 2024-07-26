@@ -38,10 +38,10 @@ General flow of any benchmark execution is divided into 3 steps:
 
 |                                                        ECS | Version                                                                                           |  Implemented  |  Verified  |       Notes       |
 |-----------------------------------------------------------:|:--------------------------------------------------------------------------------------------------|:-------------:|:----------:|:-----------------:|
-|                    [Arch](https://github.com/genaray/Arch) | [1.2.8.1-alpha](https://www.nuget.org/packages/Arch/1.2.8.1-alpha)                                |       ✅       |     ❌      |        N/A        |
-|                           [fennecs](https://fennecs.tech/) | [0.5.8-beta](https://www.nuget.org/packages/fennecs/0.5.8-beta)                                   |       ✅       |     ❌      |        N/A        |
+|                    [Arch](https://github.com/genaray/Arch) | [1.2.8.2-alpha](https://www.nuget.org/packages/Arch/1.2.8.2-alpha)                                |       ✅       |     ❌      |        N/A        |
+|                           [fennecs](https://fennecs.tech/) | [0.5.10-beta](https://www.nuget.org/packages/fennecs/0.5.10-beta)                                 |       ✅       |     ❌      |        N/A        |
 |               [Morpeh](https://github.com/scellecs/morpeh) | [2024.1.0-rc49](https://github.com/scellecs/morpeh/releases/tag/2024.1.0-rc49)                    |       ✅       |     ❌      |        N/A        |
-|       [DragonECS](https://github.com/DCFApixels/DragonECS) | [0.8.37](https://github.com/DCFApixels/DragonECS/commit/a9e3580f375a9729662682061e85cb7a873cd6f8) |       ✅       |     ❌      |        N/A        |
+|       [DragonECS](https://github.com/DCFApixels/DragonECS) | [0.8.39](https://github.com/DCFApixels/DragonECS/commit/753250025f8a35ec7ea26959dd8ebad446df86c9) |       ✅       |     ❌      |        N/A        |
 |                  [LeoECS](https://github.com/Leopotam/ecs) | [2023.6.22](https://github.com/Leopotam/ecs/releases/tag/2023.6.22)                               |       ✅       |     ❌      |        N/A        |
 |          [LeoECSLite](https://github.com/Leopotam/ecslite) | [2024.5.22](https://github.com/Leopotam/ecslite/releases/tag/2024.5.22)                           |       ✅       |     ❌      |        N/A        |
 |         [DefaultECS](https://github.com/Doraku/DefaultEcs) | [0.18.0-beta01](https://github.com/Doraku/DefaultEcs/releases/tag/0.18.0-beta01)                  |       ✅       |     ❌      |  Analyzer 0.17.8  |
@@ -102,3 +102,4 @@ Command line args:
    For example **RemoveComponent** benchmark will work faster with Arch and FennECS because they're not deleting entity.
    Because of that special property called `DeletesEntityOnLastComponentDeletion` is required to be implemented in each
    context.
+4. **TinyECS** - Deleting entities during lock causing stackoverflow on merge so get rid of lock during deletions.

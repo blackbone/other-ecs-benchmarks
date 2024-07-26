@@ -52,12 +52,14 @@ public sealed class TinyEcsContext(int entityCount = 4096) : IBenchmarkContext
 
     public void DeleteEntities(in Array entitySet)
     {
+        _world!.EndDeferred();
         var entities = (EntityView[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             if (entities[i] != default)
                 entities[i].Delete();
         
         EntityCount -= entitySet.Length;
+        _world!.BeginDeferred();
     }
 
     public Array Shuffle(in Array entitySet)
