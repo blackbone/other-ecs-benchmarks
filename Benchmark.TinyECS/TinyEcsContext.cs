@@ -231,49 +231,27 @@ public sealed class TinyEcsContext(int entityCount = 4096) : IBenchmarkContext
 
     public void Tick(float delta) => _scheduler!.Run();
 
-    public unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId) where T1 : struct, MorpehComponent, DragonComponent
-    {
-        _scheduler!.AddSystem((Query<T1> query) => {
-            foreach (var (e, c1) in query.Iter<T1>())
-                for (var i = 0; i < e.Length; i++)
-                    method(ref c1[i]);
-        });
-    }
+    public unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId)
+        where T1 : struct, MorpehComponent, DragonComponent =>
+        _scheduler!.AddSystem((Query<T1> query) => query.EachJob((ref T1 c1) => method(ref c1)));
 
     public unsafe void AddSystem<T1, T2>(delegate*<ref T1, ref T2, void> method, int poolId)
-        where T1 : struct, MorpehComponent, DragonComponent where T2 : struct, MorpehComponent, DragonComponent
-    {
-        _scheduler!.AddSystem((Query<(T1, T2)> query) => {
-            foreach (var (e, c1, c2) in query.Iter<T1, T2>())
-                for (var i = 0; i < e.Length; i++)
-                    method(ref c1[i], ref c2[i]);
-        });
-    }
+        where T1 : struct, MorpehComponent, DragonComponent
+        where T2 : struct, MorpehComponent, DragonComponent =>
+        _scheduler!.AddSystem((Query<(T1, T2)> query) => query.EachJob((ref T1 c1, ref T2 c2) => method(ref c1, ref c2)));
 
     public unsafe void AddSystem<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> method, int poolId)
         where T1 : struct, MorpehComponent, DragonComponent
         where T2 : struct, MorpehComponent, DragonComponent
-        where T3 : struct, MorpehComponent, DragonComponent
-    {
-        _scheduler!.AddSystem((Query<(T1, T2, T3)> query) => {
-            foreach (var (e, c1, c2, c3) in query.Iter<T1, T2, T3>())
-                for (var i = 0; i < e.Length; i++)
-                    method(ref c1[i], ref c2[i], ref c3[i]);
-        });
-    }
+        where T3 : struct, MorpehComponent, DragonComponent =>
+        _scheduler!.AddSystem((Query<(T1, T2, T3)> query) => query.EachJob((ref T1 c1, ref T2 c2, ref T3 c3) => method(ref c1, ref c2, ref c3)));
 
     public unsafe void AddSystem<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> method, int poolId)
         where T1 : struct, MorpehComponent, DragonComponent
         where T2 : struct, MorpehComponent, DragonComponent
         where T3 : struct, MorpehComponent, DragonComponent
-        where T4 : struct, MorpehComponent, DragonComponent
-    {
-        _scheduler!.AddSystem((Query<(T1, T2, T3, T4)> query) => {
-            foreach (var (e, c1, c2, c3, c4) in query.Iter<T1, T2, T3, T4>())
-                for (var i = 0; i < e.Length; i++)
-                    method(ref c1[i], ref c2[i], ref c3[i], ref c4[i]);
-        });
-    }
+        where T4 : struct, MorpehComponent, DragonComponent =>
+        _scheduler!.AddSystem((Query<(T1, T2, T3, T4)> query) => query.EachJob((ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4) => method(ref c1, ref c2, ref c3, ref c4)));
 
     public void Dispose()
     {
