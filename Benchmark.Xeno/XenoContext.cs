@@ -1,77 +1,107 @@
-using Benchmark._Context;
-using fennecs;
-using Entity = fennecs.Entity;
-using World = fennecs.World;
+﻿using Benchmark._Context;
+using Xeno;
+using World = Xeno.World;
 using MorpehComponent = Scellecs.Morpeh.IComponent;
 using DragonComponent = DCFApixels.DragonECS.IEcsComponent;
 using XenoComponent = Xeno.IComponent;
 
-namespace Benchmark.Fennecs;
+namespace Benchmark.Xeno;
 
-public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
+public class XenoContext(int entityCount = 4096) : IBenchmarkContext
 {
-    private readonly Dictionary<int, Query>? _streams = new();
-    private readonly List<ISystem>? _systems = new();
-    private World.WorldLock? _lock;
-    private World? _world = new();
+    private World? _world;
 
     public bool DeletesEntityOnLastComponentDeletion => false;
-
-    public int EntityCount => _world!.Count;
-
-    public void Setup()
-    {
-        _world = new World(entityCount);
-    }
-
-    public void FinishSetup()
-    {
-    }
-
-    public void Cleanup()
-    {
-        _systems!.Clear();
-        _streams!.Clear();
-        _world!.GC();
-        _world!.Dispose();
-        _world = null;
-    }
+    public int EntityCount => (int)_world!.EntityCount;
 
     public void Dispose()
     {
     }
 
+    public void Setup()
+    {
+        _world = Worlds.Create($"xeno_world_{DateTimeOffset.UtcNow.Ticks}");
+        _world!.EnsureCapacity(EntityCount);
+    }
+
+    public void FinishSetup()
+    {
+        _world!.Start();
+    }
+
     public void Warmup<T1>(in int poolId)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        => _streams![poolId] = _world!.Query<T1>().Compile().Warmup();
+    {
+        _world!.EnsureCapacity<T1>(entityCount);
+    }
 
     public void Warmup<T1, T2>(in int poolId)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
-        => _streams![poolId] = _world!.Query<T1, T2>().Compile().Warmup();
+    {
+        _world!.EnsureCapacity<T1>(entityCount);
+        _world!.EnsureCapacity<T2>(entityCount);
+    }
 
     public void Warmup<T1, T2, T3>(in int poolId)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
-        => _streams![poolId] = _world!.Query<T1, T2, T3>().Compile().Warmup();
+    {
+        _world!.EnsureCapacity<T1>(entityCount);
+        _world!.EnsureCapacity<T2>(entityCount);
+        _world!.EnsureCapacity<T3>(entityCount);
+    }
 
     public void Warmup<T1, T2, T3, T4>(in int poolId)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T4 : struct, MorpehComponent, DragonComponent, XenoComponent
-        => _streams![poolId] = _world!.Query<T1, T2, T3, T4>().Compile().Warmup();
+    {
+        _world!.EnsureCapacity<T1>(entityCount);
+        _world!.EnsureCapacity<T2>(entityCount);
+        _world!.EnsureCapacity<T3>(entityCount);
+        _world!.EnsureCapacity<T4>(entityCount);
+    }
 
-    public void Lock() => _lock = _world!.Lock();
+    public void Cleanup()
+    {
+        _world!.Dispose();
+        _world = null;
+    }
 
-    public void Commit() => _lock!.Value.Dispose();
+    public void Lock()
+    {
+    }
+
+    public void Commit()
+    {
+    }
+
+    public void DeleteEntities(in Array entitySet)
+    {
+        var entities = (Entity[])entitySet;
+        for (var i = 0; i < entities.Length; i++)
+            _world!.DeleteEntity(entities[i]);
+    }
+
+    public Array Shuffle(in Array entitySet)
+    {
+        Random.Shared.Shuffle((Entity[])entitySet);
+        return entitySet;
+    }
+
+    public Array PrepareSet(in int count)
+    {
+        return new Entity[count];
+    }
 
     public void CreateEntities(in Array entitySet)
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
-            entities[i] = _world!.Spawn();
+            entities[i] = _world!.CreateEntity();
     }
 
     public void CreateEntities<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default)
@@ -79,45 +109,39 @@ public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
-            entities[i] = _world!.Spawn().Add(c1);
+            entities[i] = _world!.CreateEntity(c1);
     }
 
-    public void CreateEntities<T1, T2>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+    public void CreateEntities<T1, T2>(in Array entitySet, in int poolId = -1, in T1 c1 = default,
+        in T2 c2 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
-            entities[i] = _world!.Spawn().Add(c1).Add(c2);
+            entities[i] = _world!.CreateEntity(c1, c2);
     }
 
     public void CreateEntities<T1, T2, T3>(in Array entitySet, in int poolId = -1, in T1 c1 = default,
-        in T2 c2 = default, in T3 c3 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        in T2 c2 = default,
+        in T3 c3 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
-            entities[i] = _world!.Spawn().Add(c1).Add(c2).Add(c3);
+            entities[i] = _world!.CreateEntity(c1, c2, c3);
     }
 
     public void CreateEntities<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1, in T1 c1 = default,
-        in T2 c2 = default, in T3 c3 = default, in T4 c4 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        in T2 c2 = default,
+        in T3 c3 = default, in T4 c4 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T4 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
-            entities[i] = _world!.Spawn().Add(c1).Add(c2).Add(c3).Add(c4);
-    }
-
-    public void DeleteEntities(in Array entitySet)
-    {
-        var entities = (Entity[])entitySet;
-        // TODO perform use overload which utilizes ReadOnlySpan<Identity>
-        for (var i = 0; i < entities.Length; i++)
-            if (_world!.Contains(entities[i]))
-                _world!.Despawn(entities[i]);
+            entities[i] = _world!.CreateEntity(c1, c2, c3, c4);
     }
 
     public void AddComponent<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default)
@@ -125,55 +149,56 @@ public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
-            entities[i].Add(c1);
+            entities[i].AddComponent(c1);
     }
 
     public void AddComponent<T1, T2>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
-            entities[i].Add(c1).Add(c2);
+            entities[i].AddComponents(c1, c2);
     }
 
-    public void AddComponent<T1, T2, T3>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default,
+    public void AddComponent<T1, T2, T3>(in Array entitySet, in int poolId = -1, in T1 c1 = default,
+        in T2 c2 = default,
         in T3 c3 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
-            entities[i].Add(c1).Add(c2).Add(c3);
+            entities[i].AddComponents(c1, c2, c3);
     }
 
     public void AddComponent<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1, in T1 c1 = default,
-        in T2 c2 = default, in T3 c3 = default, in T4 c4 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        in T2 c2 = default,
+        in T3 c3 = default, in T4 c4 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T4 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
-            entities[i].Add(c1).Add(c2).Add(c3).Add(c4);
+            entities[i].AddComponents(c1, c2, c3, c4);
     }
 
-    public void RemoveComponent<T1>(in Array entitySet, in int poolId = -1) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+    public void RemoveComponent<T1>(in Array entitySet, in int poolId = -1)
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
-            if (entities[i].Has<T1>())
-                entities[i].Remove<T1>();
+            entities[i].RemoveComponent<T1>(out _);
     }
 
     public void RemoveComponent<T1, T2>(in Array entitySet, in int poolId = -1)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
-        {
-            if (entities[i].Has<T1>()) entities[i].Remove<T1>();
-            if (entities[i].Has<T2>()) entities[i].Remove<T2>();
-        }
+            entities[i].RemoveComponents<T1, T2>(out _, out _);
     }
 
     public void RemoveComponent<T1, T2, T3>(in Array entitySet, in int poolId = -1)
@@ -183,11 +208,7 @@ public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
-        {
-            if (entities[i].Has<T1>()) entities[i].Remove<T1>();
-            if (entities[i].Has<T2>()) entities[i].Remove<T2>();
-            if (entities[i].Has<T3>()) entities[i].Remove<T3>();
-        }
+            entities[i].RemoveComponents<T1, T2, T3>(out _, out _, out _);
     }
 
     public void RemoveComponent<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1)
@@ -198,57 +219,56 @@ public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
-        {
-            if (entities[i].Has<T1>()) entities[i].Remove<T1>();
-            if (entities[i].Has<T2>()) entities[i].Remove<T2>();
-            if (entities[i].Has<T3>()) entities[i].Remove<T3>();
-            if (entities[i].Has<T4>()) entities[i].Remove<T4>();
-        }
+            entities[i].RemoveComponents<T1, T2, T3, T4>(out _, out _, out _, out _);
     }
 
     public int CountWith<T1>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
-        return _streams![poolId].Count;
+        return _world!.Count<T1>();
     }
 
     public int CountWith<T1, T2>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
-        return _streams![poolId].Count;
+        return _world!.Count<T1, T2>();
     }
 
-    public int CountWith<T1, T2, T3>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+    public int CountWith<T1, T2, T3>(in int poolId)
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
-        return _streams![poolId].Count;
+        return _world!.Count<T1, T2, T3>();
     }
 
-    public int CountWith<T1, T2, T3, T4>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+    public int CountWith<T1, T2, T3, T4>(in int poolId)
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T4 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
-        return _streams![poolId].Count;
+        return _world!.Count<T1, T2, T3, T4>();
     }
 
-    public bool GetSingle<T1>(in object? entity, in int poolId, ref T1 c1) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+    public bool GetSingle<T1>(in object? entity, in int poolId, ref T1 c1)
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         if (entity == null) return false;
 
         var e = (Entity)entity;
-        c1 = e.Ref<T1>();
+        c1 = e.AccessComponent<T1>();
         return true;
     }
 
     public bool GetSingle<T1, T2>(in object? entity, in int poolId, ref T1 c1, ref T2 c2)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
         if (entity == null) return false;
 
         var e = (Entity)entity;
-        c1 = e.Ref<T1>();
-        c2 = e.Ref<T2>();
+        c1 = e.AccessComponent<T1>();
+        c2 = e.AccessComponent<T2>();
         return true;
     }
 
@@ -260,14 +280,14 @@ public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
         if (entity == null) return false;
 
         var e = (Entity)entity;
-        c1 = e.Ref<T1>();
-        c2 = e.Ref<T2>();
-        c3 = e.Ref<T3>();
+        c1 = e.AccessComponent<T1>();
+        c2 = e.AccessComponent<T2>();
+        c3 = e.AccessComponent<T3>();
         return true;
     }
 
-    public bool GetSingle<T1, T2, T3, T4>(in object? entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+    public bool GetSingle<T1, T2, T3, T4>(in object? entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3,
+        ref T4 c4) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T4 : struct, MorpehComponent, DragonComponent, XenoComponent
@@ -275,29 +295,29 @@ public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
         if (entity == null) return false;
 
         var e = (Entity)entity;
-        c1 = e.Ref<T1>();
-        c2 = e.Ref<T2>();
-        c3 = e.Ref<T3>();
-        c4 = e.Ref<T4>();
+        c1 = e.AccessComponent<T1>();
+        c2 = e.AccessComponent<T2>();
+        c3 = e.AccessComponent<T3>();
+        c4 = e.AccessComponent<T4>();
         return true;
     }
 
     public void Tick(float delta)
     {
-        for (var i = 0; i < _systems!.Count; i++)
-            _systems[i].Run(delta);
+        _world!.Tick(delta);
     }
 
     public unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
-        _systems!.Add(new System<T1>(method, _streams![poolId].Stream<T1>()));
+        _world!.AddSystem(new System1<T1>(method));
     }
 
     public unsafe void AddSystem<T1, T2>(delegate*<ref T1, ref T2, void> method, int poolId)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
-        _systems!.Add(new System<T1, T2>(method, _streams![poolId].Stream<T1, T2>()));
+        _world!.AddSystem(new System2<T1, T2>(method));
     }
 
     public unsafe void AddSystem<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> method, int poolId)
@@ -305,7 +325,7 @@ public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
-        _systems!.Add(new System<T1, T2, T3>(method, _streams![poolId].Stream<T1, T2, T3>()));
+        _world!.AddSystem(new System3<T1, T2, T3>(method));
     }
 
     public unsafe void AddSystem<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> method, int poolId)
@@ -314,17 +334,55 @@ public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
         where T4 : struct, MorpehComponent, DragonComponent, XenoComponent
     {
-        _systems!.Add(new System<T1, T2, T3, T4>(method, _streams![poolId].Stream<T1, T2, T3, T4>()));
+        _world!.AddSystem(new System4<T1, T2, T3, T4>(method));
     }
+}
 
-    public Array Shuffle(in Array entitySet)
-    {
-        Random.Shared.Shuffle((Entity[])entitySet);
-        return entitySet;
-    }
+[System]
+public unsafe partial class System1<C1>
+    where C1 : struct, XenoComponent
+{
+    private readonly delegate*<ref C1, void> _method;
+    public System1(delegate*<ref C1, void> method) : this() => _method = method;
+    
+    [SystemMethod(SystemMethodType.Update)]
+    private void Update(ref C1 c1) => _method(ref c1);
+}
 
-    public Array PrepareSet(in int count)
-    {
-        return count > 0 ? new Entity[count] : [];
-    }
+[System]
+public unsafe partial class System2<C1, C2>
+    where C1 : struct, XenoComponent
+    where C2 : struct, XenoComponent
+{
+    private readonly delegate*<ref C1, ref C2, void> _method;
+    public System2(delegate*<ref C1, ref C2, void> method) : this() => _method = method;
+    [SystemMethod(SystemMethodType.Update)]
+    private void Update(ref C1 c1, ref C2 c2) => _method(ref c1, ref c2);
+}
+
+[System]
+public unsafe partial class System3<C1, C2, C3>
+    where C1 : struct, XenoComponent
+    where C2 : struct, XenoComponent
+    where C3 : struct, XenoComponent
+{
+    private readonly delegate*<ref C1, ref C2, ref C3, void> _method;
+    public System3(delegate*<ref C1, ref C2, ref C3, void> method) : this() => _method = method;
+    
+    [SystemMethod(SystemMethodType.Update)]
+    private void Update(ref C1 c1, ref C2 c2, ref C3 c3) => _method(ref c1, ref c2, ref c3);
+}
+
+[System]
+public unsafe partial class System4<C1, C2, C3, C4>
+    where C1 : struct, XenoComponent
+    where C2 : struct, XenoComponent
+    where C3 : struct, XenoComponent
+    where C4 : struct, XenoComponent
+{
+    private readonly delegate*<ref C1, ref C2, ref C3, ref C4, void> _method;
+    public System4(delegate*<ref C1, ref C2, ref C3, ref C4, void> method) : this() => _method = method;
+    
+    [SystemMethod(SystemMethodType.Update)]
+    private void Update(ref C1 c1, ref C2 c2, ref C3 c3, ref C4 c4) => _method(ref c1, ref c2, ref c3, ref c4);
 }

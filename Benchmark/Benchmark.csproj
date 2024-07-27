@@ -29,6 +29,7 @@
     <!-- SUPPORT REFERENCES -->
     <ItemGroup>
         <ProjectReference Include="..\Benchmark.TinyECS\Benchmark.TinyECS.csproj" />
+        <ProjectReference Include="..\Benchmark.Xeno\Benchmark.Xeno.csproj" />
         <ProjectReference Include="..\Benchmark._Context\Benchmark._Context.csproj"/>
         <ProjectReference Include="..\Benchmark._Generator\Benchmark._Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
     </ItemGroup>

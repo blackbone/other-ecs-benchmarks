@@ -47,6 +47,7 @@ General flow of any benchmark execution is divided into 3 steps:
 |         [DefaultECS](https://github.com/Doraku/DefaultEcs) | [0.18.0-beta01](https://github.com/Doraku/DefaultEcs/releases/tag/0.18.0-beta01)                  |       ✅       |     ❌      |  Analyzer 0.17.8  |
 | [FlecsNET](https://github.com/BeanCheeseBurrito/Flecs.NET) | [4.0.0](https://www.nuget.org/packages/Flecs.NET.Release/4.0.0)                                   |       ✅       |     ❌      |        N/A        |
 |        [TinyEcs](https://github.com/andreakarasho/TinyEcs) | [1.3.0](https://www.nuget.org/packages/TinyEcs.Main/1.3.0)                                        |       ✅       |     ❌      |        N/A        |
+|                  [Xeno](https://github.com/blackbone/xeno) | [0.1.1](https://github.com/blackbone/xeno/commit/04ba1abe218868a38d55123386a387aa95fc27af)        |       ✅       |     ✅      |        N/A        |
 
 # Implemented benchmarks
 
