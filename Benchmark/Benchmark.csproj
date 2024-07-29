@@ -28,6 +28,7 @@
 
     <!-- SUPPORT REFERENCES -->
     <ItemGroup>
+        <ProjectReference Include="..\Benchmark.FriFlo\Benchmark.FriFlo.csproj" />
         <ProjectReference Include="..\Benchmark.TinyECS\Benchmark.TinyECS.csproj" />
         <ProjectReference Include="..\Benchmark.Xeno\Benchmark.Xeno.csproj" />
         <ProjectReference Include="..\Benchmark._Context\Benchmark._Context.csproj"/>

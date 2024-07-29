@@ -6,13 +6,10 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-        <InvariantGlobalization>true</InvariantGlobalization>
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\submodules\DragonECS\DragonECS.csproj" />
-      <ProjectReference Include="..\submodules\morpeh\Scellecs.Morpeh\Scellecs.Morpeh.csproj" />
-      <ProjectReference Include="..\submodules\xeno\Xeno.csproj" />
+      <ProjectReference Include="..\Benchmark._Context\Benchmark._Context.csproj" />
     </ItemGroup>
 
     <ItemGroup>

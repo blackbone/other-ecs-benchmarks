@@ -6,6 +6,7 @@ using World = DefaultEcs.World;
 using MorpehComponent = Scellecs.Morpeh.IComponent;
 using DragonComponent = DCFApixels.DragonECS.IEcsComponent;
 using XenoComponent = Xeno.IComponent;
+using FrifloComponent = Friflo.Engine.ECS.IComponent;
 
 namespace Benchmark.DefaultECS;
 
@@ -41,25 +42,25 @@ public sealed class DefaultECSContext(int entityCount = 4096) : IBenchmarkContex
     }
 
     public void Warmup<T1>(in int poolId)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         => _queries![poolId] = _world!.GetEntities().With<T1>();
 
     public void Warmup<T1, T2>(in int poolId)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         => _queries![poolId] = _world!.GetEntities().With<T1>().With<T2>();
 
     public void Warmup<T1, T2, T3>(in int poolId)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
+        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         => _queries![poolId] = _world!.GetEntities().With<T1>().With<T2>().With<T3>();
 
     public void Warmup<T1, T2, T3, T4>(in int poolId)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
+        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
+        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         => _queries![poolId] = _world!.GetEntities().With<T1>().With<T2>().With<T3>().With<T4>();
 
     public void Lock()
@@ -98,7 +99,7 @@ public sealed class DefaultECSContext(int entityCount = 4096) : IBenchmarkContex
     }
 
     public void CreateEntities<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
@@ -109,7 +110,7 @@ public sealed class DefaultECSContext(int entityCount = 4096) : IBenchmarkContex
     }
 
     public void CreateEntities<T1, T2>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
@@ -122,9 +123,9 @@ public sealed class DefaultECSContext(int entityCount = 4096) : IBenchmarkContex
 
     public void CreateEntities<T1, T2, T3>(in Array entitySet, in int poolId = -1, in T1 c1 = default,
         in T2 c2 = default,
-        in T3 c3 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
+        in T3 c3 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
+        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
@@ -138,10 +139,10 @@ public sealed class DefaultECSContext(int entityCount = 4096) : IBenchmarkContex
 
     public void CreateEntities<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1, in T1 c1 = default,
         in T2 c2 = default,
-        in T3 c3 = default, in T4 c4 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent
+        in T3 c3 = default, in T4 c4 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
+        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
+        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
@@ -155,14 +156,14 @@ public sealed class DefaultECSContext(int entityCount = 4096) : IBenchmarkContex
     }
 
     public void AddComponent<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++) entities[i].Set(c1);
     }
 
     public void AddComponent<T1, T2>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
@@ -173,9 +174,9 @@ public sealed class DefaultECSContext(int entityCount = 4096) : IBenchmarkContex
     }
 
     public void AddComponent<T1, T2, T3>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default,
-        in T3 c3 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
+        in T3 c3 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
+        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
@@ -188,10 +189,10 @@ public sealed class DefaultECSContext(int entityCount = 4096) : IBenchmarkContex
 
     public void AddComponent<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1, in T1 c1 = default,
         in T2 c2 = default,
-        in T3 c3 = default, in T4 c4 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent
+        in T3 c3 = default, in T4 c4 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
+        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
+        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
@@ -203,14 +204,14 @@ public sealed class DefaultECSContext(int entityCount = 4096) : IBenchmarkContex
         }
     }
 
-    public void RemoveComponent<T1>(in Array entitySet, in int poolId = -1) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+    public void RemoveComponent<T1>(in Array entitySet, in int poolId = -1) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++) entities[i].Remove<T1>();
     }
 
     public void RemoveComponent<T1, T2>(in Array entitySet, in int poolId = -1)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
@@ -221,9 +222,9 @@ public sealed class DefaultECSContext(int entityCount = 4096) : IBenchmarkContex
     }
 
     public void RemoveComponent<T1, T2, T3>(in Array entitySet, in int poolId = -1)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
+        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
@@ -235,10 +236,10 @@ public sealed class DefaultECSContext(int entityCount = 4096) : IBenchmarkContex
     }
 
     public void RemoveComponent<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
+        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
+        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
@@ -250,33 +251,33 @@ public sealed class DefaultECSContext(int entityCount = 4096) : IBenchmarkContex
         }
     }
 
-    public int CountWith<T1>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+    public int CountWith<T1>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
         return _queries![poolId].AsEnumerable().Count();
     }
 
-    public int CountWith<T1, T2>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+    public int CountWith<T1, T2>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
         return _queries![poolId].AsEnumerable().Count();
     }
 
-    public int CountWith<T1, T2, T3>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
+    public int CountWith<T1, T2, T3>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
+        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
         return _queries![poolId].AsEnumerable().Count();
     }
 
-    public int CountWith<T1, T2, T3, T4>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent
+    public int CountWith<T1, T2, T3, T4>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
+        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
+        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
         return _queries![poolId].AsEnumerable().Count();
     }
 
-    public bool GetSingle<T1>(in object? entity, in int poolId, ref T1 c1) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+    public bool GetSingle<T1>(in object? entity, in int poolId, ref T1 c1) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
         if (entity == null) return false;
 
@@ -286,7 +287,7 @@ public sealed class DefaultECSContext(int entityCount = 4096) : IBenchmarkContex
     }
 
     public bool GetSingle<T1, T2>(in object? entity, in int poolId, ref T1 c1, ref T2 c2)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
         if (entity == null) return false;
 
@@ -297,9 +298,9 @@ public sealed class DefaultECSContext(int entityCount = 4096) : IBenchmarkContex
     }
 
     public bool GetSingle<T1, T2, T3>(in object? entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
+        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
         if (entity == null) return false;
 
@@ -311,10 +312,10 @@ public sealed class DefaultECSContext(int entityCount = 4096) : IBenchmarkContex
     }
 
     public bool GetSingle<T1, T2, T3, T4>(in object? entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
+        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
+        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
         if (entity == null) return false;
 
@@ -333,30 +334,30 @@ public sealed class DefaultECSContext(int entityCount = 4096) : IBenchmarkContex
     }
 
     public unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
         _systems!.Add(new System<T1>(_queries![poolId], method));
     }
 
     public unsafe void AddSystem<T1, T2>(delegate*<ref T1, ref T2, void> method, int poolId)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
         _systems!.Add(new System<T1, T2>(_queries![poolId], method));
     }
 
     public unsafe void AddSystem<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> method, int poolId)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
+        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
         _systems!.Add(new System<T1, T2, T3>(_queries![poolId], method));
     }
 
     public unsafe void AddSystem<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> method, int poolId)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent
-        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
+        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
+        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
         _systems!.Add(new System<T1, T2, T3, T4>(_queries![poolId], method));
     }
