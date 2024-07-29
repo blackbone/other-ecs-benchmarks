@@ -15,20 +15,24 @@ public class FrifloContext(int entityCount = 4096) : IBenchmarkContext
     private readonly Dictionary<int, ArchetypeQuery> _queries = new();
     private EntityStore? _world;
     private SystemRoot? _root;
+    private ParallelJobRunner? _runner;
     
     public bool DeletesEntityOnLastComponentDeletion => false;
     public int EntityCount => _world!.Count;
     
     public void Dispose()
     {
-        _world = null;
+        _runner?.Dispose();
         _root = null;
+        _runner = null;
+        _world = null;
     }
 
     public void Setup()
     {
         _world = new EntityStore(PidType.UsePidAsId);
         _root = new SystemRoot(_world);
+        _runner = new ParallelJobRunner(4);
     }
 
     public void FinishSetup()
@@ -295,14 +299,14 @@ public class FrifloContext(int entityCount = 4096) : IBenchmarkContext
 
     public unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
-        => _root!.Add(new FriFloSystem<T1>(method));
+        => _root!.Add(new FriFloSystem<T1>(_runner!, method));
 
     public unsafe void AddSystem<T1, T2>(delegate*<ref T1, ref T2, void> method, int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
-        => _root!.Add(new FriFloSystem<T1, T2>(method));
+        => _root!.Add(new FriFloSystem<T1, T2>(_runner!, method));
 
     public unsafe void AddSystem<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> method, int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
-        => _root!.Add(new FriFloSystem<T1, T2, T3>(method));
+        => _root!.Add(new FriFloSystem<T1, T2, T3>(_runner!, method));
 
     public unsafe void AddSystem<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> method, int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
-        => _root!.Add(new FriFloSystem<T1, T2, T3, T4>(method));
+        => _root!.Add(new FriFloSystem<T1, T2, T3, T4>(_runner!, method));
 }
