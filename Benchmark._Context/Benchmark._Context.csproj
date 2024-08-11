@@ -15,8 +15,4 @@
       <ProjectReference Include="..\submodules\xeno\Xeno.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <PackageReference Include="Friflo.Engine.ECS" Version="3.0.0-preview.6" />
-    </ItemGroup>
-
 </Project>
