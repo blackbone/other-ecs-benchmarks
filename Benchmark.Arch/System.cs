@@ -12,13 +12,7 @@ public unsafe class System<T>(delegate*<ref T, void> method)
     }
 
     private ForEach _forEach = new(method);
-    private readonly QueryDescription _query = new()
-    {
-        All = new Signature([typeof(T)]),
-        Any = Signature.Null,
-        None = Signature.Null,
-        Exclusive = Signature.Null
-    };
+    private readonly QueryDescription _query = new([typeof(T)]);
 
     public void ForEachQuery(World world) => world.InlineParallelQuery<ForEach, T>(_query, ref _forEach);
 }
@@ -32,13 +26,7 @@ public unsafe class System<T1, T2>(delegate*<ref T1, ref T2, void> method)
     }
 
     private ForEach _forEach = new(method);
-    private readonly QueryDescription _query = new()
-    {
-        All = new Signature([typeof(T1), typeof(T2)]),
-        Any = Signature.Null,
-        None = Signature.Null,
-        Exclusive = Signature.Null
-    };
+    private readonly QueryDescription _query = new([typeof(T1), typeof(T2)]);
     
     public void ForEachQuery(World world) => world.InlineParallelQuery<ForEach, T1, T2>(_query, ref _forEach);
 }
@@ -53,13 +41,7 @@ public unsafe class System<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> m
 
     private ForEach _forEach = new(method);
 
-    private readonly QueryDescription _query = new()
-    {
-        All = new Signature([typeof(T1), typeof(T2), typeof(T3)]),
-        Any = Signature.Null,
-        None = Signature.Null,
-        Exclusive = Signature.Null
-    };
+    private readonly QueryDescription _query = new([typeof(T1), typeof(T2), typeof(T3)]);
 
     public void ForEachQuery(World world) => world.InlineParallelQuery<ForEach, T1, T2, T3>(_query, ref _forEach);
 }
@@ -74,13 +56,7 @@ public unsafe class System<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref
 
     private ForEach _forEach = new(method);
 
-    private readonly QueryDescription _query = new()
-    {
-        All = new Signature([typeof(T1), typeof(T2), typeof(T3), typeof(T4)]),
-        Any = Signature.Null,
-        None = Signature.Null,
-        Exclusive = Signature.Null
-    };
+    private readonly QueryDescription _query = new([typeof(T1), typeof(T2), typeof(T3), typeof(T4)]);
     
     public void ForEachQuery(World world) => world.InlineParallelQuery<ForEach, T1, T2, T3, T4>(_query, ref _forEach);
 }
