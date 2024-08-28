@@ -36,19 +36,19 @@ General flow of any benchmark execution is divided into 3 steps:
 
 # Implemented contexts
 
-|                                                                 ECS | Version                                                                                           |  Implemented  |  Verified  |       Notes       |
-|--------------------------------------------------------------------:|:--------------------------------------------------------------------------------------------------|:-------------:|:----------:|:-----------------:|
-|                             [Arch](https://github.com/genaray/Arch) | [1.3.3-alpha](https://www.nuget.org/packages/Arch/1.3.3-alpha)                                    |       ✅       |     ❌      |        N/A        |
-|                                    [fennecs](https://fennecs.tech/) | [0.5.10-beta](https://www.nuget.org/packages/fennecs/0.5.10-beta)                                 |       ✅       |     ❌      |        N/A        |
-|                        [Morpeh](https://github.com/scellecs/morpeh) | [2024.1.0-rc49](https://github.com/scellecs/morpeh/releases/tag/2024.1.0-rc49)                    |       ✅       |     ❌      |        N/A        |
-|                [DragonECS](https://github.com/DCFApixels/DragonECS) | [0.8.41](https://github.com/DCFApixels/DragonECS/commit/dc05867f929aa86bae998f65aa4d11df2848c2fd) |       ✅       |     ❌      |        N/A        |
-|                           [LeoECS](https://github.com/Leopotam/ecs) | [2023.6.22](https://github.com/Leopotam/ecs/releases/tag/2023.6.22)                               |       ✅       |     ❌      |        N/A        |
-|                   [LeoECSLite](https://github.com/Leopotam/ecslite) | [2024.5.22](https://github.com/Leopotam/ecslite/releases/tag/2024.5.22)                           |       ✅       |     ❌      |        N/A        |
-|                  [DefaultECS](https://github.com/Doraku/DefaultEcs) | [0.18.0-beta01](https://github.com/Doraku/DefaultEcs/releases/tag/0.18.0-beta01)                  |       ✅       |     ❌      |  Analyzer 0.17.8  |
-|          [FlecsNET](https://github.com/BeanCheeseBurrito/Flecs.NET) | [4.0.0](https://www.nuget.org/packages/Flecs.NET.Release/4.0.0)                                   |       ✅       |     ❌      |        N/A        |
-|                 [TinyEcs](https://github.com/andreakarasho/TinyEcs) | [1.3.0](https://www.nuget.org/packages/TinyEcs.Main/1.3.0)                                        |       ✅       |     ❌      |        N/A        |
-|                           [Xeno](https://github.com/blackbone/xeno) | [0.1.2](https://github.com/blackbone/xeno/releases/tag/0.1.2)                                     |       ✅       |     ✅      |        N/A        |
-|               [FriFlo](https://github.com/friflo/Friflo.Engine.ECS) | [3.0.0-preview.11](https://www.nuget.org/packages/Friflo.Engine.ECS/3.0.0-preview.11)             |       ✅       |     ❌      |        N/A        |
+|                                                                 ECS | Version                                                                               |  Implemented  |  Verified  |       Notes       |
+|--------------------------------------------------------------------:|:--------------------------------------------------------------------------------------|:-------------:|:----------:|:-----------------:|
+|                             [Arch](https://github.com/genaray/Arch) | [1.3.3-alpha](https://www.nuget.org/packages/Arch/1.3.3-alpha)                        |       ✅       |     ❌      |        N/A        |
+|                                    [fennecs](https://fennecs.tech/) | [0.5.10-beta](https://www.nuget.org/packages/fennecs/0.5.10-beta)                     |       ✅       |     ❌      |        N/A        |
+|                        [Morpeh](https://github.com/scellecs/morpeh) | [2024.1.0-rc49](https://github.com/scellecs/morpeh/releases/tag/2024.1.0-rc49)        |       ✅       |     ❌      |        N/A        |
+|                [DragonECS](https://github.com/DCFApixels/DragonECS) | [0.8.42](https://github.com/DCFApixels/DragonECS/releases/tag/0.8.42)                 |       ✅       |     ❌      |        N/A        |
+|                           [LeoECS](https://github.com/Leopotam/ecs) | [2023.6.22](https://github.com/Leopotam/ecs/releases/tag/2023.6.22)                   |       ✅       |     ❌      |        N/A        |
+|                   [LeoECSLite](https://github.com/Leopotam/ecslite) | [2024.5.22](https://github.com/Leopotam/ecslite/releases/tag/2024.5.22)               |       ✅       |     ❌      |        N/A        |
+|                  [DefaultECS](https://github.com/Doraku/DefaultEcs) | [0.18.0-beta01](https://github.com/Doraku/DefaultEcs/releases/tag/0.18.0-beta01)      |       ✅       |     ❌      |  Analyzer 0.17.8  |
+|          [FlecsNET](https://github.com/BeanCheeseBurrito/Flecs.NET) | [4.0.0](https://www.nuget.org/packages/Flecs.NET.Release/4.0.0)                       |       ✅       |     ❌      |        N/A        |
+|                 [TinyEcs](https://github.com/andreakarasho/TinyEcs) | [1.3.0](https://www.nuget.org/packages/TinyEcs.Main/1.3.0)                            |       ✅       |     ❌      |        N/A        |
+|                           [Xeno](https://github.com/blackbone/xeno) | [0.1.2](https://github.com/blackbone/xeno/releases/tag/0.1.2)                         |       ✅       |     ✅      |        N/A        |
+|               [FriFlo](https://github.com/friflo/Friflo.Engine.ECS) | [3.0.0-preview.13](https://www.nuget.org/packages/Friflo.Engine.ECS/3.0.0-preview.13) |       ✅       |     ❌      |        N/A        |
 
 # Implemented benchmarks
 
