@@ -43,7 +43,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: benchmark
-          path: .benchmark/
+          path: ./.benchmark/
           retention-days: 1
   
   run:
@@ -64,7 +64,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: benchmark
-          path: .benchmark/
+          path: ./.benchmark/
       - name: Run Benchmark
         run: |
           chmod +x ./.benchmark/Benchmark

@@ -24,7 +24,9 @@ if (Directory.Exists(".benchmark_results"))
     Directory.Delete(".benchmark_results", true);
 
 // parse cmd args
-var options = ParseCommandLineArgs(args);
+var options = Options.Parse(args);
+Console.WriteLine("Using Options:");
+Console.WriteLine(JsonSerializer.Serialize(options, JsonSerializerOptions.Default));
 
 // configure jobs
 var shortJob = Job.ShortRun
