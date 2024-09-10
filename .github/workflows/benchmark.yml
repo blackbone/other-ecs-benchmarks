@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  prepare:
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.out.outputs.matrix }}
@@ -39,16 +39,10 @@ jobs:
           echo "{\"benchmark\": $(jq --raw-input --slurp --compact-output 'split("\n") | map(select(. != ""))' benchmarks.txt)}" > matrix.json
           cat matrix.json
           echo "matrix=$(cat matrix.json)" >> $GITHUB_OUTPUT
-      - name: Archive benchmark build
-        uses: actions/upload-artifact@v4
-        with:
-          name: benchmark
-          path: .benchmark/
-          retention-days: 1
   
   run:
     runs-on: ubuntu-latest
-    needs: build
+    needs: prepare
     strategy:
       matrix: ${{ fromJson(needs.build.outputs.matrix) }}
     steps:
@@ -60,11 +54,8 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
-      - name: Download Benchmark
-        uses: actions/download-artifact@v4
-        with:
-          name: benchmark
-          path: .benchmark/
+      - name: Build Benchmark
+        run: dotnet build -c Release /p:CheckCacheMisses=false
       - name: Run Benchmark
         run: |
           chmod +x ./.benchmark/Benchmark
