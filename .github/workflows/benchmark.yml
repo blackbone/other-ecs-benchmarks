@@ -52,6 +52,8 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
+      - name: Restore Benchmark
+        run: dotnet restore
       - name: Publish benchmark
         run: dotnet publish -c Release /p:CheckCacheMisses=false Benchmark/Benchmark.csproj -o .benchmark
       - name: Run Benchmark
