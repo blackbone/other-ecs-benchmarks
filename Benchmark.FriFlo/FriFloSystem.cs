@@ -15,8 +15,9 @@ public unsafe class FriFloSystem<T1>(ParallelJobRunner runner, delegate*<ref T1,
 
     private void Job(Chunk<T1> c1, ChunkEntities entities)
     {
-        foreach (var entity in entities)
-            method(ref entity.GetComponent<T1>());
+        for (var i = 0; i < c1.Length; i++) {
+            method(ref c1[i]);
+        }
     }
 }
 
@@ -33,8 +34,9 @@ public unsafe class FriFloSystem<T1, T2>(ParallelJobRunner runner, delegate*<ref
 
     private void Job(Chunk<T1> c1, Chunk<T2> c2, ChunkEntities entities)
     {
-        foreach (var entity in entities)
-            method(ref entity.GetComponent<T1>(), ref entity.GetComponent<T2>());
+        for (var i = 0; i < entities.Length; i++) {
+            method(ref c1[i], ref c2[i]);
+        }
     }
 }
 
@@ -52,8 +54,9 @@ public unsafe class FriFloSystem<T1, T2, T3>(ParallelJobRunner runner, delegate*
 
     private void Job(Chunk<T1> c1, Chunk<T2> c2, Chunk<T3> c3, ChunkEntities entities)
     {
-        foreach (var entity in entities)
-            method(ref entity.GetComponent<T1>(), ref entity.GetComponent<T2>(), ref entity.GetComponent<T3>());
+        for (var i = 0; i < entities.Length; i++) {
+            method(ref c1[i], ref c2[i], ref c3[i]);
+        }
     }
 }
 
@@ -72,7 +75,8 @@ public unsafe class FriFloSystem<T1, T2, T3, T4>(ParallelJobRunner runner, deleg
 
     private void Job(Chunk<T1> c1, Chunk<T2> c2, Chunk<T3> c3, Chunk<T4> c4, ChunkEntities entities)
     {
-        foreach (var entity in entities)
-            method(ref entity.GetComponent<T1>(), ref entity.GetComponent<T2>(), ref entity.GetComponent<T3>(), ref entity.GetComponent<T4>());
+        for (var i = 0; i < entities.Length; i++) {
+            method(ref c1[i], ref c2[i], ref c3[i], ref c4[i]);
+        }
     }
 }
