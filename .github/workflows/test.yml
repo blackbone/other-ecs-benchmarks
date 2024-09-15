@@ -30,4 +30,4 @@ jobs:
       - name: Build Benchmark
         run: dotnet build -c Release /p:CheckCacheMisses=false
       - name: Run Tests
-        run: dotnet test -c Release
+        run: dotnet test -c Release -v quiet --nologo -l:"console;verbosity=normal"
