@@ -18,7 +18,7 @@ public abstract class Remove1ComponentRandomOrder<T> : IBenchmark<T> where T : I
     private Array _entitySet;
 
     [IterationSetup]
-    public void Setup()
+    public void IterationSetup()
     {
         Context = BenchmarkContext.Create<T>(EntityCount);
         Context?.Setup();
@@ -30,7 +30,7 @@ public abstract class Remove1ComponentRandomOrder<T> : IBenchmark<T> where T : I
     }
 
     [IterationCleanup]
-    public void Cleanup()
+    public void IterationCleanup()
     {
         if (!Context.DeletesEntityOnLastComponentDeletion)
             Context?.DeleteEntities(_entitySet);

@@ -19,7 +19,7 @@ public abstract class CreateEntityWith1RandomComponent<T> : IBenchmark<T> where 
     private Random _rnd;
 
     [IterationSetup]
-    public void Setup()
+    public void IterationSetup()
     {
         Context = BenchmarkContext.Create<T>(EntityCount);
         Context?.Setup();
@@ -36,7 +36,7 @@ public abstract class CreateEntityWith1RandomComponent<T> : IBenchmark<T> where 
     }
 
     [IterationCleanup]
-    public void Cleanup()
+    public void IterationCleanup()
     {
         var setsCount = EntityCount / ChunkSize + 1;
         for (var i = 0; i < setsCount; i++)

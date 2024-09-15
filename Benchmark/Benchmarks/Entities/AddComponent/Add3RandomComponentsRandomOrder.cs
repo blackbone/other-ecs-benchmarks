@@ -19,7 +19,7 @@ public abstract class Add3RandomComponentsRandomOrder<T> : IBenchmark<T> where T
     private Random _rnd;
 
     [IterationSetup]
-    public void Setup()
+    public void IterationSetup()
     {
         Context = BenchmarkContext.Create<T>(EntityCount);
         Context?.Setup();
@@ -41,7 +41,7 @@ public abstract class Add3RandomComponentsRandomOrder<T> : IBenchmark<T> where T
     }
 
     [IterationCleanup]
-    public void Cleanup()
+    public void IterationCleanup()
     {
         for (var i = 0; i < EntityCount; i++)
             Context?.DeleteEntities(_entitySets[i]);

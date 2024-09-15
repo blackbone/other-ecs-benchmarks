@@ -16,7 +16,7 @@ public abstract class SystemWith2ComponentsMultipleComposition<T> : IBenchmark<T
     public T Context { get; set; }
 
     [GlobalSetup]
-    public void Setup()
+    public void IterationSetup()
     {
         Context = BenchmarkContext.Create<T>(EntityCount);
         Context?.Setup();
@@ -76,7 +76,7 @@ public abstract class SystemWith2ComponentsMultipleComposition<T> : IBenchmark<T
     }
 
     [GlobalCleanup]
-    public void Cleanup()
+    public void IterationCleanup()
     {
         Context?.Cleanup();
         Context?.Dispose();

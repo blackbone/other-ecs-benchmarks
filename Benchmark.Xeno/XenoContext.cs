@@ -190,7 +190,7 @@ public class XenoContext(int entityCount = 4096) : IBenchmarkContext
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
-            entities[i].RemoveComponent<T1>(out _);
+            entities[i].RemoveComponent<T1>();
     }
 
     public void RemoveComponent<T1, T2>(in Array entitySet, in int poolId = -1)
@@ -199,7 +199,7 @@ public class XenoContext(int entityCount = 4096) : IBenchmarkContext
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
-            entities[i].RemoveComponents<T1, T2>(out _, out _);
+            entities[i].RemoveComponents<T1, T2>();
     }
 
     public void RemoveComponent<T1, T2, T3>(in Array entitySet, in int poolId = -1)
@@ -209,7 +209,7 @@ public class XenoContext(int entityCount = 4096) : IBenchmarkContext
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
-            entities[i].RemoveComponents<T1, T2, T3>(out _, out _, out _);
+            entities[i].RemoveComponents<T1, T2, T3>();
     }
 
     public void RemoveComponent<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1)
@@ -220,7 +220,7 @@ public class XenoContext(int entityCount = 4096) : IBenchmarkContext
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
-            entities[i].RemoveComponents<T1, T2, T3, T4>(out _, out _, out _, out _);
+            entities[i].RemoveComponents<T1, T2, T3, T4>();
     }
 
     public int CountWith<T1>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
@@ -257,7 +257,7 @@ public class XenoContext(int entityCount = 4096) : IBenchmarkContext
         if (entity == null) return false;
 
         var e = (Entity)entity;
-        c1 = e.AccessComponent<T1>();
+        c1 = e.RefComponent<T1>();
         return true;
     }
 
@@ -268,8 +268,8 @@ public class XenoContext(int entityCount = 4096) : IBenchmarkContext
         if (entity == null) return false;
 
         var e = (Entity)entity;
-        c1 = e.AccessComponent<T1>();
-        c2 = e.AccessComponent<T2>();
+        c1 = e.RefComponent<T1>();
+        c2 = e.RefComponent<T2>();
         return true;
     }
 
@@ -281,9 +281,9 @@ public class XenoContext(int entityCount = 4096) : IBenchmarkContext
         if (entity == null) return false;
 
         var e = (Entity)entity;
-        c1 = e.AccessComponent<T1>();
-        c2 = e.AccessComponent<T2>();
-        c3 = e.AccessComponent<T3>();
+        c1 = e.RefComponent<T1>();
+        c2 = e.RefComponent<T2>();
+        c3 = e.RefComponent<T3>();
         return true;
     }
 
@@ -296,10 +296,10 @@ public class XenoContext(int entityCount = 4096) : IBenchmarkContext
         if (entity == null) return false;
 
         var e = (Entity)entity;
-        c1 = e.AccessComponent<T1>();
-        c2 = e.AccessComponent<T2>();
-        c3 = e.AccessComponent<T3>();
-        c4 = e.AccessComponent<T4>();
+        c1 = e.RefComponent<T1>();
+        c2 = e.RefComponent<T2>();
+        c3 = e.RefComponent<T3>();
+        c4 = e.RefComponent<T4>();
         return true;
     }
 

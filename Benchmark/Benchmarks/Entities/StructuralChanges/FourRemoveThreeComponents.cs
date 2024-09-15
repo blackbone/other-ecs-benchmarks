@@ -6,7 +6,7 @@ namespace Benchmark.Benchmarks.Entities.StructuralChanges;
 
 [ArtifactsPath(".benchmark_results/" + nameof(FourRemoveThreeComponents<T>))]
 [MemoryDiagnoser]
-[BenchmarkCategory(Categories.PerInvocationSetup)]
+// [BenchmarkCategory(Categories.PerInvocationSetup)]
 #if CHECK_CACHE_MISSES
 [HardwareCounters(BenchmarkDotNet.Diagnosers.HardwareCounter.CacheMisses)]
 #endif
@@ -17,25 +17,22 @@ public abstract class FourRemoveThreeComponents<T> : IBenchmark<T> where T : IBe
     public T Context { get; set; }
     private Array _entitySet;
 
-    [IterationSetup]
-    public void Setup()
-    {
+    [GlobalSetup]
+    public void GlobalSetup() {
         Context = BenchmarkContext.Create<T>(EntityCount);
         Context?.Setup();
         _entitySet = Context?.PrepareSet(EntityCount);
         Context?.Warmup<Component1, Component2, Component3, Component4>(0);
-        Context?.CreateEntities(_entitySet, 0, default(Component1), default(Component2), default(Component3), default(Component4));
         Context?.Warmup<Component2, Component3, Component4>(1);
         Context?.FinishSetup();
     }
 
-    [IterationCleanup]
-    public void Cleanup()
+    [IterationSetup]
+    public void IterationSetup()
     {
-        Context?.DeleteEntities(_entitySet);
-        Context?.Cleanup();
-        Context?.Dispose();
-        Context = default;
+        Context?.Lock();
+        Context?.CreateEntities(_entitySet, 0, default(Component1), default(Component2), default(Component3), default(Component4));
+        Context?.Commit();
     }
 
     [Benchmark]
@@ -44,5 +41,20 @@ public abstract class FourRemoveThreeComponents<T> : IBenchmark<T> where T : IBe
         Context?.Lock();
         Context?.RemoveComponent<Component2, Component3, Component4>(_entitySet, 1);
         Context?.Commit();
+    }
+
+    [IterationCleanup]
+    public void IterationCleanup()
+    {
+        Context?.Lock();
+        Context?.DeleteEntities(_entitySet);
+        Context?.Commit();
+    }
+
+    [GlobalCleanup]
+    public void GlobalCleanup() {
+        Context?.Cleanup();
+        Context?.Dispose();
+        Context = default;
     }
 }

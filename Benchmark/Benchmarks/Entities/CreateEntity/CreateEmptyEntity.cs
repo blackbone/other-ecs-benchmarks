@@ -17,7 +17,7 @@ public abstract class CreateEmptyEntity<T> : IBenchmark<T> where T : IBenchmarkC
     private Array _entitySet;
 
     [IterationSetup]
-    public void Setup()
+    public void IterationSetup()
     {
         Context = BenchmarkContext.Create<T>(EntityCount);
         Context?.Setup();
@@ -26,7 +26,7 @@ public abstract class CreateEmptyEntity<T> : IBenchmark<T> where T : IBenchmarkC
     }
 
     [IterationCleanup]
-    public void Cleanup()
+    public void IterationCleanup()
     {
         Context?.DeleteEntities(_entitySet);
         Context?.Cleanup();

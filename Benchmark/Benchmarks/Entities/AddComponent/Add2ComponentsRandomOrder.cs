@@ -18,7 +18,7 @@ public abstract class Add2ComponentsRandomOrder<T> : IBenchmark<T> where T : IBe
     private Array _entitySet;
 
     [IterationSetup]
-    public void Setup()
+    public void IterationSetup()
     {
         Context = BenchmarkContext.Create<T>(EntityCount);
         Context?.Setup();
@@ -30,7 +30,7 @@ public abstract class Add2ComponentsRandomOrder<T> : IBenchmark<T> where T : IBe
     }
 
     [IterationCleanup]
-    public void Cleanup()
+    public void IterationCleanup()
     {
         Context?.RemoveComponent<Component1, Component2>(_entitySet, 0);
         Context?.DeleteEntities(_entitySet);

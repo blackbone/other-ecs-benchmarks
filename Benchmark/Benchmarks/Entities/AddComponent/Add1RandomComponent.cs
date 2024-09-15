@@ -19,7 +19,7 @@ public abstract class Add1RandomComponent<T> : IBenchmark<T> where T : IBenchmar
     private Random _rnd;
 
     [IterationSetup]
-    public void Setup()
+    public void IterationSetup()
     {
         Context = BenchmarkContext.Create<T>(EntityCount);
         Context?.Setup();
@@ -40,7 +40,7 @@ public abstract class Add1RandomComponent<T> : IBenchmark<T> where T : IBenchmar
     }
 
     [IterationCleanup]
-    public void Cleanup()
+    public void IterationCleanup()
     {
         var setsCount = EntityCount;
         for (var i = 0; i < setsCount; i++)

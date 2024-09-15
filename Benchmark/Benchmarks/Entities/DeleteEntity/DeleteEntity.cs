@@ -17,7 +17,7 @@ public abstract class DeleteEntity<T> : IBenchmark<T> where T : IBenchmarkContex
     private Array _entitySet;
 
     [IterationSetup]
-    public void Setup()
+    public void IterationSetup()
     {
         Context = BenchmarkContext.Create<T>(EntityCount);
         Context.Setup();
@@ -29,7 +29,7 @@ public abstract class DeleteEntity<T> : IBenchmark<T> where T : IBenchmarkContex
     }
 
     [IterationCleanup]
-    public void Cleanup()
+    public void IterationCleanup()
     {
         Context?.DeleteEntities(_entitySet);
         Context?.Cleanup();

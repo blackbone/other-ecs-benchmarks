@@ -17,7 +17,7 @@ public abstract class CreateEntityWith3Components<T> : IBenchmark<T> where T : I
     private Array _entitySet;
 
     [IterationSetup]
-    public void Setup()
+    public void IterationSetup()
     {
         Context = BenchmarkContext.Create<T>(EntityCount);
         Context?.Setup();
@@ -27,7 +27,7 @@ public abstract class CreateEntityWith3Components<T> : IBenchmark<T> where T : I
     }
 
     [IterationCleanup]
-    public void Cleanup()
+    public void IterationCleanup()
     {
         Context?.DeleteEntities(_entitySet);
         Context?.Cleanup();

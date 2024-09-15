@@ -18,7 +18,7 @@ public abstract class ThreeAddOneComponent<T> : IBenchmark<T> where T : IBenchma
     private Array _entitySet;
 
     [IterationSetup]
-    public void Setup()
+    public void IterationSetup()
     {
         Context = BenchmarkContext.Create<T>(EntityCount);
         Context?.Setup();
@@ -30,7 +30,7 @@ public abstract class ThreeAddOneComponent<T> : IBenchmark<T> where T : IBenchma
     }
 
     [IterationCleanup]
-    public void Cleanup()
+    public void IterationCleanup()
     {
         Context?.DeleteEntities(_entitySet);
         Context?.Cleanup();
