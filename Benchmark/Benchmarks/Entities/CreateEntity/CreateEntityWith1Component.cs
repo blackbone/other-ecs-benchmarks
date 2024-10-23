@@ -6,7 +6,7 @@ namespace Benchmark.Benchmarks.Entities.CreateEntity;
 
 [ArtifactsPath(".benchmark_results/" + nameof(CreateEntityWith1Component<T>))]
 [MemoryDiagnoser]
-[BenchmarkCategory(Categories.PerInvocationSetup)]
+
 #if CHECK_CACHE_MISSES
 [HardwareCounters(BenchmarkDotNet.Diagnosers.HardwareCounter.CacheMisses)]
 #endif
@@ -16,23 +16,14 @@ public abstract class CreateEntityWith1Component<T> : IBenchmark<T> where T : IB
     public T Context { get; set; }
     private Array _entitySet;
 
-    [IterationSetup]
-    public void IterationSetup()
-    {
+    [GlobalSetup]
+    public void GlobalSetup() {
         Context = BenchmarkContext.Create<T>(EntityCount);
         Context?.Setup();
-        _entitySet = Context?.PrepareSet(EntityCount);
         Context?.Warmup<Component1>(0);
         Context?.FinishSetup();
-    }
 
-    [IterationCleanup]
-    public void IterationCleanup()
-    {
-        Context?.DeleteEntities(_entitySet);
-        Context?.Cleanup();
-        Context?.Dispose();
-        Context = default;
+        _entitySet = Context?.PrepareSet(EntityCount);
     }
 
     [Benchmark]
@@ -41,5 +32,18 @@ public abstract class CreateEntityWith1Component<T> : IBenchmark<T> where T : IB
         Context?.Lock();
         Context?.CreateEntities<Component1>(_entitySet, 0);
         Context?.Commit();
+    }
+
+    [IterationCleanup]
+    public void IterationCleanup()
+    {
+        Context?.DeleteEntities(_entitySet);
+    }
+
+    [GlobalCleanup]
+    public void GlobalCleanup() {
+        Context?.Cleanup();
+        Context?.Dispose();
+        Context = default;
     }
 }

@@ -7,24 +7,20 @@ using FrifloComponent = Friflo.Engine.ECS.IComponent;
 
 namespace Benchmark.TinyECS;
 
-public sealed class TinyEcsContext(int entityCount = 4096) : IBenchmarkContext
-{
+public sealed class TinyEcsContext(int entityCount = 4096) : IBenchmarkContext {
     private World? _world;
     private Scheduler? _scheduler;
     private readonly Dictionary<int, Query>? _queries = new();
 
     public bool DeletesEntityOnLastComponentDeletion => false;
     public int EntityCount { get; private set; }
-    
-    public void Setup()
-    {
+
+    public void Setup() {
         _world = new World();
         _scheduler = new Scheduler(_world);
     }
 
-    public void FinishSetup()
-    {
-    }
+    public void FinishSetup() {}
 
     public void Warmup<T1>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         => _queries![poolId] = _world!.QueryBuilder().With<T1>().Build();
@@ -38,12 +34,11 @@ public sealed class TinyEcsContext(int entityCount = 4096) : IBenchmarkContext
     public void Warmup<T1, T2, T3, T4>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         => _queries![poolId] = _world!.QueryBuilder().With<T1>().With<T2>().With<T3>().With<T4>().Build();
 
-    public void Cleanup()
-    {
+    public void Cleanup() {
         _queries!.Clear();
 
         _scheduler = null;
-        
+
         _world!.Dispose();
         _world = null;
     }
@@ -178,16 +173,16 @@ public sealed class TinyEcsContext(int entityCount = 4096) : IBenchmarkContext
     }
 
     public int CountWith<T1>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
-        => _queries![poolId].Count();
+        => _world!.Query<T1>().Count();
 
     public int CountWith<T1, T2>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
-        => _queries![poolId].Count();
+        => _world!.Query<(T1, T2)>().Count();
 
     public int CountWith<T1, T2, T3>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
-        => _queries![poolId].Count();
+        => _world!.Query<(T1, T2, T3)>().Count();
 
     public int CountWith<T1, T2, T3, T4>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
-        => _queries![poolId].Count();
+        => _world!.Query<(T1, T2, T3, T4)>().Count();
 
     public bool GetSingle<T1>(in object? entity, in int poolId, ref T1 c1) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {

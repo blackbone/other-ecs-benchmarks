@@ -1,4 +1,5 @@
 ﻿using Benchmark._Context;
+using Flecs.NET.Bindings;
 using Flecs.NET.Core;
 using Entity = Flecs.NET.Core.Entity;
 using World = Flecs.NET.Core.World;
@@ -19,14 +20,15 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
     public bool DeletesEntityOnLastComponentDeletion => false;
     public int EntityCount { get; private set; }
 
-    public void Setup()
-    {
+    public void Setup() {
         _world = World.Create();
-        _world.SetThreads(4);
+        _world.Import<Ecs.Stats>();
+        _world.Set<flecs.EcsRest>(default);
     }
 
     public void FinishSetup()
     {
+        _world.InitBuiltinComponents();
     }
 
     public void Cleanup()
@@ -326,12 +328,12 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
         return true;
     }
 
-    public void Tick(float delta) => _world.Progress(delta);
+    public void Tick(float delta) => _world.Progress(0f);
 
     public unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
-        _world.Routine<T1>()
+        _world.System<T1>()
             .MultiThreaded()
             .Write<T1>()
             .Each(method);
@@ -340,7 +342,7 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
     public unsafe void AddSystem<T1, T2>(delegate*<ref T1, ref T2, void> method, int poolId)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
-        _world.Routine<T1, T2>()
+        _world.System<T1, T2>()
             .MultiThreaded()
             .Write<T1>()
             .Write<T2>()
@@ -352,7 +354,7 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
-        _world.Routine<T1, T2, T3>()
+        _world.System<T1, T2, T3>()
             .MultiThreaded()
             .Write<T1>()
             .Write<T2>()
@@ -366,7 +368,7 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
-        _world.Routine<T1, T2, T3, T4>()
+        _world.System<T1, T2, T3, T4>()
             .MultiThreaded()
             .Write<T1>()
             .Write<T2>()

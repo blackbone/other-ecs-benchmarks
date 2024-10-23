@@ -2,14 +2,11 @@ namespace Benchmark;
 
 public class Options
 {
-    public bool PrintList { get; set; }
-    public string[] Contexts { get; set; }
-
-    // single benchmark run
-    public string Benchmark { get; set; }
-
-    // multi benchmarks run
-    public string[] Benchmarks { get; set; }
+    public bool PrintList { get; private set; }
+    public string[] Contexts { get; private set; }
+    public string Benchmark { get; private set; }
+    public string[] Benchmarks { get; private set; }
+    public bool ShortRun { get; private set; }
 
     public static Options Parse(in string[] args)
     {
@@ -24,6 +21,7 @@ public class Options
                 break;
             }
 
+            if (args[i] == "--short") result.ShortRun = true;
             if (args[i].StartsWith("contexts=")) result.Contexts = args[i].Split("=")[1].Split(",");
             if (args[i].StartsWith("benchmarks=")) result.Benchmarks = args[i].Split("=")[1].Split(",");
             if (args[i].StartsWith("benchmark=")) result.Benchmark = args[i].Split("=")[1];

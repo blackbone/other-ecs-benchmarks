@@ -9,7 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="TinyEcs.Main" Version="1.3.0" />
+      <PackageReference Include="TinyEcs.Main" Version="1.4.0" />
     </ItemGroup>
 
     <ItemGroup>

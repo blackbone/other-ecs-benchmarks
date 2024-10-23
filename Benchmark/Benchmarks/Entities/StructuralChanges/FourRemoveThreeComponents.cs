@@ -6,7 +6,6 @@ namespace Benchmark.Benchmarks.Entities.StructuralChanges;
 
 [ArtifactsPath(".benchmark_results/" + nameof(FourRemoveThreeComponents<T>))]
 [MemoryDiagnoser]
-// [BenchmarkCategory(Categories.PerInvocationSetup)]
 #if CHECK_CACHE_MISSES
 [HardwareCounters(BenchmarkDotNet.Diagnosers.HardwareCounter.CacheMisses)]
 #endif

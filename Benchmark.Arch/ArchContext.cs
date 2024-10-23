@@ -30,15 +30,7 @@ public sealed class ArchContext(int entityCount = 4096) : IBenchmarkContext
 
     public void Setup()
     {
-        var scheduler = new JobScheduler(new JobScheduler.Config
-        {
-            ThreadPrefixName = "Arch.Samples",
-            ThreadCount = 0,
-            MaxExpectedConcurrentJobs = 64,
-            StrictAllocationMode = false,
-        });
         _world = World.Create();
-        World.SharedJobScheduler = scheduler;
         _world!.EnsureCapacity(entityCount);
     }
 

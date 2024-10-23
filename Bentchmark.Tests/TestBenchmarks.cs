@@ -12,21 +12,18 @@ public class TestBenchmarks
     {
         Assert.NotNull(benchmark);
 
-        var isGlobalSetup = typeof(T).GetMethod(nameof(IBenchmark.IterationSetup))?.GetCustomAttribute(typeof(GlobalSetupAttribute)) != null;
-        var isGlobalCleanup = typeof(T).GetMethod(nameof(IBenchmark.IterationCleanup))?.GetCustomAttribute(typeof(GlobalCleanupAttribute)) != null;
-
-        if (isGlobalSetup) benchmark.IterationSetup();
+        benchmark.GlobalSetup();
         
         // because of repetative logic we need to check bench will clear and reuse correctly
         var i = 3;
         while (i-- > 0)
         {
-            if (!isGlobalSetup) benchmark.IterationSetup();
+            benchmark.IterationSetup();
             benchmark.Run();
-            if (!isGlobalCleanup) benchmark.IterationCleanup();
+            benchmark.IterationCleanup();
         }
         
-        if (isGlobalCleanup) benchmark.IterationCleanup();
+        benchmark.GlobalCleanup();
     }
 
     public static IEnumerable<IBenchmark?> GetBenchmarks()

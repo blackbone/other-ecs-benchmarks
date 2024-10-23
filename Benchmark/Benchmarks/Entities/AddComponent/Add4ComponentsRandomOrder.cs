@@ -6,7 +6,6 @@ namespace Benchmark.Benchmarks.Entities.AddComponent;
 
 [ArtifactsPath(".benchmark_results/" + nameof(Add4ComponentsRandomOrder<T>))]
 [MemoryDiagnoser]
-[BenchmarkCategory(Categories.PerInvocationSetup)]
 #if CHECK_CACHE_MISSES
 [HardwareCounters(BenchmarkDotNet.Diagnosers.HardwareCounter.CacheMisses)]
 #endif

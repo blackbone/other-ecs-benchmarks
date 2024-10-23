@@ -14,7 +14,7 @@ public unsafe class System<T>(delegate*<ref T, void> method)
     private ForEach _forEach = new(method);
     private readonly QueryDescription _query = new([typeof(T)]);
 
-    public void ForEachQuery(World world) => world.InlineParallelQuery<ForEach, T>(_query, ref _forEach);
+    public void ForEachQuery(World world) => world.InlineQuery<ForEach, T>(_query, ref _forEach);
 }
 
 public unsafe class System<T1, T2>(delegate*<ref T1, ref T2, void> method)
@@ -28,7 +28,7 @@ public unsafe class System<T1, T2>(delegate*<ref T1, ref T2, void> method)
     private ForEach _forEach = new(method);
     private readonly QueryDescription _query = new([typeof(T1), typeof(T2)]);
     
-    public void ForEachQuery(World world) => world.InlineParallelQuery<ForEach, T1, T2>(_query, ref _forEach);
+    public void ForEachQuery(World world) => world.InlineQuery<ForEach, T1, T2>(_query, ref _forEach);
 }
 
 public unsafe class System<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> method)
@@ -43,7 +43,7 @@ public unsafe class System<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> m
 
     private readonly QueryDescription _query = new([typeof(T1), typeof(T2), typeof(T3)]);
 
-    public void ForEachQuery(World world) => world.InlineParallelQuery<ForEach, T1, T2, T3>(_query, ref _forEach);
+    public void ForEachQuery(World world) => world.InlineQuery<ForEach, T1, T2, T3>(_query, ref _forEach);
 }
 
 public unsafe class System<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> method)
@@ -58,5 +58,5 @@ public unsafe class System<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref
 
     private readonly QueryDescription _query = new([typeof(T1), typeof(T2), typeof(T3), typeof(T4)]);
     
-    public void ForEachQuery(World world) => world.InlineParallelQuery<ForEach, T1, T2, T3, T4>(_query, ref _forEach);
+    public void ForEachQuery(World world) => world.InlineQuery<ForEach, T1, T2, T3, T4>(_query, ref _forEach);
 }

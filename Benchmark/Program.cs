@@ -34,6 +34,10 @@ var shortJob = Job.ShortRun
     .WithToolchain(InProcessEmitToolchain.Instance)
 #endif
     .WithStrategy(RunStrategy.Monitoring)
+    .WithInvocationCount(1)
+    .WithIterationCount(4)
+    .WithEvaluateOverhead(false)
+    .WithWarmupCount(0)
     .Apply();
 
 var clearEachInvocationJob = Job.Dry
@@ -97,16 +101,12 @@ foreach (var baseBenchmarkType in baseBenchmarkTypes)
         benchmarkTypes.AddRange(benchmarkAllTypes.Where(t => contextBenchTypes.Contains(t)));
 
     var benchmarkSwitcher = BenchmarkSwitcher.FromTypes(benchmarkTypes.ToArray());
-    var perInvocationSetup = baseBenchmarkType.GetCustomAttribute<BenchmarkCategoryAttribute>()?.Categories
-        .Contains(Categories.PerInvocationSetup) ?? false;
 
-#if SHORT_RUN
-    var summaries = benchmarkSwitcher.RunAll(configuration.AddJob(shortJob)).ToArray();
-#else
-    var summaries =
-        benchmarkSwitcher.RunAll(configuration.AddJob(perInvocationSetup ? clearEachInvocationJob : precisionJob))
-            .ToArray();
-#endif
+    var job = options.ShortRun ? shortJob : precisionJob;
+
+    // TODO: need per invocation?
+
+    var summaries = benchmarkSwitcher.RunAll(configuration.AddJob(job)).ToArray();
 
     // post process benchmark reports
     foreach (var summary in summaries)
