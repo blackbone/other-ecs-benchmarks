@@ -9,12 +9,12 @@ using FrifloComponent = Friflo.Engine.ECS.IComponent;
 
 namespace Benchmark.LeoEcsLite;
 
-public sealed class LeoEcsLiteContext(int entityCount = 4096) : IBenchmarkContext
+public sealed class LeoEcsLiteContext : IBenchmarkContext
 {
-    private readonly Dictionary<int, EcsFilter>? _filters = new();
-    private readonly Dictionary<int, IEcsPool[]>? _pools = new();
-    private IEcsSystems? _systems;
-    private EcsWorld? _world;
+    private readonly Dictionary<int, EcsFilter> _filters = new();
+    private readonly Dictionary<int, IEcsPool[]> _pools = new();
+    private IEcsSystems _systems;
+    private EcsWorld _world;
 
     public bool DeletesEntityOnLastComponentDeletion => true;
 
@@ -22,11 +22,7 @@ public sealed class LeoEcsLiteContext(int entityCount = 4096) : IBenchmarkContex
 
     public void Setup()
     {
-        _world = new EcsWorld(new EcsWorld.Config
-        {
-            PoolDenseSize = entityCount,
-            PoolRecycledSize = entityCount
-        });
+        _world = new EcsWorld();
         _systems = new EcsSystems(_world!);
     }
 
@@ -41,26 +37,25 @@ public sealed class LeoEcsLiteContext(int entityCount = 4096) : IBenchmarkContex
         _systems = null;
         _filters!.Clear();
         _pools!.Clear();
-        _world!.Destroy();
-
-        _world = null;
     }
 
     public void Dispose()
     {
+        _world!.Destroy();
+        _world = null;
     }
 
     public void Warmup<T1>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
         _pools![poolId] = [_world!.GetPool<T1>()];
-        _filters![poolId] = _world!.Filter<T1>().End(entityCount);
+        _filters![poolId] = _world!.Filter<T1>().End();
     }
 
     public void Warmup<T1, T2>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
         _pools![poolId] = [_world!.GetPool<T1>(), _world!.GetPool<T2>()];
-        _filters![poolId] = _world!.Filter<T1>().Inc<T2>().End(entityCount);
+        _filters![poolId] = _world!.Filter<T1>().Inc<T2>().End();
     }
 
     public void Warmup<T1, T2, T3>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
@@ -68,7 +63,7 @@ public sealed class LeoEcsLiteContext(int entityCount = 4096) : IBenchmarkContex
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
         _pools![poolId] = [_world!.GetPool<T1>(), _world!.GetPool<T2>(), _world!.GetPool<T3>()];
-        _filters![poolId] = _world!.Filter<T1>().Inc<T2>().Inc<T3>().End(entityCount);
+        _filters![poolId] = _world!.Filter<T1>().Inc<T2>().Inc<T3>().End();
     }
 
     public void Warmup<T1, T2, T3, T4>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
@@ -77,17 +72,7 @@ public sealed class LeoEcsLiteContext(int entityCount = 4096) : IBenchmarkContex
         where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
         _pools![poolId] = [_world!.GetPool<T1>(), _world!.GetPool<T2>(), _world!.GetPool<T3>(), _world!.GetPool<T4>()];
-        _filters![poolId] = _world!.Filter<T1>().Inc<T2>().Inc<T3>().Inc<T4>().End(entityCount);
-    }
-
-    public void Lock()
-    {
-        // no op
-    }
-
-    public void Commit()
-    {
-        // no op
+        _filters![poolId] = _world!.Filter<T1>().Inc<T2>().Inc<T3>().Inc<T4>().End();
     }
 
     public void CreateEntities(in Array entitySet)
@@ -324,7 +309,7 @@ public sealed class LeoEcsLiteContext(int entityCount = 4096) : IBenchmarkContex
         return _filters![poolId].GetEntitiesCount();
     }
 
-    public bool GetSingle<T1>(in object? entity, in int poolId, ref T1 c1) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
+    public bool GetSingle<T1>(in object entity, in int poolId, ref T1 c1) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
         if (entity == null) return false;
 
@@ -335,7 +320,7 @@ public sealed class LeoEcsLiteContext(int entityCount = 4096) : IBenchmarkContex
         return true;
     }
 
-    public bool GetSingle<T1, T2>(in object? entity, in int poolId, ref T1 c1, ref T2 c2)
+    public bool GetSingle<T1, T2>(in object entity, in int poolId, ref T1 c1, ref T2 c2)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
         if (entity == null) return false;
@@ -349,7 +334,7 @@ public sealed class LeoEcsLiteContext(int entityCount = 4096) : IBenchmarkContex
         return true;
     }
 
-    public bool GetSingle<T1, T2, T3>(in object? entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3)
+    public bool GetSingle<T1, T2, T3>(in object entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
@@ -367,7 +352,7 @@ public sealed class LeoEcsLiteContext(int entityCount = 4096) : IBenchmarkContex
         return true;
     }
 
-    public bool GetSingle<T1, T2, T3, T4>(in object? entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4)
+    public bool GetSingle<T1, T2, T3, T4>(in object entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
@@ -420,12 +405,6 @@ public sealed class LeoEcsLiteContext(int entityCount = 4096) : IBenchmarkContex
         where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
         _systems!.Add(new System<T1, T2, T3, T4>(method));
-    }
-
-    public Array Shuffle(in Array entitySet)
-    {
-        Random.Shared.Shuffle((int[])entitySet);
-        return entitySet;
     }
 
     public Array PrepareSet(in int count)

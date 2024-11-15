@@ -21,41 +21,35 @@ public abstract class Add1Component<T> : IBenchmark<T> where T : IBenchmarkConte
     public void GlobalSetup()
     {
         Context = BenchmarkContext.Create<T>(EntityCount);
-        Context?.Setup();
-        _entitySet = Context?.PrepareSet(EntityCount);
-        Context?.Warmup<Component1>(0);
-        Context?.FinishSetup();
+        Context.Setup();
+        _entitySet = Context.PrepareSet(EntityCount);
+        Context.Warmup<Component1>(0);
+        Context.FinishSetup();
     }
 
     [IterationSetup]
     public void IterationSetup()
     {
-        Context?.Lock();
-        Context?.CreateEntities(_entitySet);
-        Context?.Commit();
+        Context.CreateEntities(_entitySet);
     }
 
     [Benchmark]
     public void Run()
     {
-        Context?.Lock();
-        Context?.AddComponent<Component1>(_entitySet, 0);
-        Context?.Commit();
+        Context.AddComponent<Component1>(_entitySet, 0);
     }
-    
+
     [IterationCleanup]
     public void IterationCleanup()
     {
-        Context?.Lock();
-        Context?.DeleteEntities(_entitySet);
-        Context?.Commit();
+        Context.DeleteEntities(_entitySet);
     }
 
     [GlobalCleanup]
     public void GlobalCleanup()
     {
-        Context?.Cleanup();
-        Context?.Dispose();
+        Context.Cleanup();
+        Context.Dispose();
         Context = default;
     }
 }

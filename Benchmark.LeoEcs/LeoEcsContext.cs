@@ -9,16 +9,16 @@ using FrifloComponent = Friflo.Engine.ECS.IComponent;
 namespace Benchmark.LeoEcs;
 
 #pragma warning disable CS9113 // Parameter is unread.
-public sealed class LeoEcsContext(int entityCount = 4096) : IBenchmarkContext
+public sealed class LeoEcsContext : IBenchmarkContext
 #pragma warning restore CS9113 // Parameter is unread.
 {
-    private readonly Dictionary<int, EcsFilter>? _filters = new();
-    private readonly List<EcsSystems>? _systems = new();
-    private EcsWorld? _world;
+    private readonly Dictionary<int, EcsFilter> _filters = new();
+    private readonly List<EcsSystems> _systems = new();
+    private EcsWorld _world;
 
     public bool DeletesEntityOnLastComponentDeletion => true;
 
-    public int EntityCount => _world!.GetStats().ActiveEntities;
+    public int EntityCount => _world.GetStats().ActiveEntities;
 
     public void Setup()
     {
@@ -36,7 +36,7 @@ public sealed class LeoEcsContext(int entityCount = 4096) : IBenchmarkContext
         foreach (var system in _systems!)
             system.Destroy();
         _systems.Clear();
-        _world!.Destroy();
+        _world.Destroy();
         _world = null;
     }
 
@@ -46,26 +46,26 @@ public sealed class LeoEcsContext(int entityCount = 4096) : IBenchmarkContext
 
     public void Warmup<T1>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
-        _filters![poolId] = _world!.GetFilter(typeof(EcsFilter<T1>));
-        _world!.GetPool<T1>().SetCapacity(EntityCount);
+        _filters![poolId] = _world.GetFilter(typeof(EcsFilter<T1>));
+        _world.GetPool<T1>().SetCapacity(EntityCount);
     }
 
     public void Warmup<T1, T2>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
-        _filters![poolId] = _world!.GetFilter(typeof(EcsFilter<T1, T2>));
-        _world!.GetPool<T1>().SetCapacity(EntityCount);
-        _world!.GetPool<T2>().SetCapacity(EntityCount);
+        _filters![poolId] = _world.GetFilter(typeof(EcsFilter<T1, T2>));
+        _world.GetPool<T1>().SetCapacity(EntityCount);
+        _world.GetPool<T2>().SetCapacity(EntityCount);
     }
 
     public void Warmup<T1, T2, T3>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
-        _filters![poolId] = _world!.GetFilter(typeof(EcsFilter<T1, T2, T3>));
-        _world!.GetPool<T1>().SetCapacity(EntityCount);
-        _world!.GetPool<T2>().SetCapacity(EntityCount);
-        _world!.GetPool<T3>().SetCapacity(EntityCount);
+        _filters![poolId] = _world.GetFilter(typeof(EcsFilter<T1, T2, T3>));
+        _world.GetPool<T1>().SetCapacity(EntityCount);
+        _world.GetPool<T2>().SetCapacity(EntityCount);
+        _world.GetPool<T3>().SetCapacity(EntityCount);
     }
 
     public void Warmup<T1, T2, T3, T4>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
@@ -73,28 +73,18 @@ public sealed class LeoEcsContext(int entityCount = 4096) : IBenchmarkContext
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
-        _filters![poolId] = _world!.GetFilter(typeof(EcsFilter<T1, T2, T3, T4>));
-        _world!.GetPool<T1>().SetCapacity(EntityCount);
-        _world!.GetPool<T2>().SetCapacity(EntityCount);
-        _world!.GetPool<T3>().SetCapacity(EntityCount);
-        _world!.GetPool<T4>().SetCapacity(EntityCount);
-    }
-
-    public void Lock()
-    {
-        // no op
-    }
-
-    public void Commit()
-    {
-        // no op
+        _filters![poolId] = _world.GetFilter(typeof(EcsFilter<T1, T2, T3, T4>));
+        _world.GetPool<T1>().SetCapacity(EntityCount);
+        _world.GetPool<T2>().SetCapacity(EntityCount);
+        _world.GetPool<T3>().SetCapacity(EntityCount);
+        _world.GetPool<T4>().SetCapacity(EntityCount);
     }
 
     public void CreateEntities(in Array entitySet)
     {
         var entities = (EcsEntity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
-            entities[i] = _world!.NewEntity();
+            entities[i] = _world.NewEntity();
     }
 
     public void CreateEntities<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default)
@@ -103,7 +93,7 @@ public sealed class LeoEcsContext(int entityCount = 4096) : IBenchmarkContext
         var entities = (EcsEntity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
         {
-            entities[i] = _world!.NewEntity();
+            entities[i] = _world.NewEntity();
             entities[i].Replace(c1);
         }
     }
@@ -114,7 +104,7 @@ public sealed class LeoEcsContext(int entityCount = 4096) : IBenchmarkContext
         var entities = (EcsEntity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
         {
-            entities[i] = _world!.NewEntity();
+            entities[i] = _world.NewEntity();
             entities[i].Replace(c1);
             entities[i].Replace(c2);
         }
@@ -128,7 +118,7 @@ public sealed class LeoEcsContext(int entityCount = 4096) : IBenchmarkContext
         var entities = (EcsEntity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
         {
-            entities[i] = _world!.NewEntity();
+            entities[i] = _world.NewEntity();
             entities[i].Replace(c1);
             entities[i].Replace(c2);
             entities[i].Replace(c3);
@@ -144,7 +134,7 @@ public sealed class LeoEcsContext(int entityCount = 4096) : IBenchmarkContext
         var entities = (EcsEntity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
         {
-            entities[i] = _world!.NewEntity();
+            entities[i] = _world.NewEntity();
             entities[i].Replace(c1);
             entities[i].Replace(c2);
             entities[i].Replace(c3);
@@ -284,7 +274,7 @@ public sealed class LeoEcsContext(int entityCount = 4096) : IBenchmarkContext
         return _filters![poolId].GetEntitiesCount();
     }
 
-    public bool GetSingle<T1>(in object? entity, in int poolId, ref T1 c1) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
+    public bool GetSingle<T1>(in object entity, in int poolId, ref T1 c1) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
         if (entity == null) return false;
 
@@ -293,7 +283,7 @@ public sealed class LeoEcsContext(int entityCount = 4096) : IBenchmarkContext
         return true;
     }
 
-    public bool GetSingle<T1, T2>(in object? entity, in int poolId, ref T1 c1, ref T2 c2)
+    public bool GetSingle<T1, T2>(in object entity, in int poolId, ref T1 c1, ref T2 c2)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
         if (entity == null) return false;
@@ -304,7 +294,7 @@ public sealed class LeoEcsContext(int entityCount = 4096) : IBenchmarkContext
         return true;
     }
 
-    public bool GetSingle<T1, T2, T3>(in object? entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3)
+    public bool GetSingle<T1, T2, T3>(in object entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
@@ -318,7 +308,7 @@ public sealed class LeoEcsContext(int entityCount = 4096) : IBenchmarkContext
         return true;
     }
 
-    public bool GetSingle<T1, T2, T3, T4>(in object? entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4)
+    public bool GetSingle<T1, T2, T3, T4>(in object entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
@@ -343,13 +333,13 @@ public sealed class LeoEcsContext(int entityCount = 4096) : IBenchmarkContext
     public unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
-        _systems!.Add(new EcsSystems(_world!).Add(new System<T1>(method)).ProcessInjects());
+        _systems.Add(new EcsSystems(_world!).Add(new System<T1>(method)).ProcessInjects());
     }
 
     public unsafe void AddSystem<T1, T2>(delegate*<ref T1, ref T2, void> method, int poolId)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
-        _systems!.Add(new EcsSystems(_world!).Add(new System<T1, T2>(method)).ProcessInjects());
+        _systems.Add(new EcsSystems(_world!).Add(new System<T1, T2>(method)).ProcessInjects());
     }
 
     public unsafe void AddSystem<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> method, int poolId)
@@ -357,7 +347,7 @@ public sealed class LeoEcsContext(int entityCount = 4096) : IBenchmarkContext
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
-        _systems!.Add(new EcsSystems(_world!).Add(new System<T1, T2, T3>(method)).ProcessInjects());
+        _systems.Add(new EcsSystems(_world!).Add(new System<T1, T2, T3>(method)).ProcessInjects());
     }
 
     public unsafe void AddSystem<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> method, int poolId)
@@ -366,13 +356,7 @@ public sealed class LeoEcsContext(int entityCount = 4096) : IBenchmarkContext
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
-        _systems!.Add(new EcsSystems(_world!).Add(new System<T1, T2, T3, T4>(method)).ProcessInjects());
-    }
-
-    public Array Shuffle(in Array entitySet)
-    {
-        Random.Shared.Shuffle((EcsEntity[])entitySet);
-        return entitySet;
+        _systems.Add(new EcsSystems(_world!).Add(new System<T1, T2, T3, T4>(method)).ProcessInjects());
     }
 
     public Array PrepareSet(in int count)

@@ -10,16 +10,14 @@ using FrifloComponent = Friflo.Engine.ECS.IComponent;
 
 namespace Benchmark.DefaultECS;
 
-#pragma warning disable CS9113 // Parameter is unread.
-public sealed class DefaultECSContext(int entityCount = 4096) : IBenchmarkContext
-#pragma warning restore CS9113 // Parameter is unread.
+public sealed class DefaultECSContext : IBenchmarkContext
 {
-    private readonly List<ISystem<float>>? _systems = new();
-    private readonly Dictionary<int, EntityQueryBuilder>? _queries = new();
-    private World? _world;
+    private readonly List<ISystem<float>> _systems = new();
+    private readonly Dictionary<int, EntityQueryBuilder> _queries = new();
+    private World _world;
 
     public bool DeletesEntityOnLastComponentDeletion => false;
-    public int EntityCount => _world!.Count();
+    public int EntityCount => _world.Count();
 
     public void Setup()
     {
@@ -32,8 +30,8 @@ public sealed class DefaultECSContext(int entityCount = 4096) : IBenchmarkContex
 
     public void Cleanup()
     {
-        _systems!.Clear();
-        _world!.Dispose();
+        _systems.Clear();
+        _world.Dispose();
         _world = null;
     }
 
@@ -43,47 +41,31 @@ public sealed class DefaultECSContext(int entityCount = 4096) : IBenchmarkContex
 
     public void Warmup<T1>(in int poolId)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
-        => _queries![poolId] = _world!.GetEntities().With<T1>();
+        => _queries![poolId] = _world.GetEntities().With<T1>();
 
     public void Warmup<T1, T2>(in int poolId)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
-        => _queries![poolId] = _world!.GetEntities().With<T1>().With<T2>();
+        => _queries![poolId] = _world.GetEntities().With<T1>().With<T2>();
 
     public void Warmup<T1, T2, T3>(in int poolId)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
-        => _queries![poolId] = _world!.GetEntities().With<T1>().With<T2>().With<T3>();
+        => _queries![poolId] = _world.GetEntities().With<T1>().With<T2>().With<T3>();
 
     public void Warmup<T1, T2, T3, T4>(in int poolId)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
-        => _queries![poolId] = _world!.GetEntities().With<T1>().With<T2>().With<T3>().With<T4>();
-
-    public void Lock()
-    {
-        // no op
-    }
-
-    public void Commit()
-    {
-        // no op
-    }
+        => _queries![poolId] = _world.GetEntities().With<T1>().With<T2>().With<T3>().With<T4>();
 
     public void DeleteEntities(in Array entitySet)
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             if (entities[i].IsAlive) entities[i].Dispose();
-    }
-
-    public Array Shuffle(in Array entitySet)
-    {
-        Random.Shared.Shuffle((Entity[])entitySet);
-        return entitySet;
     }
 
     public Array PrepareSet(in int count)
@@ -95,7 +77,7 @@ public sealed class DefaultECSContext(int entityCount = 4096) : IBenchmarkContex
     {
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
-            entities[i] = _world!.CreateEntity();
+            entities[i] = _world.CreateEntity();
     }
 
     public void CreateEntities<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default)
@@ -104,7 +86,7 @@ public sealed class DefaultECSContext(int entityCount = 4096) : IBenchmarkContex
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
         {
-            entities[i] = _world!.CreateEntity();
+            entities[i] = _world.CreateEntity();
             entities[i].Set(c1);
         }
     }
@@ -115,7 +97,7 @@ public sealed class DefaultECSContext(int entityCount = 4096) : IBenchmarkContex
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
         {
-            entities[i] = _world!.CreateEntity();
+            entities[i] = _world.CreateEntity();
             entities[i].Set(c1);
             entities[i].Set(c2);
         }
@@ -130,7 +112,7 @@ public sealed class DefaultECSContext(int entityCount = 4096) : IBenchmarkContex
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
         {
-            entities[i] = _world!.CreateEntity();
+            entities[i] = _world.CreateEntity();
             entities[i].Set(c1);
             entities[i].Set(c2);
             entities[i].Set(c3);
@@ -147,7 +129,7 @@ public sealed class DefaultECSContext(int entityCount = 4096) : IBenchmarkContex
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
         {
-            entities[i] = _world!.CreateEntity();
+            entities[i] = _world.CreateEntity();
             entities[i].Set(c1);
             entities[i].Set(c2);
             entities[i].Set(c3);
@@ -277,7 +259,7 @@ public sealed class DefaultECSContext(int entityCount = 4096) : IBenchmarkContex
         return _queries![poolId].AsEnumerable().Count();
     }
 
-    public bool GetSingle<T1>(in object? entity, in int poolId, ref T1 c1) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
+    public bool GetSingle<T1>(in object entity, in int poolId, ref T1 c1) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
         if (entity == null) return false;
 
@@ -286,7 +268,7 @@ public sealed class DefaultECSContext(int entityCount = 4096) : IBenchmarkContex
         return true;
     }
 
-    public bool GetSingle<T1, T2>(in object? entity, in int poolId, ref T1 c1, ref T2 c2)
+    public bool GetSingle<T1, T2>(in object entity, in int poolId, ref T1 c1, ref T2 c2)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
         if (entity == null) return false;
@@ -297,7 +279,7 @@ public sealed class DefaultECSContext(int entityCount = 4096) : IBenchmarkContex
         return true;
     }
 
-    public bool GetSingle<T1, T2, T3>(in object? entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3)
+    public bool GetSingle<T1, T2, T3>(in object entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
@@ -311,7 +293,7 @@ public sealed class DefaultECSContext(int entityCount = 4096) : IBenchmarkContex
         return true;
     }
 
-    public bool GetSingle<T1, T2, T3, T4>(in object? entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4)
+    public bool GetSingle<T1, T2, T3, T4>(in object entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
@@ -336,13 +318,13 @@ public sealed class DefaultECSContext(int entityCount = 4096) : IBenchmarkContex
     public unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
-        _systems!.Add(new System<T1>(_queries![poolId], method));
+        _systems.Add(new System<T1>(_queries![poolId], method));
     }
 
     public unsafe void AddSystem<T1, T2>(delegate*<ref T1, ref T2, void> method, int poolId)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
-        _systems!.Add(new System<T1, T2>(_queries![poolId], method));
+        _systems.Add(new System<T1, T2>(_queries![poolId], method));
     }
 
     public unsafe void AddSystem<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> method, int poolId)
@@ -350,7 +332,7 @@ public sealed class DefaultECSContext(int entityCount = 4096) : IBenchmarkContex
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
-        _systems!.Add(new System<T1, T2, T3>(_queries![poolId], method));
+        _systems.Add(new System<T1, T2, T3>(_queries![poolId], method));
     }
 
     public unsafe void AddSystem<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> method, int poolId)
@@ -359,6 +341,6 @@ public sealed class DefaultECSContext(int entityCount = 4096) : IBenchmarkContex
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
-        _systems!.Add(new System<T1, T2, T3, T4>(_queries![poolId], method));
+        _systems.Add(new System<T1, T2, T3, T4>(_queries![poolId], method));
     }
 }

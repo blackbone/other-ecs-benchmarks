@@ -9,20 +9,20 @@ using FrifloComponent = Friflo.Engine.ECS.IComponent;
 
 namespace Benchmark.Fennecs;
 
-public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
+public sealed class FennecsContext : IBenchmarkContext
 {
-    private readonly Dictionary<int, Query>? _streams = new();
-    private readonly List<ISystem>? _systems = new();
+    private readonly Dictionary<int, Query> _streams = new();
+    private readonly List<ISystem> _systems = new();
     private World.WorldLock? _lock;
-    private World? _world = new();
+    private World _world = new();
 
     public bool DeletesEntityOnLastComponentDeletion => false;
 
-    public int EntityCount => _world!.Count;
+    public int EntityCount => _world.Count;
 
     public void Setup()
     {
-        _world = new World(entityCount);
+        _world = new World();
     }
 
     public void FinishSetup()
@@ -31,64 +31,67 @@ public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
 
     public void Cleanup()
     {
-        _systems!.Clear();
-        _streams!.Clear();
-        _world!.GC();
-        _world!.Dispose();
-        _world = null;
+        _systems.Clear();
+        _streams.Clear();
     }
 
     public void Dispose()
     {
+        _world.GC();
+        _world.Dispose();
+        _world = null;
     }
 
     public void Warmup<T1>(in int poolId)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
-        => _streams![poolId] = _world!.Query<T1>().Compile().Warmup();
+        => _streams![poolId] = _world.Query<T1>().Compile().Warmup();
 
     public void Warmup<T1, T2>(in int poolId)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
-        => _streams![poolId] = _world!.Query<T1, T2>().Compile().Warmup();
+        => _streams![poolId] = _world.Query<T1, T2>().Compile().Warmup();
 
     public void Warmup<T1, T2, T3>(in int poolId)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
-        => _streams![poolId] = _world!.Query<T1, T2, T3>().Compile().Warmup();
+        => _streams![poolId] = _world.Query<T1, T2, T3>().Compile().Warmup();
 
     public void Warmup<T1, T2, T3, T4>(in int poolId)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
-        => _streams![poolId] = _world!.Query<T1, T2, T3, T4>().Compile().Warmup();
+        => _streams![poolId] = _world.Query<T1, T2, T3, T4>().Compile().Warmup();
 
-    public void Lock() => _lock = _world!.Lock();
+    public void Lock() => _lock = _world.Lock();
 
-    public void Commit() => _lock!.Value.Dispose();
+    public void Commit() => _lock.Value.Dispose();
 
     public void CreateEntities(in Array entitySet)
     {
+        using var @lock = _world.Lock();
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
-            entities[i] = _world!.Spawn();
+            entities[i] = _world.Spawn();
     }
 
     public void CreateEntities<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
+        using var @lock = _world.Lock();
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
-            entities[i] = _world!.Spawn().Add(c1);
+            entities[i] = _world.Spawn().Add(c1);
     }
 
     public void CreateEntities<T1, T2>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
+        using var @lock = _world.Lock();
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
-            entities[i] = _world!.Spawn().Add(c1).Add(c2);
+            entities[i] = _world.Spawn().Add(c1).Add(c2);
     }
 
     public void CreateEntities<T1, T2, T3>(in Array entitySet, in int poolId = -1, in T1 c1 = default,
@@ -96,9 +99,10 @@ public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
+        using var @lock = _world.Lock();
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
-            entities[i] = _world!.Spawn().Add(c1).Add(c2).Add(c3);
+            entities[i] = _world.Spawn().Add(c1).Add(c2).Add(c3);
     }
 
     public void CreateEntities<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1, in T1 c1 = default,
@@ -107,23 +111,25 @@ public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
+        using var @lock = _world.Lock();
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
-            entities[i] = _world!.Spawn().Add(c1).Add(c2).Add(c3).Add(c4);
+            entities[i] = _world.Spawn().Add(c1).Add(c2).Add(c3).Add(c4);
     }
 
     public void DeleteEntities(in Array entitySet)
     {
+        using var @lock = _world.Lock();
         var entities = (Entity[])entitySet;
-        // TODO perform use overload which utilizes ReadOnlySpan<Identity>
         for (var i = 0; i < entities.Length; i++)
-            if (_world!.Contains(entities[i]))
-                _world!.Despawn(entities[i]);
+            if (_world.Contains(entities[i]))
+                _world.Despawn(entities[i]);
     }
 
     public void AddComponent<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
+        using var @lock = _world.Lock();
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i].Add(c1);
@@ -132,6 +138,7 @@ public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
     public void AddComponent<T1, T2>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
+        using var @lock = _world.Lock();
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i].Add(c1).Add(c2);
@@ -142,6 +149,7 @@ public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
+        using var @lock = _world.Lock();
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i].Add(c1).Add(c2).Add(c3);
@@ -153,6 +161,7 @@ public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
+        using var @lock = _world.Lock();
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i].Add(c1).Add(c2).Add(c3).Add(c4);
@@ -160,6 +169,7 @@ public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
 
     public void RemoveComponent<T1>(in Array entitySet, in int poolId = -1) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
+        using var @lock = _world.Lock();
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             if (entities[i].Has<T1>())
@@ -169,6 +179,7 @@ public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
     public void RemoveComponent<T1, T2>(in Array entitySet, in int poolId = -1)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
+        using var @lock = _world.Lock();
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
         {
@@ -182,6 +193,7 @@ public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
+        using var @lock = _world.Lock();
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
         {
@@ -197,6 +209,7 @@ public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
+        using var @lock = _world.Lock();
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
         {
@@ -233,7 +246,7 @@ public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
         return _streams![poolId].Count;
     }
 
-    public bool GetSingle<T1>(in object? entity, in int poolId, ref T1 c1) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
+    public bool GetSingle<T1>(in object entity, in int poolId, ref T1 c1) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
         if (entity == null) return false;
 
@@ -242,7 +255,7 @@ public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
         return true;
     }
 
-    public bool GetSingle<T1, T2>(in object? entity, in int poolId, ref T1 c1, ref T2 c2)
+    public bool GetSingle<T1, T2>(in object entity, in int poolId, ref T1 c1, ref T2 c2)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
         if (entity == null) return false;
@@ -253,7 +266,7 @@ public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
         return true;
     }
 
-    public bool GetSingle<T1, T2, T3>(in object? entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3)
+    public bool GetSingle<T1, T2, T3>(in object entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
@@ -267,7 +280,7 @@ public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
         return true;
     }
 
-    public bool GetSingle<T1, T2, T3, T4>(in object? entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4)
+    public bool GetSingle<T1, T2, T3, T4>(in object entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
@@ -285,20 +298,20 @@ public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
 
     public void Tick(float delta)
     {
-        for (var i = 0; i < _systems!.Count; i++)
+        for (var i = 0; i < _systems.Count; i++)
             _systems[i].Run(delta);
     }
 
     public unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
-        _systems!.Add(new System<T1>(method, _streams![poolId].Stream<T1>()));
+        _systems.Add(new System<T1>(method, _streams![poolId].Stream<T1>()));
     }
 
     public unsafe void AddSystem<T1, T2>(delegate*<ref T1, ref T2, void> method, int poolId)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
-        _systems!.Add(new System<T1, T2>(method, _streams![poolId].Stream<T1, T2>()));
+        _systems.Add(new System<T1, T2>(method, _streams![poolId].Stream<T1, T2>()));
     }
 
     public unsafe void AddSystem<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> method, int poolId)
@@ -306,7 +319,7 @@ public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
-        _systems!.Add(new System<T1, T2, T3>(method, _streams![poolId].Stream<T1, T2, T3>()));
+        _systems.Add(new System<T1, T2, T3>(method, _streams![poolId].Stream<T1, T2, T3>()));
     }
 
     public unsafe void AddSystem<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> method, int poolId)
@@ -315,13 +328,7 @@ public sealed class FennecsContext(int entityCount = 4096) : IBenchmarkContext
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
-        _systems!.Add(new System<T1, T2, T3, T4>(method, _streams![poolId].Stream<T1, T2, T3, T4>()));
-    }
-
-    public Array Shuffle(in Array entitySet)
-    {
-        Random.Shared.Shuffle((Entity[])entitySet);
-        return entitySet;
+        _systems.Add(new System<T1, T2, T3, T4>(method, _streams![poolId].Stream<T1, T2, T3, T4>()));
     }
 
     public Array PrepareSet(in int count)

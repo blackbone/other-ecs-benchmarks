@@ -11,12 +11,12 @@ using FrifloComponent = Friflo.Engine.ECS.IComponent;
 
 namespace Benchmark.Morpeh;
 
-public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
+public sealed class MorpehContext : IBenchmarkContext
 {
-    private readonly Dictionary<int, Filter>? _filters = new();
-    private readonly Dictionary<int, IStash[]>? _stashes = new();
-    private SystemsGroup? _systems;
-    private World? _world;
+    private readonly Dictionary<int, Filter> _filters = new();
+    private readonly Dictionary<int, IStash[]> _stashes = new();
+    private SystemsGroup _systems;
+    private World _world;
 
     public bool DeletesEntityOnLastComponentDeletion => true;
 
@@ -31,7 +31,7 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
 
     public void FinishSetup()
     {
-        _world!.WarmupArchetypes(entityCount);
+        // _world!.WarmupArchetypes(entityCount);
     }
 
     public void Cleanup()
@@ -51,16 +51,6 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
 
     public void Dispose()
     {
-    }
-
-    public void Lock()
-    {
-        /* no op */
-    }
-
-    public void Commit()
-    {
-        _world!.Commit();
     }
 
     public void Warmup<T1>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
@@ -133,7 +123,7 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
         return _filters![poolId].GetLengthSlow();
     }
 
-    public bool GetSingle<T1>(in object? entity, in int poolId, ref T1 c1) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
+    public bool GetSingle<T1>(in object entity, in int poolId, ref T1 c1) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
         if (entity == null) return false;
 
@@ -145,7 +135,7 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
         return true;
     }
 
-    public bool GetSingle<T1, T2>(in object? entity, in int poolId, ref T1 c1, ref T2 c2)
+    public bool GetSingle<T1, T2>(in object entity, in int poolId, ref T1 c1, ref T2 c2)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
         if (entity == null) return false;
@@ -160,7 +150,7 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
         return true;
     }
 
-    public bool GetSingle<T1, T2, T3>(in object? entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3)
+    public bool GetSingle<T1, T2, T3>(in object entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
@@ -179,7 +169,7 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
         return true;
     }
 
-    public bool GetSingle<T1, T2, T3, T4>(in object? entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4)
+    public bool GetSingle<T1, T2, T3, T4>(in object entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
@@ -240,6 +230,8 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i] = _world!.CreateEntity();
+
+        _world!.Commit();
     }
 
     public void CreateEntities<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default)
@@ -252,6 +244,8 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
             entities[i] = _world!.CreateEntity();
             s1.Add(entities[i]) = c1;
         }
+
+        _world!.Commit();
     }
 
     public void CreateEntities<T1, T2>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default)
@@ -267,6 +261,8 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
             s1.Add(entities[i]) = c1;
             s2.Add(entities[i]) = c2;
         }
+
+        _world!.Commit();
     }
 
     public void CreateEntities<T1, T2, T3>(in Array entitySet, in int poolId = -1, in T1 c1 = default,
@@ -286,6 +282,8 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
             s2.Add(entities[i]) = c2;
             s3.Add(entities[i]) = c3;
         }
+
+        _world!.Commit();
     }
 
     public void CreateEntities<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1, in T1 c1 = default,
@@ -308,6 +306,8 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
             s3.Add(entities[i]) = c3;
             s4.Add(entities[i]) = c4;
         }
+
+        _world!.Commit();
     }
 
     public void DeleteEntities(in Array entitySet)
@@ -315,6 +315,8 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             _world!.RemoveEntity(entities[i]);
+
+        _world!.Commit();
     }
 
     public void AddComponent<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default)
@@ -325,6 +327,8 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
         var s1 = (Stash<T1>)pool[0];
         for (var i = 0; i < entities.Length; i++)
             s1.Add(entities[i]) = c1;
+
+        _world!.Commit();
     }
 
     public void AddComponent<T1, T2>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default)
@@ -339,6 +343,8 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
             s1.Add(entities[i]) = c1;
             s2.Add(entities[i]) = c2;
         }
+
+        _world!.Commit();
     }
 
     public void AddComponent<T1, T2, T3>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default,
@@ -357,6 +363,8 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
             s2.Add(entities[i]) = c2;
             s3.Add(entities[i]) = c3;
         }
+
+        _world!.Commit();
     }
 
     public void AddComponent<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1, in T1 c1 = default,
@@ -378,6 +386,8 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
             s3.Add(entities[i]) = c3;
             s4.Add(entities[i]) = c4;
         }
+
+        _world!.Commit();
     }
 
     public void RemoveComponent<T1>(in Array entitySet, in int poolId = -1) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
@@ -387,6 +397,8 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
         var c1 = (Stash<T1>)pool[0];
         for (var i = 0; i < entities.Length; i++)
             c1.Remove(entities[i]);
+
+        _world!.Commit();
     }
 
     public void RemoveComponent<T1, T2>(in Array entitySet, in int poolId = -1)
@@ -401,6 +413,8 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
             c1.Remove(entities[i]);
             c2.Remove(entities[i]);
         }
+
+        _world!.Commit();
     }
 
     public void RemoveComponent<T1, T2, T3>(in Array entitySet, in int poolId = -1)
@@ -440,12 +454,8 @@ public sealed class MorpehContext(int entityCount = 4096) : IBenchmarkContext
             c3.Remove(entities[i]);
             c4.Remove(entities[i]);
         }
-    }
 
-    public Array Shuffle(in Array entitySet)
-    {
-        Random.Shared.Shuffle((Entity[])entitySet);
-        return entitySet;
+        _world!.Commit();
     }
 
     public Array PrepareSet(in int count)

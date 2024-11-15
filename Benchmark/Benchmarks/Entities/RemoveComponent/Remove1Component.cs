@@ -21,29 +21,27 @@ public abstract class Remove1Component<T> : IBenchmark<T> where T : IBenchmarkCo
     public void IterationSetup()
     {
         Context = BenchmarkContext.Create<T>(EntityCount);
-        Context?.Setup();
-        Context?.Warmup<Component1>(0);
-        _entitySet = Context?.PrepareSet(EntityCount);
-        Context?.CreateEntities<Component1>(_entitySet, 0);
-        Context?.FinishSetup();
+        Context.Setup();
+        Context.Warmup<Component1>(0);
+        _entitySet = Context.PrepareSet(EntityCount);
+        Context.CreateEntities<Component1>(_entitySet, 0);
+        Context.FinishSetup();
     }
 
     [IterationCleanup]
     public void IterationCleanup()
     {
-        if (!Context.DeletesEntityOnLastComponentDeletion)
-            Context?.DeleteEntities(_entitySet);
+        if (Context.DeletesEntityOnLastComponentDeletion)
+            Context.DeleteEntities(_entitySet);
 
-        Context?.Cleanup();
-        Context?.Dispose();
+        Context.Cleanup();
+        Context.Dispose();
         Context = default;
     }
 
     [Benchmark]
     public void Run()
     {
-        Context?.Lock();
-        Context?.RemoveComponent<Component1>(_entitySet, 0);
-        Context?.Commit();
+        Context.RemoveComponent<Component1>(_entitySet, 0);
     }
 }

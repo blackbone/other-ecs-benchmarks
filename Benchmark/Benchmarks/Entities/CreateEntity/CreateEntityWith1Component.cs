@@ -17,33 +17,33 @@ public abstract class CreateEntityWith1Component<T> : IBenchmark<T> where T : IB
     private Array _entitySet;
 
     [GlobalSetup]
-    public void GlobalSetup() {
+    public void GlobalSetup()
+    {
         Context = BenchmarkContext.Create<T>(EntityCount);
-        Context?.Setup();
-        Context?.Warmup<Component1>(0);
-        Context?.FinishSetup();
+        Context.Setup();
+        Context.Warmup<Component1>(0);
+        Context.FinishSetup();
 
-        _entitySet = Context?.PrepareSet(EntityCount);
+        _entitySet = Context.PrepareSet(EntityCount);
     }
 
     [Benchmark]
     public void Run()
     {
-        Context?.Lock();
-        Context?.CreateEntities<Component1>(_entitySet, 0);
-        Context?.Commit();
+        Context.CreateEntities<Component1>(_entitySet, 0);
     }
 
     [IterationCleanup]
     public void IterationCleanup()
     {
-        Context?.DeleteEntities(_entitySet);
+        Context.DeleteEntities(_entitySet);
     }
 
     [GlobalCleanup]
-    public void GlobalCleanup() {
-        Context?.Cleanup();
-        Context?.Dispose();
+    public void GlobalCleanup()
+    {
+        Context.Cleanup();
+        Context.Dispose();
         Context = default;
     }
 }

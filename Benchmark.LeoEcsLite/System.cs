@@ -7,8 +7,8 @@ namespace Benchmark.LeoEcsLite;
 public unsafe class System<T1>(delegate*<ref T1, void> method) : IEcsInitSystem, IEcsRunSystem
     where T1 : struct
 {
-    private EcsFilter? _filter;
-    private EcsPool<T1>? _p1;
+    private EcsFilter _filter;
+    private EcsPool<T1> _p1;
 
     public void Init(IEcsSystems systems)
     {
@@ -28,9 +28,9 @@ public unsafe class System<T1, T2>(delegate*<ref T1, ref T2, void> method) : IEc
     where T1 : struct
     where T2 : struct
 {
-    private EcsFilter? _filter;
-    private EcsPool<T1>? _p1;
-    private EcsPool<T2>? _p2;
+    private EcsFilter _filter;
+    private EcsPool<T1> _p1;
+    private EcsPool<T2> _p2;
 
     public void Init(IEcsSystems systems)
     {
@@ -52,10 +52,10 @@ public unsafe class System<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> m
     where T2 : struct
     where T3 : struct
 {
-    private EcsFilter? _filter;
-    private EcsPool<T1>? _p1;
-    private EcsPool<T2>? _p2;
-    private EcsPool<T3>? _p3;
+    private EcsFilter _filter;
+    private EcsPool<T1> _p1;
+    private EcsPool<T2> _p2;
+    private EcsPool<T3> _p3;
 
     public void Init(IEcsSystems systems)
     {
@@ -80,11 +80,11 @@ public unsafe class System<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref
     where T3 : struct
     where T4 : struct
 {
-    private EcsFilter? _filter;
-    private EcsPool<T1>? _p1;
-    private EcsPool<T2>? _p2;
-    private EcsPool<T3>? _p3;
-    private EcsPool<T4>? _p4;
+    private EcsFilter _filter;
+    private EcsPool<T1> _p1;
+    private EcsPool<T2> _p2;
+    private EcsPool<T3> _p3;
+    private EcsPool<T4> _p4;
 
     public void Init(IEcsSystems systems)
     {

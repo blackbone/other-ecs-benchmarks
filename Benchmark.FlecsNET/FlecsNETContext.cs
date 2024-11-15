@@ -1,8 +1,6 @@
 ﻿using Benchmark._Context;
 using Flecs.NET.Bindings;
 using Flecs.NET.Core;
-using Entity = Flecs.NET.Core.Entity;
-using World = Flecs.NET.Core.World;
 using MorpehComponent = Scellecs.Morpeh.IComponent;
 using DragonComponent = DCFApixels.DragonECS.IEcsComponent;
 using XenoComponent = Xeno.IComponent;
@@ -11,10 +9,10 @@ using FrifloComponent = Friflo.Engine.ECS.IComponent;
 namespace Benchmark.FlecsNET;
 
 #pragma warning disable CS9113 // Parameter is unread.
-public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
+public sealed class FlecsNETContext : IBenchmarkContext
 #pragma warning restore CS9113 // Parameter is unread.
 {
-    private readonly Dictionary<int, Query>? _queries = new();
+    private readonly Dictionary<int, Query> _queries = new();
     private World _world;
 
     public bool DeletesEntityOnLastComponentDeletion => false;
@@ -34,12 +32,12 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
     public void Cleanup()
     {
         _world.Quit();
-        _world.Dispose();
-        _world = default;
     }
 
     public void Dispose()
     {
+        _world.Dispose();
+        _world = default;
     }
 
     public void Lock()
@@ -80,18 +78,14 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
 
     public void DeleteEntities(in Array entitySet)
     {
+        using var defer = new Defer(_world);
+
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             if (entities[i].IsAlive())
                 entities[i].Destruct();
 
         EntityCount -= entities.Length;
-    }
-
-    public Array Shuffle(in Array entitySet)
-    {
-        Random.Shared.Shuffle((Entity[])entitySet);
-        return entitySet;
     }
 
     public Array PrepareSet(in int count)
@@ -101,6 +95,8 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
 
     public void CreateEntities(in Array entitySet)
     {
+        using var defer = new Defer(_world);
+
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i] = _world.Entity();
@@ -111,6 +107,8 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
     public void CreateEntities<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
+        using var defer = new Defer(_world);
+
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i] = _world.Entity().Set(c1);
@@ -121,6 +119,8 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
     public void CreateEntities<T1, T2>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
+        using var defer = new Defer(_world);
+
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i] = _world.Entity().Set(c1).Set(c2);
@@ -134,6 +134,8 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
+        using var defer = new Defer(_world);
+
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i] = _world.Entity().Set(c1).Set(c2).Set(c3);
@@ -143,11 +145,14 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
 
     public void CreateEntities<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1, in T1 c1 = default,
         in T2 c2 = default,
-        in T3 c3 = default, in T4 c4 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
+        in T3 c3 = default,
+        in T4 c4 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
+        using var defer = new Defer(_world);
+
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i] = _world.Entity().Set(c1).Set(c2).Set(c3).Set(c4);
@@ -158,6 +163,8 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
     public void AddComponent<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
+        using var defer = new Defer(_world);
+
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i].Set(c1);
@@ -176,6 +183,8 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
+        using var defer = new Defer(_world);
+
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i].Set(c1).Set(c2).Set(c3);
@@ -188,6 +197,8 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
+        using var defer = new Defer(_world);
+
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i].Set(c1).Set(c2).Set(c3).Set(c4);
@@ -195,6 +206,8 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
 
     public void RemoveComponent<T1>(in Array entitySet, in int poolId = -1) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
+        using var defer = new Defer(_world);
+
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             if (entities[i].IsAlive() && entities[i].Has<T1>())
@@ -204,6 +217,8 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
     public void RemoveComponent<T1, T2>(in Array entitySet, in int poolId = -1)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
+        using var defer = new Defer(_world);
+
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
         {
@@ -218,6 +233,8 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
+        using var defer = new Defer(_world);
+
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
         {
@@ -234,6 +251,8 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
+        using var defer = new Defer(_world);
+
         var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
         {
@@ -279,7 +298,7 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
         return n;
     }
 
-    public bool GetSingle<T1>(in object? entity, in int poolId, ref T1 c1) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
+    public bool GetSingle<T1>(in object entity, in int poolId, ref T1 c1) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
         if (entity == null) return false;
         var e = (Entity)entity;
@@ -287,7 +306,7 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
         return true;
     }
 
-    public bool GetSingle<T1, T2>(in object? entity, in int poolId, ref T1 c1, ref T2 c2)
+    public bool GetSingle<T1, T2>(in object entity, in int poolId, ref T1 c1, ref T2 c2)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
         if (entity == null) return false;
@@ -298,7 +317,7 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
         return true;
     }
 
-    public bool GetSingle<T1, T2, T3>(in object? entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3)
+    public bool GetSingle<T1, T2, T3>(in object entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
@@ -312,7 +331,7 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
         return true;
     }
 
-    public bool GetSingle<T1, T2, T3, T4>(in object? entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4)
+    public bool GetSingle<T1, T2, T3, T4>(in object entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
@@ -328,7 +347,7 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
         return true;
     }
 
-    public void Tick(float delta) => _world.Progress(0f);
+    public void Tick(float delta) => _world.Progress();
 
     public unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
@@ -375,5 +394,17 @@ public sealed class FlecsNETContext(int entityCount = 4096) : IBenchmarkContext
             .Write<T3>()
             .Write<T4>()
             .Each(method);
+    }
+
+    private readonly struct Defer : IDisposable {
+        private readonly World _world;
+
+        public Defer(World world) {
+            _world = world;
+            _world.DeferBegin();
+        }
+
+        // ReSharper disable once PossiblyImpureMethodCallOnReadonlyVariable
+        public void Dispose() => _world.DeferEnd();
     }
 }

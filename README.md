@@ -39,16 +39,16 @@ General flow of any benchmark execution is divided into 3 steps:
 |                                                        ECS | Version                                                                               | Implemented | Verified |      Notes      |
 |-----------------------------------------------------------:|:--------------------------------------------------------------------------------------|:-----------:|:--------:|:---------------:|
 |                    [Arch](https://github.com/genaray/Arch) | [1.3.3-alpha](https://www.nuget.org/packages/Arch/1.3.3-alpha)                        |      ✅      |    ❌     |       N/A       |
-|                           [fennecs](https://fennecs.tech/) | [0.5.11-beta](https://www.nuget.org/packages/fennecs/0.5.11-beta)                     |      ✅      |    ❌     |       N/A       |
-|               [Morpeh](https://github.com/scellecs/morpeh) | [2024.1.0-rc54](https://github.com/scellecs/morpeh/releases/tag/2024.1.0-rc54)        |      ✅      |    ❌     |       N/A       |
-|       [DragonECS](https://github.com/DCFApixels/DragonECS) | [0.8.54](https://github.com/DCFApixels/DragonECS/releases/tag/0.8.54)                 |      ✅      |    ❌     |       N/A       |
+|                           [fennecs](https://fennecs.tech/) | [0.5.14-beta](https://www.nuget.org/packages/fennecs/0.5.14-beta)                     |      ✅      |    ❌     |       N/A       |
+|               [Morpeh](https://github.com/scellecs/morpeh) | [2024.1.0-rc55](https://github.com/scellecs/morpeh/releases/tag/2024.1.0-rc55)        |      ✅      |    ❌     |       N/A       |
+|       [DragonECS](https://github.com/DCFApixels/DragonECS) | [0.8.61](https://github.com/DCFApixels/DragonECS/releases/tag/0.8.61)                 |      ✅      |    ❌     |       N/A       |
 |                  [LeoECS](https://github.com/Leopotam/ecs) | [2023.6.22](https://github.com/Leopotam/ecs/releases/tag/2023.6.22)                   |      ✅      |    ❌     |       N/A       |
 |          [LeoECSLite](https://github.com/Leopotam/ecslite) | [2024.5.22](https://github.com/Leopotam/ecslite/releases/tag/2024.5.22)               |      ✅      |    ❌     |       N/A       |
 |         [DefaultECS](https://github.com/Doraku/DefaultEcs) | [0.18.0-beta01](https://github.com/Doraku/DefaultEcs/releases/tag/0.18.0-beta01)      |      ✅      |    ❌     | Analyzer 0.17.8 |
 | [FlecsNET](https://github.com/BeanCheeseBurrito/Flecs.NET) | [4.0.2](https://www.nuget.org/packages/Flecs.NET.Release/4.0.2)                       |      ✅      |    ❌     |       N/A       |
 |        [TinyEcs](https://github.com/andreakarasho/TinyEcs) | [1.4.0](https://www.nuget.org/packages/TinyEcs.Main/1.4.0)                            |      ✅      |    ❌     |       N/A       |
-|                  [Xeno](https://github.com/blackbone/xeno) | ~~[0.1.5](https://github.com/blackbone/xeno/releases/tag/0.1.5)~~                     |      ❌      |    ❌     |       N/A       |
-|      [FriFlo](https://github.com/friflo/Friflo.Engine.ECS) | [3.0.0-preview.13](https://www.nuget.org/packages/Friflo.Engine.ECS/3.0.0-preview.13) |      ✅      |    ❌     |       N/A       |
+|                  [Xeno](https://github.com/blackbone/xeno) | [0.1.6](https://github.com/blackbone/xeno/releases/tag/0.1.6)                         |      ✅      |    ✅     |       N/A       |
+|      [FriFlo](https://github.com/friflo/Friflo.Engine.ECS) | [3.0.0-preview.14](https://www.nuget.org/packages/Friflo.Engine.ECS/3.0.0-preview.14) |      ✅      |    ❌     |       N/A       |
 
 # Implemented benchmarks
 
@@ -90,7 +90,7 @@ Command line args:
 
 1. Because of nature of BenchmarkDotNet there's sequential iteration of creating entities happening.
    This leads to case where, for example we creating 100k entities in benchmark, it's properly cleared
-   in Setup and Cleanup but benchmark itself will be called multiple times which will lead to creating 100k entities,
+   in Setup and Cleanup but benchma[Xeno.SourceGenerator.csproj](submodules/Xeno/src%7E/Xeno.SourceGenerator/Xeno.SourceGenerator.csproj)rk itself will be called multiple times which will lead to creating 100k entities,
    then another 100k and in some cases lead to millions of entities in the world which can affect perfomance of creation
    and deletion on certain ECS implementations.
 2. System benchmarks which uses *Padding* property produces up to 1.100.000 entities each because of logic of padding

@@ -16,19 +16,19 @@ public abstract class SystemWith1ComponentMultipleComposition<T> : IBenchmark<T>
     public T Context { get; set; }
 
     [GlobalSetup]
-    public void IterationSetup()
+    public void GlobalSetup()
     {
         Context = BenchmarkContext.Create<T>(EntityCount);
-        Context?.Setup();
+        Context.Setup();
 
-        Context?.Warmup<Component1>(0);
-        Context?.Warmup<Padding1>(1);
-        Context?.Warmup<Padding2>(2);
-        Context?.Warmup<Padding3>(3);
-        Context?.Warmup<Padding4>(4);
+        Context.Warmup<Component1>(0);
+        Context.Warmup<Padding1>(1);
+        Context.Warmup<Padding2>(2);
+        Context.Warmup<Padding3>(3);
+        Context.Warmup<Padding4>(4);
 
-        var set = Context?.PrepareSet(1);
-        Context?.Lock();
+        var set = Context.PrepareSet(1);
+
         // set up entities
         for (var i = 0; i < EntityCount; ++i)
         {
@@ -36,43 +36,45 @@ public abstract class SystemWith1ComponentMultipleComposition<T> : IBenchmark<T>
                 switch (i % 4)
                 {
                     case 0:
-                        Context?.CreateEntities(set, 1, default(Padding1));
+                        Context.CreateEntities(set, 1, default(Padding1));
                         break;
                     case 2:
-                        Context?.CreateEntities(set, 2, default(Padding2));
+                        Context.CreateEntities(set, 2, default(Padding2));
                         break;
                     case 3:
-                        Context?.CreateEntities(set, 3, default(Padding3));
+                        Context.CreateEntities(set, 3, default(Padding3));
                         break;
                     case 4:
-                        Context?.CreateEntities(set, 4, default(Padding4));
+                        Context.CreateEntities(set, 4, default(Padding4));
                         break;
                 }
 
-            Context?.CreateEntities(set, 0, new Component1 { Value = 0 });
+            Context.CreateEntities(set, 0, new Component1 { Value = 0 });
         }
 
-        Context?.Commit();
 
         unsafe
         {
             // set up systems
-            Context?.AddSystem<Component1>(&Update, 0);
+            Context.AddSystem<Component1>(&Update, 0);
         }
 
-        Context?.FinishSetup();
+        Context.FinishSetup();
     }
 
     [GlobalCleanup]
-    public void IterationCleanup()
+    public void GlobalCleanup()
     {
-        Context?.Cleanup();
-        Context?.Dispose();
+        Context.Cleanup();
+        Context.Dispose();
         Context = default;
     }
 
     [Benchmark]
-    public void Run() => Context?.Tick(0.1f);
+    public void Run()
+    {
+        Context.Tick(0.1f);
+    }
 
     private static void Update(ref Component1 c1)
     {

@@ -1,5 +1,6 @@
 using System;
 using Benchmark._Context;
+using Benchmark.Utils;
 using BenchmarkDotNet.Attributes;
 
 namespace Benchmark.Benchmarks.Entities.RemoveComponent;
@@ -15,36 +16,43 @@ public abstract class Remove2ComponentsRandomOrder<T> : IBenchmark<T> where T : 
     [Params(Constants.EntityCount)] public int EntityCount { get; set; }
     public T Context { get; set; }
     private Array _entitySet;
+    
+
+    [GlobalSetup]
+    public void GlobalSetup()
+    {
+        Context = BenchmarkContext.Create<T>(EntityCount);
+        Context.Setup();
+        Context.Warmup<Component1, Component2>(0);
+        _entitySet = Context.PrepareSet(EntityCount);
+        Context.FinishSetup();
+    }
 
     [IterationSetup]
     public void IterationSetup()
     {
-        Context = BenchmarkContext.Create<T>(EntityCount);
-        Context?.Setup();
-
-        Context?.Warmup<Component1, Component2>(0);
-        _entitySet = Context?.PrepareSet(EntityCount);
-        Context?.CreateEntities<Component1, Component2>(_entitySet, 0);
-        _entitySet = Context?.Shuffle(_entitySet);
-        Context?.FinishSetup();
-    }
-
-    [IterationCleanup]
-    public void IterationCleanup()
-    {
-        if (!Context.DeletesEntityOnLastComponentDeletion)
-            Context?.DeleteEntities(_entitySet);
-
-        Context?.Cleanup();
-        Context?.Dispose();
-        Context = default;
+        Context.CreateEntities<Component1, Component2>(_entitySet, 0);
+        _entitySet.Shuffle();
     }
 
     [Benchmark]
     public void Run()
     {
-        Context?.Lock();
-        Context?.RemoveComponent<Component1, Component2>(_entitySet, 0);
-        Context?.Commit();
+        Context.RemoveComponent<Component1, Component2>(_entitySet, 0);
+    }
+
+    [IterationCleanup]
+    public void IterationCleanup()
+    {
+        if (Context.DeletesEntityOnLastComponentDeletion)
+            Context.DeleteEntities(_entitySet);
+    }
+
+    [GlobalCleanup]
+    public void GlobalCleanup()
+    {
+        Context.Cleanup();
+        Context.Dispose();
+        Context = default;
     }
 }

@@ -4,7 +4,7 @@
         <TargetFramework>net8.0</TargetFramework>
         <LangVersion>12</LangVersion>
         <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
+        <Nullable>disable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <InvariantGlobalization>true</InvariantGlobalization>
     </PropertyGroup>
@@ -13,7 +13,7 @@
       <ProjectReference Include="..\submodules\DragonECS\DragonECS.csproj" />
       <ProjectReference Include="..\submodules\morpeh\Scellecs.Morpeh\Scellecs.Morpeh.csproj" />
       <ProjectReference Include="..\submodules\xeno\Xeno.csproj" />
-        <PackageReference Include="Friflo.Engine.ECS" Version="3.0.0-preview.13" />
+        <PackageReference Include="Friflo.Engine.ECS" Version="3.0.0-preview.14" />
     </ItemGroup>
 
 </Project>

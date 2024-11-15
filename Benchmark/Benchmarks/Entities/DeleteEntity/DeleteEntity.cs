@@ -16,33 +16,40 @@ public abstract class DeleteEntity<T> : IBenchmark<T> where T : IBenchmarkContex
     public T Context { get; set; }
     private Array _entitySet;
 
-    [IterationSetup]
-    public void IterationSetup()
+    [GlobalSetup]
+    public void GlobalSetup()
     {
         Context = BenchmarkContext.Create<T>(EntityCount);
         Context.Setup();
         _entitySet = Context.PrepareSet(EntityCount);
-        Context.Lock();
-        Context.CreateEntities(_entitySet);
-        Context.Commit();
         Context.FinishSetup();
     }
 
-    [IterationCleanup]
-    public void IterationCleanup()
+    [IterationSetup]
+    public void IterationSetup()
     {
-        Context?.DeleteEntities(_entitySet);
-        Context?.Cleanup();
-        Context?.Dispose();
-        Context = default;
+        Context.CreateEntities(_entitySet);
     }
 
     [Benchmark]
     public void Run()
     {
-        Context?.Lock();
-        Context?.DeleteEntities(_entitySet);
-        Context?.Commit();
-        _entitySet = Context?.PrepareSet(0);
+        Context.DeleteEntities(_entitySet);
+
+        _entitySet = Context.PrepareSet(0);
+    }
+
+    [IterationCleanup]
+    public void IterationCleanup()
+    {
+        Context.DeleteEntities(_entitySet);
+    }
+
+    [GlobalCleanup]
+    public void GlobalCleanup()
+    {
+        Context.Cleanup();
+        Context.Dispose();
+        Context = default;
     }
 }

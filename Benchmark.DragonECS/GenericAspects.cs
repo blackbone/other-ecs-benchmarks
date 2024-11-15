@@ -5,7 +5,7 @@ namespace Benchmark.DragonECS;
 public class Aspect<T1> : EcsAspect
     where T1 : struct, IEcsComponent
 {
-    public EcsPool<T1>? Components1;
+    public EcsPool<T1> Components1;
 
     protected override void Init(Builder b)
     {
@@ -18,8 +18,8 @@ public class Aspect<T1, T2> : EcsAspect
     where T1 : struct, IEcsComponent
     where T2 : struct, IEcsComponent
 {
-    public EcsPool<T1>? Components1;
-    public EcsPool<T2>? Components2;
+    public EcsPool<T1> Components1;
+    public EcsPool<T2> Components2;
 
     protected override void Init(Builder b)
     {
@@ -34,9 +34,9 @@ public class Aspect<T1, T2, T3> : EcsAspect
     where T2 : struct, IEcsComponent
     where T3 : struct, IEcsComponent
 {
-    public EcsPool<T1>? Components1;
-    public EcsPool<T2>? Components2;
-    public EcsPool<T3>? Components3;
+    public EcsPool<T1> Components1;
+    public EcsPool<T2> Components2;
+    public EcsPool<T3> Components3;
 
     protected override void Init(Builder b)
     {
@@ -53,10 +53,10 @@ public class Aspect<T1, T2, T3, T4> : EcsAspect
     where T3 : struct, IEcsComponent
     where T4 : struct, IEcsComponent
 {
-    public EcsPool<T1>? Components1;
-    public EcsPool<T2>? Components2;
-    public EcsPool<T3>? Components3;
-    public EcsPool<T4>? Components4;
+    public EcsPool<T1> Components1;
+    public EcsPool<T2> Components2;
+    public EcsPool<T3> Components3;
+    public EcsPool<T4> Components4;
 
     protected override void Init(Builder b)
     {

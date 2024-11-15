@@ -36,11 +36,11 @@ public class BenchmarksGenerator : ISourceGenerator
 
         // get base context type
         var contextInterfaceType = compilation.GetTypeByMetadataName("Benchmark._Context.IBenchmarkContext");
-        log.AppendLine(contextInterfaceType!.ContainingNamespace + "." + contextInterfaceType!.Name);
+        log.AppendLine(contextInterfaceType.ContainingNamespace + "." + contextInterfaceType.Name);
 
         // get base benchmark type
         var benchmarkInterfaceType = compilation.GetTypeByMetadataName("Benchmark.IBenchmark");
-        log.AppendLine(benchmarkInterfaceType!.ContainingNamespace + "." + benchmarkInterfaceType!.Name);
+        log.AppendLine(benchmarkInterfaceType.ContainingNamespace + "." + benchmarkInterfaceType.Name);
 
         // get all context implementation types
         var contexts = CollectImplementations(compilation, contextInterfaceType);
@@ -100,7 +100,7 @@ public class BenchmarksGenerator : ISourceGenerator
                     .Replace($"\" + nameof({benchmarkType.Name}<T>)", $"{benchmarkType.Name}\"")
                     .Replace("public T Context { get; set; }", $"public {contextFullName} Context {{ get; set; }}")
                     .Replace("Context = BenchmarkContext.Create<T>(EntityCount);",
-                        $"Context = new {contextFullName}(EntityCount);");
+                        $"Context = new {contextFullName}();");
 
                 context.AddSource($"{name}.g.cs", SourceText.From(source, Encoding.UTF8));
                 var caseFullName = $"Benchmark.Generated.{name}";
@@ -147,7 +147,7 @@ public class BenchmarksGenerator : ISourceGenerator
 
         sb.Clear();
         sb.AppendLine("public static Dictionary<Type, Type[]> Contexts = new (){");
-        foreach (var (ctx, impls) in byContext?.OrderBy(kv => kv.Key).ToArray() ?? [])
+        foreach (var (ctx, impls) in byContext.OrderBy(kv => kv.Key).ToArray() ?? [])
             sb.AppendLine($"{{typeof({ctx}), [{string.Join(", ", impls.Select(i => $"typeof({i})"))}]}},");
         sb.AppendLine("};");
 

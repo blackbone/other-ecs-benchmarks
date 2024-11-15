@@ -16,30 +16,33 @@ public abstract class CreateEntityWith3Components<T> : IBenchmark<T> where T : I
     public T Context { get; set; }
     private Array _entitySet;
 
-    [IterationSetup]
-    public void IterationSetup()
+    [GlobalSetup]
+    public void GlobalSetup()
     {
         Context = BenchmarkContext.Create<T>(EntityCount);
-        Context?.Setup();
-        _entitySet = Context?.PrepareSet(EntityCount);
-        Context?.Warmup<Component1, Component2, Component3>(0);
-        Context?.FinishSetup();
-    }
-
-    [IterationCleanup]
-    public void IterationCleanup()
-    {
-        Context?.DeleteEntities(_entitySet);
-        Context?.Cleanup();
-        Context?.Dispose();
-        Context = default;
+        Context.Setup();
+        _entitySet = Context.PrepareSet(EntityCount);
+        Context.Warmup<Component1, Component2, Component3>(0);
+        Context.FinishSetup();
     }
 
     [Benchmark]
     public void Run()
     {
-        Context?.Lock();
-        Context?.CreateEntities<Component1, Component2, Component3>(_entitySet, 0);
-        Context?.Commit();
+        Context.CreateEntities<Component1, Component2, Component3>(_entitySet, 0);
+    }
+
+    [IterationCleanup]
+    public void IterationCleanup()
+    {
+        Context.DeleteEntities(_entitySet);
+    }
+
+    [GlobalCleanup]
+    public void GlobalCleanup()
+    {
+        Context.Cleanup();
+        Context.Dispose();
+        Context = default;
     }
 }

@@ -11,7 +11,7 @@ public static class Constants
     public const int EntityCount = SmallEntityCount;
     public const int SystemEntityCount = SmallEntityCount;
 #else
-    public const int EntityCount = LargeEntityCount;
+    public const int EntityCount = MidEntityCount;
     public const int SystemEntityCount = MidEntityCount;
 #endif
 }

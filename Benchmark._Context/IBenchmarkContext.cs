@@ -80,16 +80,6 @@ public interface IBenchmarkContext : IDisposable
     /// </summary>
     public void Cleanup();
 
-    /// <summary>
-    ///     Acquire lock for deferred structural changes/
-    /// </summary>
-    public void Lock();
-
-    /// <summary>
-    ///     Release lock and apply structural changes.
-    /// </summary>
-    public void Commit();
-
     #region Entity - Delete
 
     /// <summary>
@@ -99,13 +89,6 @@ public interface IBenchmarkContext : IDisposable
     public void DeleteEntities(in Array entitySet);
 
     #endregion
-
-    /// <summary>
-    ///     Shuffles entities in set.
-    /// </summary>
-    /// <param name="entitySet"> Entity set object returned by <see cref="CreateEntities" /> </param>
-    /// <returns> New or existing shuffled set. </returns>
-    public Array Shuffle(in Array entitySet);
 
     /// <summary>
     ///     Prepares entity set.
@@ -286,19 +269,19 @@ public interface IBenchmarkContext : IDisposable
 
     #region Entities - Get With
 
-    public bool GetSingle<T1>(in object? entity, in int poolId, ref T1 c1)
+    public bool GetSingle<T1>(in object entity, in int poolId, ref T1 c1)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent;
 
-    public bool GetSingle<T1, T2>(in object? entity, in int poolId, ref T1 c1, ref T2 c2)
+    public bool GetSingle<T1, T2>(in object entity, in int poolId, ref T1 c1, ref T2 c2)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent;
 
-    public bool GetSingle<T1, T2, T3>(in object? entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3)
+    public bool GetSingle<T1, T2, T3>(in object entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent;
 
-    public bool GetSingle<T1, T2, T3, T4>(in object? entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4)
+    public bool GetSingle<T1, T2, T3, T4>(in object entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent

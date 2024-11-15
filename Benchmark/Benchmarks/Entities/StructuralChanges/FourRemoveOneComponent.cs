@@ -16,32 +16,40 @@ public abstract class FourRemoveOneComponent<T> : IBenchmark<T> where T : IBench
     public T Context { get; set; }
     private Array _entitySet;
 
+    [GlobalSetup]
+    public void GlobalSetup()
+    {
+        Context = BenchmarkContext.Create<T>(EntityCount);
+        Context.Setup();
+        _entitySet = Context.PrepareSet(EntityCount);
+        Context.Warmup<Component1, Component2, Component3, Component4>(0);
+        Context.Warmup<Component4>(1);
+        Context.FinishSetup();
+    }
+
     [IterationSetup]
     public void IterationSetup()
     {
-        Context = BenchmarkContext.Create<T>(EntityCount);
-        Context?.Setup();
-        _entitySet = Context?.PrepareSet(EntityCount);
-        Context?.Warmup<Component1, Component2, Component3, Component4>(0);
-        Context?.CreateEntities(_entitySet, 0, default(Component1), default(Component2), default(Component3), default(Component4));
-        Context?.Warmup<Component4>(1);
-        Context?.FinishSetup();
-    }
-
-    [IterationCleanup]
-    public void IterationCleanup()
-    {
-        Context?.DeleteEntities(_entitySet);
-        Context?.Cleanup();
-        Context?.Dispose();
-        Context = default;
+        Context.CreateEntities(_entitySet, 0, default(Component1), default(Component2), default(Component3), default(Component4));
     }
 
     [Benchmark]
     public void Run()
     {
-        Context?.Lock();
-        Context?.RemoveComponent<Component4>(_entitySet, 1);
-        Context?.Commit();
+        Context.RemoveComponent<Component4>(_entitySet, 1);
+    }
+
+    [IterationCleanup]
+    public void IterationCleanup()
+    {
+        Context.DeleteEntities(_entitySet);
+    }
+
+    [GlobalCleanup]
+    public void GlobalCleanup()
+    {
+        Context.Cleanup();
+        Context.Dispose();
+        Context = default;
     }
 }

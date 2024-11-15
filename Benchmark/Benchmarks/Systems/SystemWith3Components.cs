@@ -16,18 +16,18 @@ public abstract class SystemWith3Components<T> : IBenchmark<T> where T : IBenchm
     public T Context { get; set; }
 
     [GlobalSetup]
-    public void IterationSetup()
+    public void GlobalSetup()
     {
         Context = BenchmarkContext.Create<T>(EntityCount);
-        Context?.Setup();
+        Context.Setup();
 
-        Context?.Warmup<Component1>(0);
-        Context?.Warmup<Component2>(1);
-        Context?.Warmup<Component3>(2);
-        Context?.Warmup<Component1, Component2, Component3>(3);
+        Context.Warmup<Component1>(0);
+        Context.Warmup<Component2>(1);
+        Context.Warmup<Component3>(2);
+        Context.Warmup<Component1, Component2, Component3>(3);
 
-        var set = Context?.PrepareSet(1);
-        Context?.Lock();
+        var set = Context.PrepareSet(1);
+
         // set up entities
         for (var i = 0; i < EntityCount; ++i)
         {
@@ -35,41 +35,43 @@ public abstract class SystemWith3Components<T> : IBenchmark<T> where T : IBenchm
                 switch (j % 2)
                 {
                     case 0:
-                        Context?.CreateEntities<Component1>(set, 0);
+                        Context.CreateEntities<Component1>(set, 0);
                         break;
                     case 1:
-                        Context?.CreateEntities<Component2>(set, 1);
+                        Context.CreateEntities<Component2>(set, 1);
                         break;
                     case 2:
-                        Context?.CreateEntities<Component3>(set, 2);
+                        Context.CreateEntities<Component3>(set, 2);
                         break;
                 }
 
-            Context?.CreateEntities(set, 3, default(Component1), new Component2 { Value = 1 },
+            Context.CreateEntities(set, 3, default(Component1), new Component2 { Value = 1 },
                 new Component3 { Value = 1 });
         }
 
-        Context?.Commit();
 
         unsafe
         {
             // set up systems
-            Context?.AddSystem<Component1, Component2, Component3>(&Update, 3);
+            Context.AddSystem<Component1, Component2, Component3>(&Update, 3);
         }
 
-        Context?.FinishSetup();
+        Context.FinishSetup();
     }
 
     [GlobalCleanup]
-    public void IterationCleanup()
+    public void GlobalCleanup()
     {
-        Context?.Cleanup();
-        Context?.Dispose();
+        Context.Cleanup();
+        Context.Dispose();
         Context = default;
     }
 
     [Benchmark]
-    public void Run() => Context?.Tick(0.1f);
+    public void Run()
+    {
+        Context.Tick(0.1f);
+    }
 
     private static void Update(ref Component1 c1, ref Component2 c2, ref Component3 c3)
     {

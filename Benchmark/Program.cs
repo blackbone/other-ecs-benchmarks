@@ -4,10 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text.Json;
 using Benchmark;
-using BenchmarkDotNet.Attributes;
+using Benchmark.Utils;
 using BenchmarkDotNet.Columns;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Engines;
@@ -40,20 +39,12 @@ var shortJob = Job.ShortRun
     .WithWarmupCount(0)
     .Apply();
 
-var clearEachInvocationJob = Job.Dry
-#if DEBUG
-    .WithToolchain(InProcessEmitToolchain.Instance)
-#endif
-    .WithInvocationCount(1)
-    .WithIterationCount(32)
-    .WithStrategy(RunStrategy.Throughput)
-    .Apply();
-
 var precisionJob = Job.Default
 #if DEBUG
     .WithToolchain(InProcessEmitToolchain.Instance)
 #endif
     .WithStrategy(RunStrategy.Throughput)
+    .WithUnrollFactor(1)
     .Apply();
 
 // configure runner
@@ -103,9 +94,6 @@ foreach (var baseBenchmarkType in baseBenchmarkTypes)
     var benchmarkSwitcher = BenchmarkSwitcher.FromTypes(benchmarkTypes.ToArray());
 
     var job = options.ShortRun ? shortJob : precisionJob;
-
-    // TODO: need per invocation?
-
     var summaries = benchmarkSwitcher.RunAll(configuration.AddJob(job)).ToArray();
 
     // post process benchmark reports
