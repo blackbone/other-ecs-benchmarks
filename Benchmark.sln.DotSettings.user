@@ -96,9 +96,21 @@
   &lt;Assembly Path="/Users/scabr/.nuget/packages/scellecs.morpeh/2023.1.0/lib/netstandard2.1/Scellecs.Morpeh.dll" /&gt;
   &lt;Assembly Path="/Users/playrix/.nuget/packages/flecs.net.release/4.0.2/lib/net8.0/Flecs.NET.dll" /&gt;
 &lt;/AssemblyExplorer&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=1b0723d4_002D5943_002D4b0b_002D8209_002D2686c87eb594/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="All tests from &amp;lt;Bentchmark.Tests&amp;gt; #3" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
-  &lt;Project Location="/Users/scabr/git/other-ecs-benchmarks/Bentchmark.Tests" Presentation="&amp;lt;Bentchmark.Tests&amp;gt;" /&gt;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=218628c3_002Dab73_002D41a7_002Dac1c_002D439baa36c9b8/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="Session" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;And&gt;
+    &lt;Namespace&gt;Bentchmark.Tests&lt;/Namespace&gt;
+    &lt;Project Location="/Users/scabr/git/other-ecs-benchmarks/Bentchmark.Tests" Presentation="&amp;lt;Bentchmark.Tests&amp;gt;" /&gt;
+  &lt;/And&gt;
 &lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=24aa09bb_002Dd733_002D4738_002D9c08_002D8302c6ef9ce0/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="TestContexts #3" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;NUnit3x::36A677FA-8326-495A-85F0-AE43B1D3F00A::net8.0::Bentchmark.Tests.TestContexts&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=2d1d4e87_002D8272_002D4509_002D8ed7_002D9869f52afd65/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="All tests from Solution #3" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;Solution /&gt;
+&lt;/SessionState&gt;</s:String>
+	
 	
 	
 	
@@ -108,10 +120,31 @@
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=577edeef_002D6930_002D4acc_002Dbcc5_002D89e2bfdd2f46/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="All tests from &amp;lt;Bentchmark.Tests&amp;gt;" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;Project Location="/Users/scabr/git/other-ecs-benchmarks/Bentchmark.Tests" Presentation="&amp;lt;Bentchmark.Tests&amp;gt;" /&gt;
 &lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=6aca9d95_002D0d59_002D4e7e_002Dbd38_002Dd7356054bff6/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="All tests from Solution #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;Solution /&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=711fe63e_002D406d_002D4143_002D81bf_002Dfa2375d05fe6/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="TestContexts" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;NUnit3x::36A677FA-8326-495A-85F0-AE43B1D3F00A::net8.0::Bentchmark.Tests.TestContexts&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String>
 	
 	
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=8ab687b3_002D9ce9_002D40cc_002Da2d2_002D62f70c473c25/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="All tests from Solution" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;Solution /&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=8f9f7dd0_002D4282_002D4bca_002Dac25_002D3caeddfe096f/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="All tests from &amp;lt;Bentchmark.Tests&amp;gt; #3" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;Project Location="/Users/scabr/git/other-ecs-benchmarks/Bentchmark.Tests" Presentation="&amp;lt;Bentchmark.Tests&amp;gt;" /&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=f00f341c_002Da722_002D4bd0_002Dabf6_002Dbe707c260b01/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="TestContexts #4" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;NUnit3x::36A677FA-8326-495A-85F0-AE43B1D3F00A::net8.0::Bentchmark.Tests.TestContexts&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=f0bd74a1_002D86b1_002D49c7_002Da3f6_002Db6474728ad51/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="TestContexts #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;NUnit3x::36A677FA-8326-495A-85F0-AE43B1D3F00A::net8.0::Bentchmark.Tests.TestContexts&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String>
 	
 	

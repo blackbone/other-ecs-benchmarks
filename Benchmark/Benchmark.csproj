@@ -18,7 +18,7 @@
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-        <DefineConstants>TRACE;SHORT_JOB</DefineConstants>
+        <DefineConstants>TRACE;SHORT_RUN</DefineConstants>
     </PropertyGroup>
 
     <!-- NUGET REFERENCES -->
@@ -40,7 +40,7 @@
         <ProjectReference Include="..\Benchmark.Arch\Benchmark.Arch.csproj"/>
         <ProjectReference Include="..\Benchmark.DragonECS\Benchmark.DragonECS.csproj"/>
         <ProjectReference Include="..\Benchmark.LeoEcs\Benchmark.LeoEcs.csproj"/>
-<!--        <ProjectReference Include="..\Benchmark.Fennecs\Benchmark.Fennecs.csproj"/>-->
+        <ProjectReference Include="..\Benchmark.Fennecs\Benchmark.Fennecs.csproj"/>
         <ProjectReference Include="..\Benchmark.Morpeh\Benchmark.Morpeh.csproj"/>
         <ProjectReference Include="..\Benchmark.DefaultECS\Benchmark.DefaultECS.csproj"/>
         <ProjectReference Include="..\Benchmark.FlecsNET\Benchmark.FlecsNET.csproj"/>

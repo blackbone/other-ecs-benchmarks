@@ -49,7 +49,6 @@ var precisionJob = Job.Default
 
 // configure runner
 IConfig configuration = DefaultConfig.Instance
-    .AddExporter(MarkdownExporter.GitHub)
     .WithOptions(ConfigOptions.DisableOptimizationsValidator)
     .WithOption(ConfigOptions.JoinSummary, true)
     .AddColumn(new ContextColumn())
@@ -79,6 +78,8 @@ if (options.Contexts is { Length: > 0 })
 Console.WriteLine("Contexts:");
 Console.WriteLine(string.Join("\n", contextTypes.Select(b => $"\t{b.Name}")));
 Console.WriteLine();
+
+Console.WriteLine($"{baseBenchmarkTypes.Length * contextTypes.Length} total benchmarks.");
 
 // run benchmarks
 foreach (var baseBenchmarkType in baseBenchmarkTypes)
