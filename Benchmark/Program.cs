@@ -44,6 +44,7 @@ var precisionJob = Job.Default
     .WithToolchain(InProcessEmitToolchain.Instance)
 #endif
     .WithStrategy(RunStrategy.Throughput)
+    .WithInvocationCount(1)
     .WithUnrollFactor(1)
     .Apply();
 
