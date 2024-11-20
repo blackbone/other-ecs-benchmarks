@@ -64,7 +64,7 @@ public abstract class CreateEntityWith2RandomComponents<T> : IBenchmark<T> where
             Context.DeleteEntities(_entitySets[i]);
     }
 
-    [GlobalSetup]
+    [GlobalCleanup]
     public void GlobalCleanup()
     {
         Context.Cleanup();
