@@ -15,7 +15,8 @@ public abstract class CreateEntityWith3RandomComponents<T> : IBenchmark<T> where
     [Params(Constants.EntityCount)] public int EntityCount { get; set; }
     [Params(1, 4, 32)] public int ChunkSize { get; set; }
     public T Context { get; set; }
-    private Array[] _entitySets;
+    private Array _entitySet;
+    private Array _tmp;
     
 
     [GlobalSetup]
@@ -23,10 +24,8 @@ public abstract class CreateEntityWith3RandomComponents<T> : IBenchmark<T> where
     {
         Context = BenchmarkContext.Create<T>(EntityCount);
         Context.Setup();
-        var setsCount = EntityCount / ChunkSize + 1;
-        _entitySets = new Array[setsCount];
-        for (var i = 0; i < setsCount; i++)
-            _entitySets[i] = Context.PrepareSet(ChunkSize);
+        _entitySet = Context.PrepareSet(EntityCount);
+        _tmp = Context.PrepareSet(ChunkSize);
         Context.Warmup<Component1, Component2, Component3>(0);
         Context.Warmup<Component2, Component3, Component4>(1);
         Context.Warmup<Component3, Component4, Component1>(2);
@@ -37,31 +36,31 @@ public abstract class CreateEntityWith3RandomComponents<T> : IBenchmark<T> where
     [Benchmark]
     public void Run()
     {
-        for (var i = 0; i < _entitySets.Length; i++)
-            switch (ArrayExtensions.Rnd.Next() % 4)
-            {
+        for (var i = 0; i < _entitySet.Length; i += ChunkSize) {
+            var count = Math.Min(ChunkSize, _entitySet.Length - i);
+            Array.Copy(_entitySet, 0, _tmp, 0, count);
+
+            switch (ArrayExtensions.Rnd.Next() % 4) {
                 case 0:
-                    Context.CreateEntities<Component1, Component2, Component3>(_entitySets[i], 0);
+                    Context.CreateEntities<Component1, Component2, Component3>(_tmp, 0);
                     break;
                 case 1:
-                    Context.CreateEntities<Component2, Component3, Component4>(_entitySets[i], 1);
+                    Context.CreateEntities<Component2, Component3, Component4>(_tmp, 1);
                     break;
                 case 2:
-                    Context.CreateEntities<Component3, Component4, Component1>(_entitySets[i], 2);
+                    Context.CreateEntities<Component3, Component4, Component1>(_tmp, 2);
                     break;
                 case 3:
-                    Context.CreateEntities<Component4, Component1, Component2>(_entitySets[i], 3);
+                    Context.CreateEntities<Component4, Component1, Component2>(_tmp, 3);
                     break;
             }
+        }
     }
 
     [IterationCleanup]
     public void IterationCleanup()
     {
-        var setsCount = EntityCount / ChunkSize + 1;
-
-        for (var i = 0; i < setsCount; i++)
-            Context.DeleteEntities(_entitySets[i]);
+        Context.DeleteEntities(_entitySet);
     }
 
     [GlobalCleanup]

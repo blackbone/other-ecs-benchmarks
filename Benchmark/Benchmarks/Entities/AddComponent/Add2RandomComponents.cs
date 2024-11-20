@@ -13,18 +13,16 @@ public abstract class Add2RandomComponents<T> : IBenchmark<T> where T : IBenchma
 {
     [Params(Constants.EntityCount)] public int EntityCount { get; set; }
     public T Context { get; set; }
-    private Array[] _entitySets;
-    
+    private Array _entitySet;
+    private Array _tmp;
 
     [GlobalSetup]
     public void GlobalSetup()
     {
         Context = BenchmarkContext.Create<T>(EntityCount);
         Context.Setup();
-        _entitySets = new Array[EntityCount];
-        for (var i = 0; i < EntityCount; i++)
-            _entitySets[i] = Context.PrepareSet(1);
-
+        _entitySet = Context.PrepareSet(EntityCount);
+        _tmp = Context.PrepareSet(1);
         Context.Warmup<Component1, Component2>(0);
         Context.Warmup<Component2, Component3>(1);
         Context.Warmup<Component3, Component4>(2);
@@ -35,36 +33,36 @@ public abstract class Add2RandomComponents<T> : IBenchmark<T> where T : IBenchma
     [IterationSetup]
     public void IterationSetup()
     {
-        for (var i = 0; i < EntityCount; i++)
-            Context.CreateEntities(_entitySets[i]);
+        Context.CreateEntities(_entitySet);
     }
 
     [Benchmark]
     public void Run()
     {
-        for (var i = 0; i < _entitySets.Length; i++)
+        for (var i = 0; i < EntityCount; i++) {
+            _tmp.SetValue(_entitySet.GetValue(i), 0);
             switch (ArrayExtensions.Rnd.Next() % 4)
             {
                 case 0:
-                    Context.AddComponent<Component1, Component2>(_entitySets[i], 0);
+                    Context.AddComponent<Component1, Component2>(_tmp, 0);
                     break;
                 case 1:
-                    Context.AddComponent<Component2, Component3>(_entitySets[i], 1);
+                    Context.AddComponent<Component2, Component3>(_tmp, 1);
                     break;
                 case 2:
-                    Context.AddComponent<Component3, Component4>(_entitySets[i], 2);
+                    Context.AddComponent<Component3, Component4>(_tmp, 2);
                     break;
                 case 3:
-                    Context.AddComponent<Component4, Component1>(_entitySets[i], 3);
+                    Context.AddComponent<Component4, Component1>(_tmp, 3);
                     break;
             }
+        }
     }
 
     [IterationCleanup]
     public void IterationCleanup()
     {
-        for (var i = 0; i < EntityCount; i++)
-            Context.DeleteEntities(_entitySets[i]);
+        Context.DeleteEntities(_entitySet);
     }
 
     [GlobalCleanup]

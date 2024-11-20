@@ -50,8 +50,6 @@ public sealed class TinyEcsContext : IBenchmarkContext {
 
     public void DeleteEntities(in Array entitySet)
     {
-        using var defer = new Defer(_world);
-
         var entities = (EntityView[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             if (entities[i] != default)
@@ -65,8 +63,6 @@ public sealed class TinyEcsContext : IBenchmarkContext {
 
     public void CreateEntities(in Array entitySet)
     {
-        using var defer = new Defer(_world);
-
         var entities = (EntityView[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i] = _world.Entity();
@@ -76,8 +72,6 @@ public sealed class TinyEcsContext : IBenchmarkContext {
 
     public void CreateEntities<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
-        using var defer = new Defer(_world);
-
         var entities = (EntityView[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i] = _world.Entity().Set(c1);
@@ -87,8 +81,6 @@ public sealed class TinyEcsContext : IBenchmarkContext {
 
     public void CreateEntities<T1, T2>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
-        using var defer = new Defer(_world);
-
         var entities = (EntityView[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i] = _world.Entity().Set(c1).Set(c2);
@@ -99,8 +91,6 @@ public sealed class TinyEcsContext : IBenchmarkContext {
     public void CreateEntities<T1, T2, T3>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default,
         in T3 c3 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
-        using var defer = new Defer(_world);
-
         var entities = (EntityView[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i] = _world.Entity().Set(c1).Set(c2).Set(c3);
@@ -111,8 +101,6 @@ public sealed class TinyEcsContext : IBenchmarkContext {
     public void CreateEntities<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default,
         in T3 c3 = default, in T4 c4 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
-        using var defer = new Defer(_world);
-
         var entities = (EntityView[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i] = _world.Entity().Set(c1).Set(c2).Set(c3).Set(c4);
@@ -122,8 +110,6 @@ public sealed class TinyEcsContext : IBenchmarkContext {
 
     public void AddComponent<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
-        using var defer = new Defer(_world);
-
         var entities = (EntityView[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i].Set(c1);
@@ -131,8 +117,6 @@ public sealed class TinyEcsContext : IBenchmarkContext {
 
     public void AddComponent<T1, T2>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
-        using var defer = new Defer(_world);
-
         var entities = (EntityView[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i].Set(c1).Set(c2);
@@ -141,8 +125,6 @@ public sealed class TinyEcsContext : IBenchmarkContext {
     public void AddComponent<T1, T2, T3>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default,
         in T3 c3 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
-        using var defer = new Defer(_world);
-
         var entities = (EntityView[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i].Set(c1).Set(c2).Set(c3);
@@ -151,8 +133,6 @@ public sealed class TinyEcsContext : IBenchmarkContext {
     public void AddComponent<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default,
         in T3 c3 = default, in T4 c4 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
-        using var defer = new Defer(_world);
-
         var entities = (EntityView[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i].Set(c1).Set(c2).Set(c3).Set(c4);
@@ -160,8 +140,6 @@ public sealed class TinyEcsContext : IBenchmarkContext {
 
     public void RemoveComponent<T1>(in Array entitySet, in int poolId = -1) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
-        using var defer = new Defer(_world);
-
         var entities = (EntityView[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i].Unset<T1>();
@@ -169,8 +147,6 @@ public sealed class TinyEcsContext : IBenchmarkContext {
 
     public void RemoveComponent<T1, T2>(in Array entitySet, in int poolId = -1) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
-        using var defer = new Defer(_world);
-
         var entities = (EntityView[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i].Unset<T1>().Unset<T2>();
@@ -178,8 +154,6 @@ public sealed class TinyEcsContext : IBenchmarkContext {
 
     public void RemoveComponent<T1, T2, T3>(in Array entitySet, in int poolId = -1) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
-        using var defer = new Defer(_world);
-
         var entities = (EntityView[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i].Unset<T1>().Unset<T2>().Unset<T3>();
@@ -187,8 +161,6 @@ public sealed class TinyEcsContext : IBenchmarkContext {
 
     public void RemoveComponent<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent
     {
-        using var defer = new Defer(_world);
-
         var entities = (EntityView[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i].Unset<T1>().Unset<T2>().Unset<T3>().Unset<T4>();
