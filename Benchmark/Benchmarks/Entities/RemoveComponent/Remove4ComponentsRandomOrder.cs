@@ -48,7 +48,7 @@ public abstract class Remove4ComponentsRandomOrder<T> : IBenchmark<T> where T : 
             Context.DeleteEntities(_entitySet);
     }
 
-    [GlobalSetup]
+    [GlobalCleanup]
     public void GlobalCleanup()
     {
         Context.Cleanup();
