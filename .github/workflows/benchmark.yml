@@ -27,9 +27,9 @@ jobs:
           dotnet-version: 8.0.x
       - name: Restore Benchmark
         run: dotnet restore
-      - name: Build Benchmark
+      - name: Build Solution
         run: dotnet build -c Release /p:CheckCacheMisses=false
-      - name: Build benchmark
+      - name: Build Benchmark
         run: dotnet publish -c Release /p:CheckCacheMisses=false Benchmark/Benchmark.csproj -o .benchmark
       - name: Prepare benchmarks list
         run: ./.benchmark/Benchmark --list > benchmarks.txt

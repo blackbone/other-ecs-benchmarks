@@ -39,7 +39,6 @@ public sealed class DragonECSContext : IBenchmarkContext
 
     public void Cleanup()
     {
-        _world.ReleaseDelEntityBufferAll();
         foreach (var pool in _pools.Values.SelectMany(p => p))
             pool.ClearAll();
     }
@@ -163,6 +162,8 @@ public sealed class DragonECSContext : IBenchmarkContext
         for (var i = 0; i < entities.Length; i++)
             if (entities[i].IsAlive)
                 _world.DelEntity(entities[i]);
+
+        _world.ReleaseDelEntityBufferAll();
     }
 
     public void AddComponent<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default)
