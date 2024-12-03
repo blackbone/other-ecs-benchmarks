@@ -13,3 +13,6 @@
 [submodule "submodules/xeno"]
 	path = submodules/xeno
 	url = git@github.com:blackbone/xeno.git
+[submodule "submodules/StaticEcs"]
+	path = submodules/StaticEcs
+	url = git@github.com:Felid-Force-Studios/StaticEcs.git
