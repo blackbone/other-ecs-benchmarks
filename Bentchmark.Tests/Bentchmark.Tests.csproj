@@ -29,6 +29,7 @@
         <ProjectReference Include="..\Benchmark.LeoEcs\Benchmark.LeoEcs.csproj"/>
         <ProjectReference Include="..\Benchmark._Context\Benchmark._Context.csproj"/>
         <ProjectReference Include="..\Benchmark\Benchmark.csproj"/>
+        <ProjectReference Include="..\submodules\xeno\Xeno.csproj" />
     </ItemGroup>
 
 </Project>

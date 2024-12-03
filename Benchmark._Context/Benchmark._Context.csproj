@@ -10,11 +10,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\StaticEcs\StaticEcs.csproj" />
+      <ProjectReference Include="..\FFS.StaticEcs.Workaround\FFS.StaticEcs.Workaround.csproj" />
       <ProjectReference Include="..\submodules\DragonECS\DragonECS.csproj" />
       <ProjectReference Include="..\submodules\morpeh\Scellecs.Morpeh\Scellecs.Morpeh.csproj" />
       <ProjectReference Include="..\submodules\xeno\Xeno.csproj" />
-        <PackageReference Include="Friflo.Engine.ECS" Version="3.0.0-preview.14" />
+        <PackageReference Include="Friflo.Engine.ECS" Version="3.0.0-preview.18" />
     </ItemGroup>
 
 </Project>

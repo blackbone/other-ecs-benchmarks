@@ -9,7 +9,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Benchmark._Context\Benchmark._Context.csproj" />
-      <ProjectReference Include="..\StaticEcs\StaticEcs.csproj" />
     </ItemGroup>
 
 </Project>
