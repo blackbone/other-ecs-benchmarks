@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <LangVersion>12</LangVersion>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>disable</Nullable>
+        <InvariantGlobalization>true</InvariantGlobalization>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <DefineConstants>FFS_ECS_EMPTY_ENTITY;FFS_ECS_DISABLE_TAGS;FFS_ECS_DISABLE_MASKS</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <DefineConstants>FFS_ECS_EMPTY_ENTITY;FFS_ECS_DISABLE_TAGS;FFS_ECS_DISABLE_MASKS</DefineConstants>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="..\submodules\StaticEcs\Src\**\*.cs">
+            <Link>Src\%(RecursiveDir)/%(FileName)%(Extension)</Link>
+        </Compile>
+    </ItemGroup>
+
+</Project>
