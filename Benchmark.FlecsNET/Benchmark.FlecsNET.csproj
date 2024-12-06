@@ -13,7 +13,7 @@
     </ItemGroup>
 
     <ItemGroup Condition="$(Configuration) == Debug">
-        <PackageReference Include="Flecs.NET.Debug" Version="4.0.2" />
+        <PackageReference Include="Flecs.NET.Debug" Version="4.0.3" />
     </ItemGroup>
 
     <ItemGroup>
