@@ -20,8 +20,8 @@ public sealed class StaticEcsContext : IBenchmarkContext
 
     public void Setup()
     {
-        Ecs.CreateWorld(EcsConfig.Default());
-        Ecs.InitializeWorld();
+        Ecs.Create(EcsConfig.Default());
+        Ecs.Initialize();
         Systems.Create();
     }
 
@@ -37,7 +37,7 @@ public sealed class StaticEcsContext : IBenchmarkContext
 
     public void Dispose()
     {
-        Ecs.DestroyWorld();
+        Ecs.Destroy();
     }
 
     public void Warmup<T1>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent { }
@@ -206,20 +206,20 @@ public sealed class StaticEcsContext : IBenchmarkContext
 
     public int CountWith<T1>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
     {
-        return World.QueryEntities.All<T1>().EntitiesCount();
+        return World.QueryEntities.For<All<T1>>().EntitiesCount();
     }
 
     public int CountWith<T1, T2>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
     {
-        return World.QueryEntities.All<T1, T2>().EntitiesCount();
+        return World.QueryEntities.For<All<T1, T2>>().EntitiesCount();
     }
 
     public int CountWith<T1, T2, T3>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
     {
-        return World.QueryEntities.All<T1, T2, T3>().EntitiesCount();
+        return World.QueryEntities.For<All<T1, T2, T3>>().EntitiesCount();
     }
 
     public int CountWith<T1, T2, T3, T4>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
@@ -227,7 +227,7 @@ public sealed class StaticEcsContext : IBenchmarkContext
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
         where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
     {
-        return World.QueryEntities.All<T1, T2, T3, T4>().EntitiesCount();
+        return World.QueryEntities.For<All<T1, T2, T3, T4>>().EntitiesCount();
     }
 
     public bool GetSingle<T1>(in object entity, in int poolId, ref T1 c1) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
@@ -289,7 +289,7 @@ public sealed class StaticEcsContext : IBenchmarkContext
     public unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
     {
-        Ecs.Context.Replace(new DelegateHolder<T1> { method = method });
+        Ecs.Context.Value.Replace(new DelegateHolder<T1> { method = method });
         Systems.AddUpdateSystem<System<T1>>();
     }
 
@@ -297,7 +297,7 @@ public sealed class StaticEcsContext : IBenchmarkContext
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent 
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
     {
-        Ecs.Context.Replace(new DelegateHolder<T1, T2> { method = method });
+        Ecs.Context.Value.Replace(new DelegateHolder<T1, T2> { method = method });
         Systems.AddUpdateSystem<System<T1, T2>>();
     }
 
@@ -306,7 +306,7 @@ public sealed class StaticEcsContext : IBenchmarkContext
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
     {
-        Ecs.Context.Replace(new DelegateHolder<T1, T2, T3> { method = method });
+        Ecs.Context.Value.Replace(new DelegateHolder<T1, T2, T3> { method = method });
         Systems.AddUpdateSystem<System<T1, T2, T3>>();
     }
 
@@ -316,7 +316,7 @@ public sealed class StaticEcsContext : IBenchmarkContext
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
         where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
     {
-        Ecs.Context.Replace(new DelegateHolder<T1, T2, T3, T4> { method = method });
+        Ecs.Context.Value.Replace(new DelegateHolder<T1, T2, T3, T4> { method = method });
         Systems.AddUpdateSystem<System<T1, T2, T3, T4>>();
     }
 
@@ -332,7 +332,7 @@ public unsafe struct System<T1> : IUpdateSystem
 
     public void Update() {
         foreach (ref var c1 in World.QueryComponents.For<T1>()) {
-            Ecs.Context<DelegateHolder<T1>>.Get().method(ref c1);
+            Ecs.Context.Value.Get<DelegateHolder<T1>>().method(ref c1);
         }
     }
 }
@@ -345,7 +345,7 @@ public unsafe struct System<T1, T2> : IUpdateSystem
     public void Update() 
     {
         World.QueryComponents.For(static (Ecs.Entity _, ref T1 c1, ref T2 c2) => {
-            Ecs.Context<DelegateHolder<T1, T2>>.Get().method(ref c1, ref c2);
+            Ecs.Context.Value.Get<DelegateHolder<T1, T2>>().method(ref c1, ref c2);
         });
     }
 }
@@ -358,7 +358,7 @@ public unsafe struct System<T1, T2, T3> : IUpdateSystem
     public void Update() 
     {
         World.QueryComponents.For(static (Ecs.Entity _, ref T1 c1, ref T2 c2, ref T3 c3) => {
-            Ecs.Context<DelegateHolder<T1, T2, T3>>.Get().method(ref c1, ref c2, ref c3);
+            Ecs.Context.Value.Get<DelegateHolder<T1, T2, T3>>().method(ref c1, ref c2, ref c3);
         });
     }
 }
@@ -372,7 +372,7 @@ public unsafe struct System<T1, T2, T3, T4> : IUpdateSystem
     public void Update() 
     {
         World.QueryComponents.For(static (Ecs.Entity _, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4) => {
-            Ecs.Context<DelegateHolder<T1, T2, T3, T4>>.Get().method(ref c1, ref c2, ref c3, ref c4);
+            Ecs.Context.Value.Get<DelegateHolder<T1, T2, T3, T4>>().method(ref c1, ref c2, ref c3, ref c4);
         });
     }
 
