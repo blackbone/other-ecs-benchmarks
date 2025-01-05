@@ -4,24 +4,24 @@ using BenchmarkDotNet.Attributes;
 
 namespace Benchmark.Benchmarks.Entities.DeleteEntity;
 
-[ArtifactsPath(".benchmark_results/" + nameof(DeleteEntity<T>))]
+[ArtifactsPath(".benchmark_results/" + nameof(DeleteEntity<T, TE>))]
 [MemoryDiagnoser]
 
 #if CHECK_CACHE_MISSES
 [HardwareCounters(BenchmarkDotNet.Diagnosers.HardwareCounter.CacheMisses)]
 #endif
-public abstract class DeleteEntity<T> : IBenchmark<T> where T : IBenchmarkContext
+public abstract class DeleteEntity<T, TE> : IBenchmark<T, TE> where T : IBenchmarkContext<TE>
 {
     [Params(Constants.EntityCount)] public int EntityCount { get; set; }
     public T Context { get; set; }
-    private Array _entitySet;
+    private TE[] _entitySet;
 
     [GlobalSetup]
     public void GlobalSetup()
     {
         Context = BenchmarkContext.Create<T>(EntityCount);
         Context.Setup();
-        _entitySet = Context.PrepareSet(EntityCount);
+        _entitySet =  Context.PrepareSet(EntityCount);
         Context.FinishSetup();
     }
 
@@ -36,7 +36,7 @@ public abstract class DeleteEntity<T> : IBenchmark<T> where T : IBenchmarkContex
     {
         Context.DeleteEntities(_entitySet);
 
-        _entitySet = Context.PrepareSet(0);
+        _entitySet =  Context.PrepareSet(0);
     }
 
     [IterationCleanup]

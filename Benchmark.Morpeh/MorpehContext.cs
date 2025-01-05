@@ -1,18 +1,16 @@
+using System.Collections.Generic;
+using System.Linq;
 using Benchmark._Context;
+using DCFApixels.DragonECS;
 using Scellecs.Morpeh;
 using Scellecs.Morpeh.Workaround;
-using MorpehComponent = Scellecs.Morpeh.IComponent;
-using DragonComponent = DCFApixels.DragonECS.IEcsComponent;
-using XenoComponent = Xeno.IComponent;
-using FrifloComponent = Friflo.Engine.ECS.IComponent;
-using StaticEcsComponent = FFS.Libraries.StaticEcs.IComponent;
 
 // ReSharper disable ForCanBeConvertedToForeach
 // ReSharper disable InconsistentNaming
 
 namespace Benchmark.Morpeh;
 
-public sealed class MorpehContext : IBenchmarkContext
+public sealed class MorpehContext : IBenchmarkContext<Entity>
 {
     private readonly Dictionary<int, Filter> _filters = new();
     private readonly Dictionary<int, IStash[]> _stashes = new();
@@ -21,7 +19,7 @@ public sealed class MorpehContext : IBenchmarkContext
 
     public bool DeletesEntityOnLastComponentDeletion => true;
 
-    public int EntityCount => _world!.EntityCount();
+    public int NumberOfLivingEntities => _world!.EntityCount();
 
     public void Setup()
     {
@@ -54,129 +52,107 @@ public sealed class MorpehContext : IBenchmarkContext
     {
     }
 
-    public void Warmup<T1>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public void Warmup<T1>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        var s1 = _world!.GetStash<T1>();
-        
-        _stashes![poolId] = [s1];
+        _stashes![poolId] = [_world!.GetStash<T1>()];
         _filters![poolId] = _world!.Filter.With<T1>().Build();
     }
 
-    public void Warmup<T1, T2>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public void Warmup<T1, T2>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        var s1 = _world!.GetStash<T1>();
-        var s2 = _world!.GetStash<T2>();
-        
-        _stashes![poolId] = [s1, s2];
+        _stashes![poolId] = [_world!.GetStash<T1>(), _world!.GetStash<T2>()];
         _filters![poolId] = _world!.Filter.With<T1>().With<T2>().Build();
     }
 
-    public void Warmup<T1, T2, T3>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public void Warmup<T1, T2, T3>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        var s1 = _world!.GetStash<T1>();
-        var s2 = _world!.GetStash<T2>();
-        var s3 = _world!.GetStash<T3>();
-        
-        _stashes![poolId] = [s1, s2, s3];
+        _stashes![poolId] = [_world!.GetStash<T1>(), _world!.GetStash<T2>(), _world!.GetStash<T3>()];
         _filters![poolId] = _world!.Filter.With<T1>().With<T2>().With<T3>().Build();
     }
 
-    public void Warmup<T1, T2, T3, T4>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public void Warmup<T1, T2, T3, T4>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        var s1 = _world!.GetStash<T1>();
-        var s2 = _world!.GetStash<T2>();
-        var s3 = _world!.GetStash<T3>();
-        var s4 = _world!.GetStash<T4>();
-        
-        _stashes![poolId] = [s1, s2, s3, s4];
+        _stashes![poolId] = [_world!.GetStash<T1>(), _world!.GetStash<T2>(), _world!.GetStash<T3>(), _world!.GetStash<T4>()];
         _filters![poolId] = _world!.Filter.With<T1>().With<T2>().With<T3>().With<T4>().Build();
     }
 
-    public int CountWith<T1>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public int CountWith<T1>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         return _filters![poolId].GetLengthSlow();
     }
 
-    public int CountWith<T1, T2>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public int CountWith<T1, T2>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         return _filters![poolId].GetLengthSlow();
     }
 
-    public int CountWith<T1, T2, T3>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public int CountWith<T1, T2, T3>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         return _filters![poolId].GetLengthSlow();
     }
 
-    public int CountWith<T1, T2, T3, T4>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public int CountWith<T1, T2, T3, T4>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         return _filters![poolId].GetLengthSlow();
     }
 
-    public bool GetSingle<T1>(in object entity, in int poolId, ref T1 c1) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public bool GetSingle<T1>(in Entity e, in int poolId, ref T1 c1) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        if (entity == null) return false;
-
         var stashes = _stashes![poolId];
-        var s1 = (Stash<T1>)stashes[0];
+        var s1 = (Stash<T1>)_stashes![poolId][0];
 
-        var e = (Entity)entity;
         c1 = s1.Get(e);
         return true;
     }
 
-    public bool GetSingle<T1, T2>(in object entity, in int poolId, ref T1 c1, ref T2 c2)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public bool GetSingle<T1, T2>(in Entity e, in int poolId, ref T1 c1, ref T2 c2)
+        where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        if (entity == null) return false;
 
         var stashes = _stashes![poolId];
         var s1 = (Stash<T1>)stashes[0];
         var s2 = (Stash<T2>)stashes[1];
 
-        var e = (Entity)entity;
         c1 = s1.Get(e);
         c2 = s2.Get(e);
         return true;
     }
 
-    public bool GetSingle<T1, T2, T3>(in object entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public bool GetSingle<T1, T2, T3>(in Entity e, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3)
+        where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        if (entity == null) return false;
 
         var stashes = _stashes![poolId];
         var s1 = (Stash<T1>)stashes[0];
         var s2 = (Stash<T2>)stashes[1];
         var s3 = (Stash<T3>)stashes[2];
 
-        var e = (Entity)entity;
         c1 = s1.Get(e);
         c2 = s2.Get(e);
         c3 = s3.Get(e);
         return true;
     }
 
-    public bool GetSingle<T1, T2, T3, T4>(in object entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public bool GetSingle<T1, T2, T3, T4>(in Entity e, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4)
+        where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        if (entity == null) return false;
 
         var stashes = _stashes![poolId];
         var s1 = (Stash<T1>)stashes[0];
@@ -184,7 +160,6 @@ public sealed class MorpehContext : IBenchmarkContext
         var s3 = (Stash<T3>)stashes[2];
         var s4 = (Stash<T4>)stashes[3];
 
-        var e = (Entity)entity;
         c1 = s1.Get(e);
         c2 = s2.Get(e);
         c3 = s3.Get(e);
@@ -198,47 +173,45 @@ public sealed class MorpehContext : IBenchmarkContext
     }
 
     public unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+        where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         _systems.AddSystem(new PointerInvocationStashSystem<T1>(method));
     }
 
     public unsafe void AddSystem<T1, T2>(delegate*<ref T1, ref T2, void> method, int poolId)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+        where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         _systems.AddSystem(new PointerInvocationStashSystem<T1, T2>(method));
     }
 
     public unsafe void AddSystem<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> method, int poolId)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+        where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         _systems.AddSystem(new PointerInvocationStashSystem<T1, T2, T3>(method));
     }
 
     public unsafe void AddSystem<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> method, int poolId)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+        where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         _systems.AddSystem(new PointerInvocationStashSystem<T1, T2, T3, T4>(method));
     }
 
-    public void CreateEntities(in Array entitySet)
+    public void CreateEntities(in Entity[] entities)
     {
-        var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i] = _world!.CreateEntity();
 
         _world!.Commit();
     }
 
-    public void CreateEntities<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public void CreateEntities<T1>(in Entity[] entities, in int poolId, in T1 c1)
+        where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        var entities = (Entity[])entitySet;
         var s1 = (Stash<T1>)_stashes![poolId][0];
         for (var i = 0; i < entities.Length; i++)
         {
@@ -249,10 +222,9 @@ public sealed class MorpehContext : IBenchmarkContext
         _world!.Commit();
     }
 
-    public void CreateEntities<T1, T2>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public void CreateEntities<T1, T2>(in Entity[] entities, in int poolId, in T1 c1, in T2 c2)
+        where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        var entities = (Entity[])entitySet;
         var pool = _stashes![poolId];
         var s1 = (Stash<T1>)pool[0];
         var s2 = (Stash<T2>)pool[1];
@@ -266,12 +238,11 @@ public sealed class MorpehContext : IBenchmarkContext
         _world!.Commit();
     }
 
-    public void CreateEntities<T1, T2, T3>(in Array entitySet, in int poolId = -1, in T1 c1 = default,
-        in T2 c2 = default, in T3 c3 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public void CreateEntities<T1, T2, T3>(in Entity[] entities, in int poolId, in T1 c1,
+        in T2 c2, in T3 c3) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        var entities = (Entity[])entitySet;
         var pool = _stashes![poolId];
         var s1 = (Stash<T1>)pool[0];
         var s2 = (Stash<T2>)pool[1];
@@ -287,13 +258,12 @@ public sealed class MorpehContext : IBenchmarkContext
         _world!.Commit();
     }
 
-    public void CreateEntities<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1, in T1 c1 = default,
-        in T2 c2 = default, in T3 c3 = default, in T4 c4 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public void CreateEntities<T1, T2, T3, T4>(in Entity[] entities, in int poolId, in T1 c1,
+        in T2 c2, in T3 c3, in T4 c4) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        var entities = (Entity[])entitySet;
         var pool = _stashes![poolId];
         var s1 = (Stash<T1>)pool[0];
         var s2 = (Stash<T2>)pool[1];
@@ -311,19 +281,17 @@ public sealed class MorpehContext : IBenchmarkContext
         _world!.Commit();
     }
 
-    public void DeleteEntities(in Array entitySet)
+    public void DeleteEntities(in Entity[] entities)
     {
-        var entities = (Entity[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             _world!.RemoveEntity(entities[i]);
 
         _world!.Commit();
     }
 
-    public void AddComponent<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public void AddComponent<T1>(in Entity[] entities, in int poolId, in T1 c1)
+        where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        var entities = (Entity[])entitySet;
         var pool = _stashes![poolId];
         var s1 = (Stash<T1>)pool[0];
         for (var i = 0; i < entities.Length; i++)
@@ -332,10 +300,9 @@ public sealed class MorpehContext : IBenchmarkContext
         _world!.Commit();
     }
 
-    public void AddComponent<T1, T2>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public void AddComponent<T1, T2>(in Entity[] entities, in int poolId, in T1 c1, in T2 c2)
+        where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        var entities = (Entity[])entitySet;
         var pool = _stashes![poolId];
         var s1 = (Stash<T1>)pool[0];
         var s2 = (Stash<T2>)pool[1];
@@ -348,12 +315,11 @@ public sealed class MorpehContext : IBenchmarkContext
         _world!.Commit();
     }
 
-    public void AddComponent<T1, T2, T3>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default,
-        in T3 c3 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public void AddComponent<T1, T2, T3>(in Entity[] entities, in int poolId, in T1 c1, in T2 c2,
+        in T3 c3) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        var entities = (Entity[])entitySet;
         var pool = _stashes![poolId];
         var s1 = (Stash<T1>)pool[0];
         var s2 = (Stash<T2>)pool[1];
@@ -368,13 +334,12 @@ public sealed class MorpehContext : IBenchmarkContext
         _world!.Commit();
     }
 
-    public void AddComponent<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1, in T1 c1 = default,
-        in T2 c2 = default, in T3 c3 = default, in T4 c4 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public void AddComponent<T1, T2, T3, T4>(in Entity[] entities, in int poolId, in T1 c1,
+        in T2 c2, in T3 c3, in T4 c4) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        var entities = (Entity[])entitySet;
         var pool = _stashes![poolId];
         var s1 = (Stash<T1>)pool[0];
         var s2 = (Stash<T2>)pool[1];
@@ -391,9 +356,8 @@ public sealed class MorpehContext : IBenchmarkContext
         _world!.Commit();
     }
 
-    public void RemoveComponent<T1>(in Array entitySet, in int poolId = -1) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public void RemoveComponent<T1>(in Entity[] entities, in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        var entities = (Entity[])entitySet;
         var pool = _stashes![poolId];
         var c1 = (Stash<T1>)pool[0];
         for (var i = 0; i < entities.Length; i++)
@@ -402,10 +366,9 @@ public sealed class MorpehContext : IBenchmarkContext
         _world!.Commit();
     }
 
-    public void RemoveComponent<T1, T2>(in Array entitySet, in int poolId = -1)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public void RemoveComponent<T1, T2>(in Entity[] entities, in int poolId)
+        where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        var entities = (Entity[])entitySet;
         var pool = _stashes![poolId];
         var c1 = (Stash<T1>)pool[0];
         var c2 = (Stash<T2>)pool[1];
@@ -418,12 +381,11 @@ public sealed class MorpehContext : IBenchmarkContext
         _world!.Commit();
     }
 
-    public void RemoveComponent<T1, T2, T3>(in Array entitySet, in int poolId = -1)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public void RemoveComponent<T1, T2, T3>(in Entity[] entities, in int poolId)
+        where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        var entities = (Entity[])entitySet;
         var pool = _stashes![poolId];
         var c1 = (Stash<T1>)pool[0];
         var c2 = (Stash<T2>)pool[1];
@@ -436,13 +398,12 @@ public sealed class MorpehContext : IBenchmarkContext
         }
     }
 
-    public void RemoveComponent<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public void RemoveComponent<T1, T2, T3, T4>(in Entity[] entities, in int poolId)
+        where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        var entities = (Entity[])entitySet;
         var pool = _stashes![poolId];
         var c1 = (Stash<T1>)pool[0];
         var c2 = (Stash<T2>)pool[1];
@@ -459,7 +420,7 @@ public sealed class MorpehContext : IBenchmarkContext
         _world!.Commit();
     }
 
-    public Array PrepareSet(in int count)
+    public Entity[] PrepareSet(in int count)
     {
         return count > 0 ? new Entity[count] : [];
     }

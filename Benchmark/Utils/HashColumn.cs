@@ -22,7 +22,7 @@ public class HashColumn : IColumn
                 break;
 
             var first = hashes[0];
-            return hashes.Any(h => h != first) ? $"!{first}" : $" {first}";
+            return hashes.Any<string>(h => h != first) ? $"!{first}" : $" {first}";
         }
 
         return "?";
@@ -32,8 +32,8 @@ public class HashColumn : IColumn
     {
         return (
             from executeResults in report.ExecuteResults
-            from extraOutputLine in executeResults.StandardOutput.Where(line => line.StartsWith(prefix))
-            select extraOutputLine[prefix.Length..]).ToArray();
+            from extraOutputLine in executeResults.StandardOutput.Where<string>(line => line.StartsWith(prefix))
+            select extraOutputLine[prefix.Length..]).ToArray<string>();
     }
 
     public string GetValue(Summary summary, BenchmarkCase benchmarkCase, SummaryStyle style) => GetValue(summary, benchmarkCase);

@@ -1,4 +1,7 @@
-﻿using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -16,6 +19,7 @@ public class BenchmarksGenerator : ISourceGenerator
 
     public void Execute(GeneratorExecutionContext context)
     {
+        return;
         var log = new StringBuilder();
         try
         {
@@ -43,7 +47,7 @@ public class BenchmarksGenerator : ISourceGenerator
         log.AppendLine(benchmarkInterfaceType.ContainingNamespace + "." + benchmarkInterfaceType.Name);
 
         // get all context implementation types
-        var contexts = CollectImplementations(compilation, contextInterfaceType);
+        var contexts = compilation.CollectImplementations(contextInterfaceType);
 
         log.AppendLine("CONTEXTS:");
         log.AppendLine(string.Join("\n",
@@ -51,7 +55,7 @@ public class BenchmarksGenerator : ISourceGenerator
                 $"\t{ctx.ContainingNamespace}.{ctx.Name} :: {ctx.Locations[0].GetLineSpan().Path}")));
 
         // get all benchmark types
-        var benchmarks = CollectImplementations(compilation, benchmarkInterfaceType,
+        var benchmarks = compilation.CollectImplementations(benchmarkInterfaceType,
             t => t.IsAbstract && t.IsGenericType && t.TypeKind != TypeKind.Interface);
 
         log.AppendLine("BENCHMARKS:");
@@ -157,7 +161,11 @@ public class BenchmarksGenerator : ISourceGenerator
         return members;
     }
 
-    private List<INamedTypeSymbol> CollectImplementations(Compilation compilation, INamedTypeSymbol interfaceType,
+}
+
+public static class SymbolExtensions
+{
+    public static List<INamedTypeSymbol> CollectImplementations(this Compilation compilation, INamedTypeSymbol interfaceType,
         Func<INamedTypeSymbol, bool> filter = null)
     {
         var implementations = new List<INamedTypeSymbol>();
@@ -186,12 +194,8 @@ public class BenchmarksGenerator : ISourceGenerator
             implementations.AddRange(values);
         }
     }
-}
 
-public static class SymbolExtensions
-{
-    public static TypeDeclarationSyntax GetTypeDeclarationSyntax(this INamedTypeSymbol typeSymbol)
-    {
+    public static TypeDeclarationSyntax GetTypeDeclarationSyntax(this INamedTypeSymbol typeSymbol) {
         var syntaxReference = typeSymbol.DeclaringSyntaxReferences.FirstOrDefault();
         if (syntaxReference == null) return null;
 

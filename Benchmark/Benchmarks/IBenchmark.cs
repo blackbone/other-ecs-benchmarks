@@ -1,3 +1,5 @@
+using Benchmark._Context;
+
 namespace Benchmark;
 
 public interface IBenchmark
@@ -22,3 +24,5 @@ public interface IBenchmark
     {
     }
 }
+
+public interface IBenchmark<T, TE> : IBenchmark where T : IBenchmarkContext<TE>;

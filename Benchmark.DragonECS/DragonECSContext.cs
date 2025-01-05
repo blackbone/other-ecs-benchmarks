@@ -1,16 +1,15 @@
-﻿using Benchmark._Context;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Benchmark._Context;
 using DCFApixels.DragonECS;
-using MorpehComponent = Scellecs.Morpeh.IComponent;
-using DragonComponent = DCFApixels.DragonECS.IEcsComponent;
-using XenoComponent = Xeno.IComponent;
-using FrifloComponent = Friflo.Engine.ECS.IComponent;
-using StaticEcsComponent = FFS.Libraries.StaticEcs.IComponent;
+using Scellecs.Morpeh;
 
 // ReSharper disable ForCanBeConvertedToForeach
 
 namespace Benchmark.DragonECS;
 
-public sealed class DragonECSContext : IBenchmarkContext
+public sealed class DragonECSContext : IBenchmarkContext<entlong>
 {
     private readonly Dictionary<int, IEcsPool[]> _pools = new();
     private readonly List<IEcsProcess> _systems = new();
@@ -19,7 +18,7 @@ public sealed class DragonECSContext : IBenchmarkContext
 
     public bool DeletesEntityOnLastComponentDeletion => true;
 
-    public int EntityCount => _world.Count;
+    public int NumberOfLivingEntities => _world.Count;
 
     public void Setup()
     {
@@ -55,43 +54,41 @@ public sealed class DragonECSContext : IBenchmarkContext
         _world = null;
     }
 
-    public void Warmup<T1>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public void Warmup<T1>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         _pools![poolId] = [_world.GetPool<T1>()];
     }
 
-    public void Warmup<T1, T2>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public void Warmup<T1, T2>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         _pools![poolId] = [_world.GetPool<T1>(), _world.GetPool<T2>()];
     }
 
-    public void Warmup<T1, T2, T3>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public void Warmup<T1, T2, T3>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         _pools![poolId] = [_world.GetPool<T1>(), _world.GetPool<T2>(), _world.GetPool<T3>()];
     }
 
-    public void Warmup<T1, T2, T3, T4>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public void Warmup<T1, T2, T3, T4>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         _pools![poolId] = [_world.GetPool<T1>(), _world.GetPool<T2>(), _world.GetPool<T3>(), _world.GetPool<T4>()];
     }
 
-    public void CreateEntities(in Array entitySet)
+    public void CreateEntities(in entlong[] entities)
     {
-        var entities = (entlong[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             entities[i] = _world.NewEntityLong();
     }
 
-    public void CreateEntities<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public void CreateEntities<T1>(in entlong[] entities, in int poolId, in T1 c1)
+        where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        var entities = (entlong[])entitySet;
         var pool = _pools![poolId];
         var ecsPool = (EcsPool<T1>)pool[0];
         for (var i = 0; i < entities.Length; i++)
@@ -101,10 +98,9 @@ public sealed class DragonECSContext : IBenchmarkContext
         }
     }
 
-    public void CreateEntities<T1, T2>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public void CreateEntities<T1, T2>(in entlong[] entities, in int poolId, in T1 c1, in T2 c2)
+        where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        var entities = (entlong[])entitySet;
         var pool = _pools![poolId];
         var ecsPool1 = (EcsPool<T1>)pool[0];
         var ecsPool2 = (EcsPool<T2>)pool[1];
@@ -116,12 +112,11 @@ public sealed class DragonECSContext : IBenchmarkContext
         }
     }
 
-    public void CreateEntities<T1, T2, T3>(in Array entitySet, in int poolId = -1, in T1 c1 = default,
-        in T2 c2 = default, in T3 c3 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public void CreateEntities<T1, T2, T3>(in entlong[] entities, in int poolId, in T1 c1,
+        in T2 c2, in T3 c3) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        var entities = (entlong[])entitySet;
         var pool = _pools![poolId];
         var ecsPool1 = (EcsPool<T1>)pool[0];
         var ecsPool2 = (EcsPool<T2>)pool[1];
@@ -135,13 +130,12 @@ public sealed class DragonECSContext : IBenchmarkContext
         }
     }
 
-    public void CreateEntities<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1, in T1 c1 = default,
-        in T2 c2 = default, in T3 c3 = default, in T4 c4 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public void CreateEntities<T1, T2, T3, T4>(in entlong[] entities, in int poolId, in T1 c1,
+        in T2 c2, in T3 c3, in T4 c4) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        var entities = (entlong[])entitySet;
         var pool = _pools![poolId];
         var ecsPool1 = (EcsPool<T1>)pool[0];
         var ecsPool2 = (EcsPool<T2>)pool[1];
@@ -157,9 +151,8 @@ public sealed class DragonECSContext : IBenchmarkContext
         }
     }
 
-    public void DeleteEntities(in Array entitySet)
+    public void DeleteEntities(in entlong[] entities)
     {
-        var entities = (entlong[])entitySet;
         for (var i = 0; i < entities.Length; i++)
             if (entities[i].IsAlive)
                 _world.DelEntity(entities[i]);
@@ -167,20 +160,18 @@ public sealed class DragonECSContext : IBenchmarkContext
         _world.ReleaseDelEntityBufferAll();
     }
 
-    public void AddComponent<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public void AddComponent<T1>(in entlong[] entities, in int poolId, in T1 c1)
+        where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        var entities = (entlong[])entitySet;
         var pool = _pools![poolId];
         var ecsPool1 = (EcsPool<T1>)pool[0];
         for (var i = 0; i < entities.Length; i++)
             ecsPool1.Add(entities[i].ID) = c1;
     }
 
-    public void AddComponent<T1, T2>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public void AddComponent<T1, T2>(in entlong[] entities, in int poolId, in T1 c1, in T2 c2)
+        where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        var entities = (entlong[])entitySet;
         var pool = _pools![poolId];
         var ecsPool1 = (EcsPool<T1>)pool[0];
         var ecsPool2 = (EcsPool<T2>)pool[1];
@@ -191,12 +182,11 @@ public sealed class DragonECSContext : IBenchmarkContext
         }
     }
 
-    public void AddComponent<T1, T2, T3>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default,
-        in T3 c3 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public void AddComponent<T1, T2, T3>(in entlong[] entities, in int poolId, in T1 c1, in T2 c2,
+        in T3 c3) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        var entities = (entlong[])entitySet;
         var pool = _pools![poolId];
         var ecsPool1 = (EcsPool<T1>)pool[0];
         var ecsPool2 = (EcsPool<T2>)pool[1];
@@ -209,13 +199,12 @@ public sealed class DragonECSContext : IBenchmarkContext
         }
     }
 
-    public void AddComponent<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1, in T1 c1 = default,
-        in T2 c2 = default, in T3 c3 = default, in T4 c4 = default) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public void AddComponent<T1, T2, T3, T4>(in entlong[] entities, in int poolId, in T1 c1,
+        in T2 c2, in T3 c3, in T4 c4) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        var entities = (entlong[])entitySet;
         var pool = _pools![poolId];
         var ecsPool1 = (EcsPool<T1>)pool[0];
         var ecsPool2 = (EcsPool<T2>)pool[1];
@@ -230,19 +219,17 @@ public sealed class DragonECSContext : IBenchmarkContext
         }
     }
 
-    public void RemoveComponent<T1>(in Array entitySet, in int poolId = -1) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public void RemoveComponent<T1>(in entlong[] entities, in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        var entities = (entlong[])entitySet;
         var pool = _pools![poolId];
         var ecsPool1 = (EcsPool<T1>)pool[0];
         for (var i = 0; i < entities.Length; i++)
             ecsPool1.TryDel(entities[i].ID);
     }
 
-    public void RemoveComponent<T1, T2>(in Array entitySet, in int poolId = -1)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public void RemoveComponent<T1, T2>(in entlong[] entities, in int poolId)
+        where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        var entities = (entlong[])entitySet;
         var pool = _pools![poolId];
         var ecsPool1 = (EcsPool<T1>)pool[0];
         var ecsPool2 = (EcsPool<T2>)pool[1];
@@ -253,12 +240,11 @@ public sealed class DragonECSContext : IBenchmarkContext
         }
     }
 
-    public void RemoveComponent<T1, T2, T3>(in Array entitySet, in int poolId = -1)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public void RemoveComponent<T1, T2, T3>(in entlong[] entities, in int poolId)
+        where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        var entities = (entlong[])entitySet;
         var pool = _pools![poolId];
         var ecsPool1 = (EcsPool<T1>)pool[0];
         var ecsPool2 = (EcsPool<T2>)pool[1];
@@ -272,13 +258,12 @@ public sealed class DragonECSContext : IBenchmarkContext
         }
     }
 
-    public void RemoveComponent<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public void RemoveComponent<T1, T2, T3, T4>(in entlong[] entities, in int poolId)
+        where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        var entities = (entlong[])entitySet;
         var pool = _pools![poolId];
         var ecsPool1 = (EcsPool<T1>)pool[0];
         var ecsPool2 = (EcsPool<T2>)pool[1];
@@ -293,37 +278,34 @@ public sealed class DragonECSContext : IBenchmarkContext
         }
     }
 
-    public int CountWith<T1>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public int CountWith<T1>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         return _world.Where(out Aspect<T1> _).Count;
     }
 
-    public int CountWith<T1, T2>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public int CountWith<T1, T2>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         return _world.Where(out Aspect<T1, T2> _).Count;
     }
 
-    public int CountWith<T1, T2, T3>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public int CountWith<T1, T2, T3>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         return _world.Where(out Aspect<T1, T2, T3> _).Count;
     }
 
-    public int CountWith<T1, T2, T3, T4>(in int poolId) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public int CountWith<T1, T2, T3, T4>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         return _world.Where(out Aspect<T1, T2, T3, T4> _).Count;
     }
 
-    public bool GetSingle<T1>(in object entity, in int poolId, ref T1 c1) where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public bool GetSingle<T1>(in entlong e, in int poolId, ref T1 c1) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        if (entity == null) return false;
-        var e = (entlong)entity;
-
         var pools = _pools![poolId];
         var p1 = (EcsPool<T1>)pools[0];
 
@@ -331,12 +313,9 @@ public sealed class DragonECSContext : IBenchmarkContext
         return true;
     }
 
-    public bool GetSingle<T1, T2>(in object entity, in int poolId, ref T1 c1, ref T2 c2)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public bool GetSingle<T1, T2>(in entlong e, in int poolId, ref T1 c1, ref T2 c2)
+        where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        if (entity == null) return false;
-        var e = (entlong)entity;
-
         var pools = _pools![poolId];
         var p1 = (EcsPool<T1>)pools[0];
         var p2 = (EcsPool<T2>)pools[1];
@@ -346,14 +325,11 @@ public sealed class DragonECSContext : IBenchmarkContext
         return true;
     }
 
-    public bool GetSingle<T1, T2, T3>(in object entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public bool GetSingle<T1, T2, T3>(in entlong e, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3)
+        where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        if (entity == null) return false;
-        var e = (entlong)entity;
-
         var pools = _pools![poolId];
         var p1 = (EcsPool<T1>)pools[0];
         var p2 = (EcsPool<T2>)pools[1];
@@ -365,15 +341,12 @@ public sealed class DragonECSContext : IBenchmarkContext
         return true;
     }
 
-    public bool GetSingle<T1, T2, T3, T4>(in object entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+    public bool GetSingle<T1, T2, T3, T4>(in entlong e, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4)
+        where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        if (entity == null) return false;
-        var e = (entlong)entity;
-
         var pools = _pools![poolId];
         var p1 = (EcsPool<T1>)pools[0];
         var p2 = (EcsPool<T2>)pools[1];
@@ -393,35 +366,35 @@ public sealed class DragonECSContext : IBenchmarkContext
     }
 
     public unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+        where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         _systems?.Add(new PointerInvocationSystem<T1>(_world!, method));
     }
 
     public unsafe void AddSystem<T1, T2>(delegate*<ref T1, ref T2, void> method, int poolId)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+        where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         _systems?.Add(new PointerInvocationSystem<T1, T2>(_world!, method));
     }
 
     public unsafe void AddSystem<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> method, int poolId)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+        where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         _systems?.Add(new PointerInvocationSystem<T1, T2, T3>(_world!, method));
     }
 
     public unsafe void AddSystem<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> method, int poolId)
-        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
-        where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+        where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         _systems?.Add(new PointerInvocationSystem<T1, T2, T3, T4>(_world!, method));
     }
 
-    public Array PrepareSet(in int count)
+    public entlong[] PrepareSet(in int count)
     {
         return count > 0 ? new entlong[count] : [];
     }

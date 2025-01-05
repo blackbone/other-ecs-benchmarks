@@ -4,26 +4,26 @@ using BenchmarkDotNet.Attributes;
 
 namespace Benchmark.Benchmarks.Entities.CreateEntity;
 
-[ArtifactsPath(".benchmark_results/" + nameof(CreateEntityWith1RandomComponent<T>))]
+[ArtifactsPath(".benchmark_results/" + nameof(CreateEntityWith1RandomComponent<T, TE>))]
 [MemoryDiagnoser]
 
 #if CHECK_CACHE_MISSES
 [HardwareCounters(BenchmarkDotNet.Diagnosers.HardwareCounter.CacheMisses)]
 #endif
-public abstract class CreateEntityWith1RandomComponent<T> : IBenchmark<T> where T : IBenchmarkContext
+public abstract class CreateEntityWith1RandomComponent<T, TE> : IBenchmark<T, TE> where T : IBenchmarkContext<TE>
 {
     [Params(Constants.EntityCount)] public int EntityCount { get; set; }
     [Params(1, 4, 32)] public int ChunkSize { get; set; }
     public T Context { get; set; }
-    private Array _entitySet;
-    private Array _tmp;
+    private TE[] _entitySet;
+    private TE[] _tmp;
 
     [GlobalSetup]
     public void GlobalSetup()
     {
         Context = BenchmarkContext.Create<T>(EntityCount);
         Context.Setup();
-        _entitySet = Context.PrepareSet(EntityCount);
+        _entitySet =  Context.PrepareSet(EntityCount);
         _tmp = Context.PrepareSet(ChunkSize);
         Context.Warmup<Component1>(0);
         Context.Warmup<Component2>(1);
@@ -35,23 +35,23 @@ public abstract class CreateEntityWith1RandomComponent<T> : IBenchmark<T> where 
     [Benchmark]
     public void Run()
     {
-        for (int i = 0; i < _entitySet.Length; i += ChunkSize) {
-            var count = Math.Min(ChunkSize, _entitySet.Length - i);
+        for (int _i = 0; _i < _entitySet.Length; _i += ChunkSize) {
+            var count = Math.Min(ChunkSize, _entitySet.Length - _i);
             Array.Copy(_entitySet, 0, _tmp, 0, count);
 
             switch (ArrayExtensions.Rnd.Next() % 4)
             {
                 case 0:
-                    Context.CreateEntities<Component1>(_tmp, 0);
+                    Context.CreateEntities<Component1>(_tmp, 0, default(Component1));
                     break;
                 case 1:
-                    Context.CreateEntities<Component2>(_tmp, 1);
+                    Context.CreateEntities<Component2>(_tmp, 1, default(Component2));
                     break;
                 case 2:
-                    Context.CreateEntities<Component3>(_tmp, 2);
+                    Context.CreateEntities<Component3>(_tmp, 2, default(Component3));
                     break;
                 case 3:
-                    Context.CreateEntities<Component4>(_tmp, 3);
+                    Context.CreateEntities<Component4>(_tmp, 3, default(Component4));
                     break;
             }
         }

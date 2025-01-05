@@ -3,17 +3,19 @@ using BenchmarkDotNet.Attributes;
 
 namespace Benchmark.Benchmarks.Systems;
 
-[ArtifactsPath(".benchmark_results/" + nameof(SystemWith1ComponentMultipleComposition<T>))]
+[ArtifactsPath(".benchmark_results/" + nameof(SystemWith1ComponentMultipleComposition<T, TE>))]
 [MemoryDiagnoser]
 #if CHECK_CACHE_MISSES
 [HardwareCounters(BenchmarkDotNet.Diagnosers.HardwareCounter.CacheMisses)]
 #endif
-public abstract class SystemWith1ComponentMultipleComposition<T> : IBenchmark<T> where T : IBenchmarkContext
+public abstract class SystemWith1ComponentMultipleComposition<T, TE> : IBenchmark<T, TE> where T : IBenchmarkContext<TE>
 {
     [Params(Constants.SystemEntityCount)] public int EntityCount { get; set; }
     [Params(0, 10)] public int Padding { get; set; }
 
     public T Context { get; set; }
+
+    private TE[] set;
 
     [GlobalSetup]
     public void GlobalSetup()
@@ -27,29 +29,31 @@ public abstract class SystemWith1ComponentMultipleComposition<T> : IBenchmark<T>
         Context.Warmup<Padding3>(3);
         Context.Warmup<Padding4>(4);
 
-        var set = Context.PrepareSet(1);
+        set = Context.PrepareSet(1);
 
         // set up entities
-        for (var i = 0; i < EntityCount; ++i)
+        for (var _i = 0; _i < EntityCount; ++_i)
         {
             for (var j = 0; j < Padding; ++j)
-                switch (i % 4)
+                switch (_i % 4)
                 {
                     case 0:
-                        Context.CreateEntities(set, 1, default(Padding1));
+                        Context.CreateEntities<Padding1>(set, 1, default(Padding1));
                         break;
                     case 2:
-                        Context.CreateEntities(set, 2, default(Padding2));
+                        Context.CreateEntities<Padding2>(set, 2, default(Padding2));
                         break;
                     case 3:
-                        Context.CreateEntities(set, 3, default(Padding3));
+                        Context.CreateEntities<Padding3>(set, 3, default(Padding3));
                         break;
                     case 4:
-                        Context.CreateEntities(set, 4, default(Padding4));
+                        Context.CreateEntities<Padding4>(set, 4, default(Padding4));
                         break;
                 }
 
-            Context.CreateEntities(set, 0, new Component1 { Value = 0 });
+            {
+                Context.CreateEntities<Component1>(set, 0, new Component1 { Value = 0 });
+            }
         }
 
 

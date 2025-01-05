@@ -2,7 +2,7 @@ using Scellecs.Morpeh;
 
 namespace Benchmark.Morpeh;
 
-internal class PointerInvocationStashSystem<T1> : ISystem
+public class PointerInvocationStashSystem<T1> : ISystem
     where T1 : struct, IComponent
 {
     private readonly unsafe delegate*<ref T1, void> _method;
@@ -35,7 +35,7 @@ internal class PointerInvocationStashSystem<T1> : ISystem
     }
 }
 
-internal class PointerInvocationStashSystem<T1, T2> : ISystem
+public class PointerInvocationStashSystem<T1, T2> : ISystem
     where T1 : struct, IComponent
     where T2 : struct, IComponent
 {
@@ -71,7 +71,7 @@ internal class PointerInvocationStashSystem<T1, T2> : ISystem
     }
 }
 
-internal class PointerInvocationStashSystem<T1, T2, T3> : ISystem
+public class PointerInvocationStashSystem<T1, T2, T3> : ISystem
     where T1 : struct, IComponent
     where T2 : struct, IComponent
     where T3 : struct, IComponent
@@ -110,7 +110,7 @@ internal class PointerInvocationStashSystem<T1, T2, T3> : ISystem
     }
 }
 
-internal class PointerInvocationStashSystem<T1, T2, T3, T4> : ISystem
+public class PointerInvocationStashSystem<T1, T2, T3, T4> : ISystem
     where T1 : struct, IComponent
     where T2 : struct, IComponent
     where T3 : struct, IComponent

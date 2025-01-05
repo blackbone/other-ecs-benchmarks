@@ -21,19 +21,36 @@
         <DefineConstants>TRACE;</DefineConstants>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <UseSharedCompilation>false</UseSharedCompilation>
+        <Deterministic>false</Deterministic>
+    </PropertyGroup>
+
+    <!-- ROSLYN SYNCHRONOUS FILE OUTPUT COMILATION -->
+    <!--
+    <PropertyGroup>
+        <UseSharedCompilation>false</UseSharedCompilation>
+        <Deterministic>false</Deterministic>
+        <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+        <CompilerGeneratedFilesOutputPath>Generated</CompilerGeneratedFilesOutputPath>
+    </PropertyGroup>
+    -->
+
     <!-- NUGET REFERENCES -->
     <ItemGroup>
+        <PackageReference Include="Arch" Version="1.3.3-alpha" />
         <PackageReference Include="BenchmarkDotNet" Version="0.14.0" />
+        <PackageReference Include="DefaultEcs" Version="0.18.0-beta01" />
+        <PackageReference Include="fennecs" Version="0.5.14-beta" />
+        <PackageReference Condition="$(Configuration) == Release" Include="Flecs.NET.Release" Version="4.0.3" />
+        <PackageReference Condition="$(Configuration) == Debug" Include="Flecs.NET.Debug" Version="4.0.3" />
     </ItemGroup>
 
     <!-- SUPPORT REFERENCES -->
     <ItemGroup>
-        <ProjectReference Include="..\Benchmark.FriFlo\Benchmark.FriFlo.csproj" />
-        <ProjectReference Include="..\Benchmark.StaticEcs\Benchmark.StaticEcs.csproj" />
-        <ProjectReference Include="..\Benchmark.TinyECS\Benchmark.TinyECS.csproj" />
-        <ProjectReference Include="..\Benchmark.Xeno\Benchmark.Xeno.csproj" />
         <ProjectReference Include="..\Benchmark._Context\Benchmark._Context.csproj"/>
         <ProjectReference Include="..\Benchmark._Generator\Benchmark._Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
+        <ProjectReference Include="..\submodules\xeno\src~\Xeno.SourceGenerator\Xeno.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
     </ItemGroup>
 
     <!-- REFERENCES TO ECS IMPLEMENTATIONS -->
@@ -46,6 +63,18 @@
         <ProjectReference Include="..\Benchmark.DefaultECS\Benchmark.DefaultECS.csproj"/>
         <ProjectReference Include="..\Benchmark.FlecsNET\Benchmark.FlecsNET.csproj"/>
         <ProjectReference Include="..\Benchmark.LeoEcsLite\Benchmark.LeoEcsLite.csproj"/>
+        <ProjectReference Include="..\Benchmark.Xeno\Benchmark.Xeno.csproj" />
+        <ProjectReference Include="..\Benchmark.FriFlo\Benchmark.FriFlo.csproj" />
+        <ProjectReference Include="..\Benchmark.StaticEcs\Benchmark.StaticEcs.csproj" />
+        <ProjectReference Include="..\Benchmark.TinyECS\Benchmark.TinyECS.csproj" />
+    </ItemGroup>
+
+
+    <!-- REFERENCES TO ECS IMPLEMENTATIONS SOURCES -->
+    <ItemGroup>
+        <AdditionalFiles Include="..\Benchmark.*\**\*.cs">
+            <Link>Sources\%(RecursiveDir)%(FileName)%(Extension)</Link>
+        </AdditionalFiles>
     </ItemGroup>
 
 </Project>

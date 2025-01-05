@@ -4,16 +4,15 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using Benchmark;
-using Benchmark.Generated;
+// using Benchmark.Generated;
 using BenchmarkDotNet.Attributes;
 
 const bool IS_ITERATIVE_RUN = true;
 const int ITERATIONS_OR_MILLISECONDS = 10;
 const int ENTITY_COUNT = 100_000;
 
-// RunBenchType(typeof(Add1Component_XenoContext));
-// return;
-
+return 0;
+/*
 Console.WriteLine("use this for testing and debugging\n\n");
 
 var results = new Dictionary<Type, double[]>();
@@ -150,3 +149,4 @@ static void PrintResults(Dictionary<Type, double[]> data) {
         Console.WriteLine();
     }
 }
+//*/

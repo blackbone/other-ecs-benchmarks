@@ -1,3 +1,4 @@
+using System;
 using MorpehComponent = Scellecs.Morpeh.IComponent;
 using DragonComponent = DCFApixels.DragonECS.IEcsComponent;
 using XenoComponent = Xeno.IComponent;
@@ -6,8 +7,7 @@ using StaticEcsComponent = FFS.Libraries.StaticEcs.IComponent;
 
 namespace Benchmark._Context;
 
-public interface IBenchmarkContext : IDisposable
-{
+public interface IBenchmarkContext : IDisposable {
     /// <summary>
     ///     Does framework deletes entity on last component deletion.
     ///     E.g. is there auto despawn of empty entities.
@@ -17,7 +17,7 @@ public interface IBenchmarkContext : IDisposable
     /// <summary>
     ///     Current count of entities in ECS.
     /// </summary>
-    public int EntityCount { get; }
+    public int NumberOfLivingEntities { get; }
 
     /// <summary>
     ///     Initialize world for test.
@@ -30,6 +30,14 @@ public interface IBenchmarkContext : IDisposable
     /// </summary>
     public void FinishSetup();
 
+    /// <summary>
+    ///     Clean up the world.
+    /// </summary>
+    public void Cleanup();
+}
+
+public interface IBenchmarkContext<E> : IBenchmarkContext
+{
     /// <summary>
     ///     Place where you can set up your stashes, caches, etc.
     /// </summary>
@@ -76,10 +84,6 @@ public interface IBenchmarkContext : IDisposable
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
         where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent;
 
-    /// <summary>
-    ///     Clean up the world.
-    /// </summary>
-    public void Cleanup();
 
     #region Entity - Delete
 
@@ -87,7 +91,7 @@ public interface IBenchmarkContext : IDisposable
     ///     Deletes set of entities.
     /// </summary>
     /// <param name="entitySet"> Entity set object returned by <see cref="CreateEntities" /> </param>
-    public void DeleteEntities(in Array entitySet);
+    public void DeleteEntities(in E[] entitySet);
 
     #endregion
 
@@ -96,7 +100,7 @@ public interface IBenchmarkContext : IDisposable
     /// </summary>
     /// <param name="count"> Count of entities to be stored. </param>
     /// <returns> New or existing shuffled set. </returns>
-    public Array PrepareSet(in int count);
+    public E[] PrepareSet(in int count);
 
     #region Entity - Create
 
@@ -104,7 +108,7 @@ public interface IBenchmarkContext : IDisposable
     ///     Create empty entity.
     /// </summary>
     /// <param name="entitySet"> Entity set object returned by <see cref="CreateEntities" /> </param>
-    public void CreateEntities(in Array entitySet);
+    public void CreateEntities(in E[] entitySet);
 
     /// <summary>
     ///     Create entity with components.
@@ -115,7 +119,7 @@ public interface IBenchmarkContext : IDisposable
     ///     Entity set identifier. Literally it can be anything, filter, query ids array, whatever. Will be used as
     ///     argument in <see cref="AddComponent{T1}" />, <see cref="RemoveComponent{T1}" />, <see cref="DeleteEntities" />
     /// </returns>
-    public void CreateEntities<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default)
+    public void CreateEntities<T1>(in E[] entitySet, in int poolId, in T1 c1)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent;
 
     /// <summary>
@@ -127,7 +131,7 @@ public interface IBenchmarkContext : IDisposable
     ///     Entity set identifier. Literally it can be anything, filter, query ids array, whatever. Will be used as
     ///     argument in <see cref="AddComponent{T1}" />, <see cref="RemoveComponent{T1}" />, <see cref="DeleteEntities" />
     /// </returns>
-    public void CreateEntities<T1, T2>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default)
+    public void CreateEntities<T1, T2>(in E[] entitySet, in int poolId, in T1 c1, in T2 c2)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent;
 
@@ -140,7 +144,7 @@ public interface IBenchmarkContext : IDisposable
     ///     Entity set identifier. Literally it can be anything, filter, query ids array, whatever. Will be used as
     ///     argument in <see cref="AddComponent{T1}" />, <see cref="RemoveComponent{T1}" />, <see cref="DeleteEntities" />
     /// </returns>
-    public void CreateEntities<T1, T2, T3>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default, in T3 c3 = default)
+    public void CreateEntities<T1, T2, T3>(in E[] entitySet, in int poolId, in T1 c1, in T2 c2, in T3 c3)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent;
@@ -154,7 +158,7 @@ public interface IBenchmarkContext : IDisposable
     ///     Entity set identifier. Literally it can be anything, filter, query ids array, whatever. Will be used as
     ///     argument in <see cref="AddComponent{T1}" />, <see cref="RemoveComponent{T1}" />, <see cref="DeleteEntities" />
     /// </returns>
-    public void CreateEntities<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default, in T3 c3 = default, in T4 c4 = default)
+    public void CreateEntities<T1, T2, T3, T4>(in E[] entitySet, in int poolId, in T1 c1, in T2 c2, in T3 c3, in T4 c4)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
@@ -169,7 +173,7 @@ public interface IBenchmarkContext : IDisposable
     /// </summary>
     /// <param name="entitySet"> Entity set object returned by <see cref="CreateEntities" /> </param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1}" /></param>
-    public void AddComponent<T1>(in Array entitySet, in int poolId = -1, in T1 c1 = default)
+    public void AddComponent<T1>(in E[] entitySet, in int poolId, in T1 c1)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent;
 
     /// <summary>
@@ -177,7 +181,7 @@ public interface IBenchmarkContext : IDisposable
     /// </summary>
     /// <param name="entitySet"> Entity set object returned by <see cref="CreateEntities" /> </param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1, T2}" /></param>
-    public void AddComponent<T1, T2>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default)
+    public void AddComponent<T1, T2>(in E[] entitySet, in int poolId, in T1 c1, in T2 c2)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent;
 
@@ -186,7 +190,7 @@ public interface IBenchmarkContext : IDisposable
     /// </summary>
     /// <param name="entitySet"> Entity set object returned by <see cref="CreateEntities" /> </param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1, T2, T3}" /></param>
-    public void AddComponent<T1, T2, T3>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default, in T3 c3 = default)
+    public void AddComponent<T1, T2, T3>(in E[] entitySet, in int poolId, in T1 c1, in T2 c2, in T3 c3)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent;
@@ -196,7 +200,7 @@ public interface IBenchmarkContext : IDisposable
     /// </summary>
     /// <param name="entitySet"> Entity set object returned by <see cref="CreateEntities" /> </param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1, T2, T3, T4}" /></param>
-    public void AddComponent<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1, in T1 c1 = default, in T2 c2 = default, in T3 c3 = default, in T4 c4 = default)
+    public void AddComponent<T1, T2, T3, T4>(in E[] entitySet, in int poolId, in T1 c1, in T2 c2, in T3 c3, in T4 c4)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
@@ -211,7 +215,7 @@ public interface IBenchmarkContext : IDisposable
     /// </summary>
     /// <param name="entitySet"> Entity set object returned by <see cref="CreateEntities" /> </param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1}" /></param>
-    public void RemoveComponent<T1>(in Array entitySet, in int poolId = -1)
+    public void RemoveComponent<T1>(in E[] entitySet, in int poolId)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent;
 
     /// <summary>
@@ -219,7 +223,7 @@ public interface IBenchmarkContext : IDisposable
     /// </summary>
     /// <param name="entitySet"> Entity set object returned by <see cref="CreateEntities" /> </param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1, T2}" /></param>
-    public void RemoveComponent<T1, T2>(in Array entitySet, in int poolId = -1)
+    public void RemoveComponent<T1, T2>(in E[] entitySet, in int poolId)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent;
 
@@ -228,7 +232,7 @@ public interface IBenchmarkContext : IDisposable
     /// </summary>
     /// <param name="entitySet"> Entity set object returned by <see cref="CreateEntities" /> </param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1, T2, T3}" /></param>
-    public void RemoveComponent<T1, T2, T3>(in Array entitySet, in int poolId = -1)
+    public void RemoveComponent<T1, T2, T3>(in E[] entitySet, in int poolId)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent;
@@ -238,7 +242,7 @@ public interface IBenchmarkContext : IDisposable
     /// </summary>
     /// <param name="entitySet"> Entity set object returned by <see cref="CreateEntities" /> </param>
     /// <param name="poolId"> ID of pool from <see cref="Warmup{T1, T2, T3, T4}" /></param>
-    public void RemoveComponent<T1, T2, T3, T4>(in Array entitySet, in int poolId = -1)
+    public void RemoveComponent<T1, T2, T3, T4>(in E[] entitySet, in int poolId)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
@@ -270,19 +274,19 @@ public interface IBenchmarkContext : IDisposable
 
     #region Entities - Get With
 
-    public bool GetSingle<T1>(in object entity, in int poolId, ref T1 c1)
+    public bool GetSingle<T1>(in E entity, in int poolId, ref T1 c1)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent;
 
-    public bool GetSingle<T1, T2>(in object entity, in int poolId, ref T1 c1, ref T2 c2)
+    public bool GetSingle<T1, T2>(in E entity, in int poolId, ref T1 c1, ref T2 c2)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent;
 
-    public bool GetSingle<T1, T2, T3>(in object entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3)
+    public bool GetSingle<T1, T2, T3>(in E entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent;
 
-    public bool GetSingle<T1, T2, T3, T4>(in object entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4)
+    public bool GetSingle<T1, T2, T3, T4>(in E entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4)
         where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
         where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent

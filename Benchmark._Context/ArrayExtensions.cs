@@ -1,3 +1,5 @@
+using System;
+
 namespace Benchmark;
 
 public static class ArrayExtensions

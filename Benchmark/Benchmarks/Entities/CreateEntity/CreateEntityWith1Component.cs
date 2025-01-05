@@ -4,17 +4,17 @@ using BenchmarkDotNet.Attributes;
 
 namespace Benchmark.Benchmarks.Entities.CreateEntity;
 
-[ArtifactsPath(".benchmark_results/" + nameof(CreateEntityWith1Component<T>))]
+[ArtifactsPath(".benchmark_results/" + nameof(CreateEntityWith1Component<T, TE>))]
 [MemoryDiagnoser]
 
 #if CHECK_CACHE_MISSES
 [HardwareCounters(BenchmarkDotNet.Diagnosers.HardwareCounter.CacheMisses)]
 #endif
-public abstract class CreateEntityWith1Component<T> : IBenchmark<T> where T : IBenchmarkContext
+public abstract class CreateEntityWith1Component<T, TE> : IBenchmark<T, TE> where T : IBenchmarkContext<TE>
 {
     [Params(Constants.EntityCount)] public int EntityCount { get; set; }
     public T Context { get; set; }
-    private Array _entitySet;
+    private TE[] _entitySet;
 
     [GlobalSetup]
     public void GlobalSetup()
@@ -24,13 +24,13 @@ public abstract class CreateEntityWith1Component<T> : IBenchmark<T> where T : IB
         Context.Warmup<Component1>(0);
         Context.FinishSetup();
 
-        _entitySet = Context.PrepareSet(EntityCount);
+        _entitySet =  Context.PrepareSet(EntityCount);
     }
 
     [Benchmark]
     public void Run()
     {
-        Context.CreateEntities<Component1>(_entitySet, 0);
+        Context.CreateEntities<Component1>(_entitySet, 0, default(Component1));
     }
 
     [IterationCleanup]

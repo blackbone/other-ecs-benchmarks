@@ -1,3 +1,5 @@
+using System;
+
 namespace Benchmark._Context;
 
 public static class BenchmarkContext

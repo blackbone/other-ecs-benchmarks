@@ -10,7 +10,6 @@ using Benchmark.Utils;
 using BenchmarkDotNet.Columns;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Engines;
-using BenchmarkDotNet.Exporters;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Reports;
 using BenchmarkDotNet.Running;
@@ -18,6 +17,7 @@ using BenchmarkDotNet.Running;
 using BenchmarkDotNet.Toolchains.InProcess.Emit;
 #endif
 
+//*
 // clear previous results
 if (Directory.Exists(".benchmark_results"))
     Directory.Delete(".benchmark_results", true);
@@ -133,5 +133,6 @@ foreach (var baseBenchmarkType in baseBenchmarkTypes)
         }
     }
 }
+//*/
 
 return 0;

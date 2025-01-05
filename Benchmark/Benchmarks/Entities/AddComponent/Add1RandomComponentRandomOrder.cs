@@ -5,25 +5,25 @@ using BenchmarkDotNet.Attributes;
 
 namespace Benchmark.Benchmarks.Entities.AddComponent;
 
-[ArtifactsPath(".benchmark_results/" + nameof(Add1RandomComponentRandomOrder<T>))]
+[ArtifactsPath(".benchmark_results/" + nameof(Add1RandomComponentRandomOrder<T, TE>))]
 [MemoryDiagnoser]
 
 #if CHECK_CACHE_MISSES
 [HardwareCounters(BenchmarkDotNet.Diagnosers.HardwareCounter.CacheMisses)]
 #endif
-public abstract class Add1RandomComponentRandomOrder<T> : IBenchmark<T> where T : IBenchmarkContext
+public abstract class Add1RandomComponentRandomOrder<T, TE> : IBenchmark<T, TE> where T : IBenchmarkContext<TE>
 {
     [Params(Constants.EntityCount)] public int EntityCount { get; set; }
     public T Context { get; set; }
-    private Array _entitySet;
-    private Array _tmp;
+    private TE[] _entitySet;
+    private TE[] _tmp;
 
     [GlobalSetup]
     public void GlobalSetup()
     {
         Context = BenchmarkContext.Create<T>(EntityCount);
         Context.Setup();
-        _entitySet = Context.PrepareSet(EntityCount);
+        _entitySet =  Context.PrepareSet(EntityCount);
         _tmp = Context.PrepareSet(1);
 
         Context.Warmup<Component1>(0);
@@ -44,21 +44,21 @@ public abstract class Add1RandomComponentRandomOrder<T> : IBenchmark<T> where T 
     [Benchmark]
     public void Run()
     {
-        for (var i = 0; i < EntityCount; i++) {
-            _tmp.SetValue(_entitySet.GetValue(i), 0);
+        for (var _i = 0; _i < EntityCount; _i++) {
+            _tmp[0] = _entitySet[_i];
             switch (ArrayExtensions.Rnd.Next() % 4)
             {
                 case 0:
-                    Context.AddComponent<Component1>(_tmp, 0);
+                    Context.AddComponent<Component1>(_tmp, 0, default(Component1));
                     break;
                 case 1:
-                    Context.AddComponent<Component2>(_tmp, 1);
+                    Context.AddComponent<Component2>(_tmp, 1, default(Component2));
                     break;
                 case 2:
-                    Context.AddComponent<Component3>(_tmp, 2);
+                    Context.AddComponent<Component3>(_tmp, 2, default(Component3));
                     break;
                 case 3:
-                    Context.AddComponent<Component4>(_tmp, 3);
+                    Context.AddComponent<Component4>(_tmp, 3, default(Component4));
                     break;
             }
         }

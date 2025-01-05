@@ -15,23 +15,11 @@ public class ContextColumn : IColumn
     public UnitType UnitType => UnitType.Dimensionless;
     public string Legend => "Ecs context for given benchmark";
 
-    public string GetValue(Summary summary, BenchmarkCase benchmarkCase)
-    {
-        return benchmarkCase.Descriptor.Type.GetGenericArguments()[0].Name.Replace("Context", "");
-    }
+    public string GetValue(Summary summary, BenchmarkCase benchmarkCase) => benchmarkCase.Descriptor.Type.Name.Split('_')[1];
 
-    public string GetValue(Summary summary, BenchmarkCase benchmarkCase, SummaryStyle style)
-    {
-        return benchmarkCase.Descriptor.Type.GetProperty("Context")?.PropertyType.Name.Replace("Context", "") ?? "N/A";
-    }
+    public string GetValue(Summary summary, BenchmarkCase benchmarkCase, SummaryStyle style) => benchmarkCase.Descriptor.Type.Name.Split('_')[1];
 
-    public bool IsDefault(Summary summary, BenchmarkCase benchmarkCase)
-    {
-        return true;
-    }
+    public bool IsDefault(Summary summary, BenchmarkCase benchmarkCase) => true;
 
-    public bool IsAvailable(Summary summary)
-    {
-        return true;
-    }
+    public bool IsAvailable(Summary summary) => true;
 }
