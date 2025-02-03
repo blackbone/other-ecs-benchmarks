@@ -30,6 +30,15 @@ public abstract class SystemWith3ComponentsMultipleComposition<T, TE> : IBenchma
         Context.Warmup<Padding2>(5);
         Context.Warmup<Padding3>(6);
         Context.Warmup<Padding4>(7);
+
+        unsafe
+        {
+            // set up systems
+            Context.AddSystem<Component1, Component2, Component3>(&Update, 3);
+        }
+
+        Context.FinishSetup();
+
         set = Context.PrepareSet(1);
 
         // set up entities
@@ -70,15 +79,6 @@ public abstract class SystemWith3ComponentsMultipleComposition<T, TE> : IBenchma
                     break;
             }
         }
-
-
-        unsafe
-        {
-            // set up systems
-            Context.AddSystem<Component1, Component2, Component3>(&Update, 3);
-        }
-
-        Context.FinishSetup();
     }
 
     [GlobalCleanup]

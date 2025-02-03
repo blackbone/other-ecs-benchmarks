@@ -20,12 +20,12 @@ public sealed class StaticEcsContext : IBenchmarkContext<Ecs<Default>.Entity>
     public void Setup()
     {
         Ecs.Create(EcsConfig.Default());
-        Ecs.Initialize();
         Systems.Create();
     }
 
     public void FinishSetup()
     {
+        Ecs.Initialize();
         Systems.Initialize();
     }
 
@@ -39,19 +39,37 @@ public sealed class StaticEcsContext : IBenchmarkContext<Ecs<Default>.Entity>
         Ecs.Destroy();
     }
 
-    public void Warmup<T1>(in int poolId) where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent { }
+    public void Warmup<T1>(in int poolId) where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
+    {
+        World.RegisterComponentType<T1>();
+    }
 
     public void Warmup<T1, T2>(in int poolId) where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
-        where T2 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent { }
+        where T2 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
+    {
+        World.RegisterComponentType<T1>();
+        World.RegisterComponentType<T2>();
+    }
 
     public void Warmup<T1, T2, T3>(in int poolId) where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T2 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
-        where T3 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent { }
+        where T3 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
+    {
+        World.RegisterComponentType<T1>();
+        World.RegisterComponentType<T2>();
+        World.RegisterComponentType<T3>();
+    }
 
     public void Warmup<T1, T2, T3, T4>(in int poolId) where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T2 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T3 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
-        where T4 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent { }
+        where T4 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
+    {
+        World.RegisterComponentType<T1>();
+        World.RegisterComponentType<T2>();
+        World.RegisterComponentType<T3>();
+        World.RegisterComponentType<T4>();
+    }
 
     public void CreateEntities(in Ecs.Entity[] entities)
     {

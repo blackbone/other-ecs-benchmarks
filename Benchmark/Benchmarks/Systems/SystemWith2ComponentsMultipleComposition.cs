@@ -31,6 +31,14 @@ public abstract class SystemWith2ComponentsMultipleComposition<T, TE> : IBenchma
         Context.Warmup<Padding3>(5);
         Context.Warmup<Padding4>(6);
 
+        unsafe
+        {
+            // set up systems
+            Context.AddSystem<Component1, Component2>(&Update, 2);
+        }
+
+        Context.FinishSetup();
+
         set = Context.PrepareSet(1);
 
         // set up entities
@@ -69,13 +77,7 @@ public abstract class SystemWith2ComponentsMultipleComposition<T, TE> : IBenchma
         }
 
 
-        unsafe
-        {
-            // set up systems
-            Context.AddSystem<Component1, Component2>(&Update, 2);
-        }
 
-        Context.FinishSetup();
     }
 
     [GlobalCleanup]

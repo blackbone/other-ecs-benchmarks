@@ -27,8 +27,15 @@ public abstract class SystemWith2Components<T, TE> : IBenchmark<T, TE> where T :
         Context.Warmup<Component2>(1);
         Context.Warmup<Component1, Component2>(2);
 
-        set = Context.PrepareSet(1);
+        unsafe
+        {
+            // set up systems
+            Context.AddSystem<Component1, Component2>(&Update, 2);
+        }
 
+        Context.FinishSetup();
+
+        set = Context.PrepareSet(1);
         // set up entities
         for (var _i = 0; _i < EntityCount; ++_i)
         {
@@ -47,15 +54,6 @@ public abstract class SystemWith2Components<T, TE> : IBenchmark<T, TE> where T :
                 Context.CreateEntities<Component1, Component2>(set, 2, default(Component1), new Component2 { Value = 1 });
             }
         }
-
-
-        unsafe
-        {
-            // set up systems
-            Context.AddSystem<Component1, Component2>(&Update, 2);
-        }
-
-        Context.FinishSetup();
     }
 
     [GlobalCleanup]

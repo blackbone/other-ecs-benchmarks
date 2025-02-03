@@ -28,8 +28,15 @@ public abstract class SystemWith3Components<T, TE> : IBenchmark<T, TE> where T :
         Context.Warmup<Component3>(2);
         Context.Warmup<Component1, Component2, Component3>(3);
 
-        set = Context.PrepareSet(1);
+        unsafe
+        {
+            // set up systems
+            Context.AddSystem<Component1, Component2, Component3>(&Update, 3);
+        }
 
+        Context.FinishSetup();
+
+        set = Context.PrepareSet(1);
         // set up entities
         for (var _i = 0; _i < EntityCount; ++_i)
         {
@@ -52,15 +59,6 @@ public abstract class SystemWith3Components<T, TE> : IBenchmark<T, TE> where T :
                     new Component3 { Value = 1 });
             }
         }
-
-
-        unsafe
-        {
-            // set up systems
-            Context.AddSystem<Component1, Component2, Component3>(&Update, 3);
-        }
-
-        Context.FinishSetup();
     }
 
     [GlobalCleanup]

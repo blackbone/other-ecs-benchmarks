@@ -29,8 +29,15 @@ public abstract class SystemWith1ComponentMultipleComposition<T, TE> : IBenchmar
         Context.Warmup<Padding3>(3);
         Context.Warmup<Padding4>(4);
 
-        set = Context.PrepareSet(1);
+        unsafe
+        {
+            // set up systems
+            Context.AddSystem<Component1>(&Update, 0);
+        }
 
+        Context.FinishSetup();
+
+        set = Context.PrepareSet(1);
         // set up entities
         for (var _i = 0; _i < EntityCount; ++_i)
         {
@@ -55,15 +62,6 @@ public abstract class SystemWith1ComponentMultipleComposition<T, TE> : IBenchmar
                 Context.CreateEntities<Component1>(set, 0, new Component1 { Value = 0 });
             }
         }
-
-
-        unsafe
-        {
-            // set up systems
-            Context.AddSystem<Component1>(&Update, 0);
-        }
-
-        Context.FinishSetup();
     }
 
     [GlobalCleanup]

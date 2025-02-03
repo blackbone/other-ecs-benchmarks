@@ -23,15 +23,6 @@ public abstract class SystemWith1Component<T, TE> : IBenchmark<T, TE> where T : 
         Context = BenchmarkContext.Create<T>(EntityCount);
         Context.Setup();
         Context.Warmup<Component1>(0);
-        set = Context.PrepareSet(1);
-
-        for (var _i = 0; _i < EntityCount; ++_i)
-        {
-            for (var j = 0; j < Padding; ++j)
-                Context.CreateEntities(set);
-
-            Context.CreateEntities<Component1>(set, 0, new Component1 { Value = 0 });
-        }
 
         unsafe
         {
@@ -40,6 +31,15 @@ public abstract class SystemWith1Component<T, TE> : IBenchmark<T, TE> where T : 
         }
 
         Context.FinishSetup();
+
+        set = Context.PrepareSet(1);
+        for (var _i = 0; _i < EntityCount; ++_i)
+        {
+            for (var j = 0; j < Padding; ++j)
+                Context.CreateEntities(set);
+
+            Context.CreateEntities<Component1>(set, 0, new Component1 { Value = 0 });
+        }
     }
 
     [GlobalCleanup]
