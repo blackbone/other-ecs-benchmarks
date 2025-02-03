@@ -22,7 +22,7 @@ public sealed class DragonECSContext : IBenchmarkContext<entlong>
 
     public void Setup()
     {
-        _world = new EcsWorld(new EcsWorldConfig());
+        _world = new EcsWorld(new EcsWorldConfig(), 0);
     }
 
     public void FinishSetup()

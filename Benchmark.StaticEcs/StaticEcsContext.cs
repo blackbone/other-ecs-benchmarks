@@ -4,9 +4,12 @@ using FFS.Libraries.StaticEcs;
 
 namespace Benchmark.StaticEcs;
 
+public readonly struct Default : IWorldType;
+public readonly struct DefaultSystemsId : ISystemsType;
+
 public abstract class Ecs : Ecs<Default> {}
 public abstract class World : Ecs<Default>.World {}
-public abstract class Systems : Systems<DefaultSystemsId> {}
+public abstract class Systems : Ecs.Systems<DefaultSystemsId> {}
 
 public sealed class StaticEcsContext : IBenchmarkContext<Ecs<Default>.Entity>
 {
@@ -16,8 +19,8 @@ public sealed class StaticEcsContext : IBenchmarkContext<Ecs<Default>.Entity>
 
     public void Setup()
     {
-        Ecs.CreateWorld(EcsConfig.Default());
-        Ecs.InitializeWorld();
+        Ecs.Create(EcsConfig.Default());
+        Ecs.Initialize();
         Systems.Create();
     }
 
@@ -33,7 +36,7 @@ public sealed class StaticEcsContext : IBenchmarkContext<Ecs<Default>.Entity>
 
     public void Dispose()
     {
-        Ecs.DestroyWorld();
+        Ecs.Destroy();
     }
 
     public void Warmup<T1>(in int poolId) where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent { }
@@ -188,20 +191,20 @@ public sealed class StaticEcsContext : IBenchmarkContext<Ecs<Default>.Entity>
 
     public int CountWith<T1>(in int poolId) where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
-        return World.QueryEntities.All<T1>().EntitiesCount();
+        return World.QueryEntities.For<All<T1>>().EntitiesCount();
     }
 
     public int CountWith<T1, T2>(in int poolId) where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T2 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
-        return World.QueryEntities.All<T1, T2>().EntitiesCount();
+        return World.QueryEntities.For<All<T1, T2>>().EntitiesCount();
     }
 
     public int CountWith<T1, T2, T3>(in int poolId) where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T2 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T3 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
-        return World.QueryEntities.All<T1, T2, T3>().EntitiesCount();
+        return World.QueryEntities.For<All<T1, T2, T3>>().EntitiesCount();
     }
 
     public int CountWith<T1, T2, T3, T4>(in int poolId) where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
@@ -209,7 +212,7 @@ public sealed class StaticEcsContext : IBenchmarkContext<Ecs<Default>.Entity>
         where T3 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T4 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
-        return World.QueryEntities.All<T1, T2, T3, T4>().EntitiesCount();
+        return World.QueryEntities.For<All<T1, T2, T3, T4>>().EntitiesCount();
     }
 
     public bool GetSingle<T1>(in Ecs.Entity e, in int poolId, ref T1 c1) where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
@@ -259,16 +262,16 @@ public sealed class StaticEcsContext : IBenchmarkContext<Ecs<Default>.Entity>
     public unsafe void AddSystem<T1>(delegate*<ref T1, void> @delegate, int poolId)
         where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
-        Ecs.Context.Replace(new DelegateHolder<T1> { method = @delegate });
-        Systems.AddUpdateSystem<System<T1>>();
+        Ecs.Context.Value.Replace(new DelegateHolder<T1> { method = @delegate });
+        Systems.AddUpdate(new System<T1>());
     }
 
     public unsafe void AddSystem<T1, T2>(delegate*<ref T1, ref T2, void> @delegate, int poolId)
         where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T2 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
-        Ecs.Context.Replace(new DelegateHolder<T1, T2> { method = @delegate });
-        Systems.AddUpdateSystem<System<T1, T2>>();
+        Ecs.Context.Value.Replace(new DelegateHolder<T1, T2> { method = @delegate });
+        Systems.AddUpdate(new System<T1, T2>());
     }
 
     public unsafe void AddSystem<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> @delegate, int poolId)
@@ -276,8 +279,8 @@ public sealed class StaticEcsContext : IBenchmarkContext<Ecs<Default>.Entity>
         where T2 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T3 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
-        Ecs.Context.Replace(new DelegateHolder<T1, T2, T3> { method = @delegate });
-        Systems.AddUpdateSystem<System<T1, T2, T3>>();
+        Ecs.Context.Value.Replace(new DelegateHolder<T1, T2, T3> { method = @delegate });
+        Systems.AddUpdate(new System<T1, T2, T3>());
     }
 
     public unsafe void AddSystem<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> @delegate, int poolId)
@@ -286,8 +289,8 @@ public sealed class StaticEcsContext : IBenchmarkContext<Ecs<Default>.Entity>
         where T3 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T4 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
-        Ecs.Context.Replace(new DelegateHolder<T1, T2, T3, T4> { method = @delegate });
-        Systems.AddUpdateSystem<System<T1, T2, T3, T4>>();
+        Ecs.Context.Value.Replace(new DelegateHolder<T1, T2, T3, T4> { method = @delegate });
+        Systems.AddUpdate(new System<T1, T2, T3, T4>());
     }
 
     public Ecs.Entity[] PrepareSet(in int count)
