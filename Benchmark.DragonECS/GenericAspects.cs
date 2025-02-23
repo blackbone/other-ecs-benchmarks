@@ -10,7 +10,7 @@ public class Aspect<T1> : EcsAspect
     protected override void Init(Builder b)
     {
         base.Init(b);
-        Components1 = b.Include<T1>();
+        Components1 = b.Inc<T1>();
     }
 }
 
@@ -24,8 +24,8 @@ public class Aspect<T1, T2> : EcsAspect
     protected override void Init(Builder b)
     {
         base.Init(b);
-        Components1 = b.Include<T1>();
-        Components2 = b.Include<T2>();
+        Components1 = b.Inc<T1>();
+        Components2 = b.Inc<T2>();
     }
 }
 
@@ -41,9 +41,9 @@ public class Aspect<T1, T2, T3> : EcsAspect
     protected override void Init(Builder b)
     {
         base.Init(b);
-        Components1 = b.Include<T1>();
-        Components2 = b.Include<T2>();
-        Components3 = b.Include<T3>();
+        Components1 = b.Inc<T1>();
+        Components2 = b.Inc<T2>();
+        Components3 = b.Inc<T3>();
     }
 }
 
@@ -61,9 +61,9 @@ public class Aspect<T1, T2, T3, T4> : EcsAspect
     protected override void Init(Builder b)
     {
         base.Init(b);
-        Components1 = b.Include<T1>();
-        Components2 = b.Include<T2>();
-        Components3 = b.Include<T3>();
-        Components4 = b.Include<T4>();
+        Components1 = b.Inc<T1>();
+        Components2 = b.Inc<T2>();
+        Components3 = b.Inc<T3>();
+        Components4 = b.Inc<T4>();
     }
 }

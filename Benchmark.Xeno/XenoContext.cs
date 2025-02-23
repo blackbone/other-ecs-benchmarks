@@ -247,20 +247,20 @@ public class XenoContext : IBenchmarkContext<Entity>
 
     public void Tick(float delta)
     {
-        // _pipeline.Tick(delta);
+        _world.Tick(delta);
     }
 
     public unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId)
         where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        // _pipeline.AddSystem(new System1<T1>(method));
+        _world.AddSystem(new System1<T1>(method));
     }
 
     public unsafe void AddSystem<T1, T2>(delegate*<ref T1, ref T2, void> method, int poolId)
         where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
         where T2 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        // _pipeline.AddSystem(new System2<T1, T2>(method));
+        _world.AddSystem(new System2<T1, T2>(method));
     }
 
     public unsafe void AddSystem<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> method, int poolId)
@@ -268,7 +268,7 @@ public class XenoContext : IBenchmarkContext<Entity>
         where T2 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
         where T3 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        // _pipeline.AddSystem(new System3<T1, T2, T3>(method));
+        _world.AddSystem(new System3<T1, T2, T3>(method));
     }
 
     public unsafe void AddSystem<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> method, int poolId)
@@ -277,7 +277,7 @@ public class XenoContext : IBenchmarkContext<Entity>
         where T3 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
         where T4 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        // _pipeline.AddSystem(new System4<T1, T2, T3, T4>(method));
+        _world.AddSystem(new System4<T1, T2, T3, T4>(method));
     }
 }
 

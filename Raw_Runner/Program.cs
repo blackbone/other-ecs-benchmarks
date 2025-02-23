@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using Benchmark;
 // using Benchmark.Generated;
 using BenchmarkDotNet.Attributes;
 
