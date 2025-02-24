@@ -155,16 +155,16 @@ public sealed class TinyEcsContext : IBenchmarkContext<EntityView>
     }
 
     public int CountWith<T1>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
-        => _world.Query<T1>().Count();
+        => _world.QueryBuilder().With<T1>().Build().Count();
 
     public int CountWith<T1, T2>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
-        => _world.Query<(T1, T2)>().Count();
+        => _world.QueryBuilder().With<T1>().With<T2>().Build().Count();
 
     public int CountWith<T1, T2, T3>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
-        => _world.Query<(T1, T2, T3)>().Count();
+        => _world.QueryBuilder().With<T1>().With<T2>().With<T3>().Build().Count();
 
     public int CountWith<T1, T2, T3, T4>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
-        => _world.Query<(T1, T2, T3, T4)>().Count();
+        => _world.QueryBuilder().With<T1>().With<T2>().With<T3>().With<T4>().Build().Count();
 
     public bool GetSingle<T1>(in EntityView e, in int poolId, ref T1 c1) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
@@ -199,30 +199,65 @@ public sealed class TinyEcsContext : IBenchmarkContext<EntityView>
     public void Tick(float delta) => _scheduler.Run();
 
     public unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId)
-        where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent =>
-        _scheduler.AddSystem((Query<T1> query) => query.EachJob((ref T1 c1) => method(ref c1)));
+        where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent {
+        var sysDelegate = Sys;
+        _scheduler.AddSystem(sysDelegate);
+        return;
+
+        void Sys(Query<Data<T1>> query) {
+            foreach (var (_, c) in query)
+                method(ref c.Ref);
+        }
+    }
 
     public unsafe void AddSystem<T1, T2>(delegate*<ref T1, ref T2, void> method, int poolId)
         where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
-        where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent =>
-        _scheduler.AddSystem((Query<(T1, T2)> query) => query.EachJob((ref T1 c1, ref T2 c2) => method(ref c1, ref c2)));
+        where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+    {
+        var sysDelegate = Sys;
+        _scheduler.AddSystem(sysDelegate);
+        return;
+
+        void Sys(Query<Data<T1, T2>> query) {
+            foreach (var (_, c1, c2) in query)
+                method(ref c1.Ref, ref c2.Ref);
+        }
+    }
 
     public unsafe void AddSystem<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> method, int poolId)
         where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
         where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
-        where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent =>
-        _scheduler.AddSystem((Query<(T1, T2, T3)> query) => query.EachJob((ref T1 c1, ref T2 c2, ref T3 c3) => method(ref c1, ref c2, ref c3)));
+        where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+    {
+        var sysDelegate = Sys;
+        _scheduler.AddSystem(sysDelegate);
+        return;
+
+        void Sys(Query<Data<T1, T2, T3>> query) {
+            foreach (var (_, c1, c2, c3) in query)
+                method(ref c1.Ref, ref c2.Ref, ref c3.Ref);
+        }
+    }
 
     public unsafe void AddSystem<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> method, int poolId)
         where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
         where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
         where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
-        where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent =>
-        _scheduler.AddSystem((Query<(T1, T2, T3, T4)> query) => query.EachJob((ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4) => method(ref c1, ref c2, ref c3, ref c4)));
+        where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+    {
+        var sysDelegate = Sys;
+        _scheduler.AddSystem(sysDelegate);
+        return;
+
+        void Sys(Query<Data<T1, T2, T3, T4>> query) {
+            foreach (var (_, c1, c2, c3, c4) in query)
+                method(ref c1.Ref, ref c2.Ref, ref c3.Ref, ref c4.Ref);
+        }
+    }
 
     private readonly struct Defer : IDisposable {
-        private readonly TinyEcs.World _world;
-        public Defer(TinyEcs.World world) {
+        private readonly World _world;
+        public Defer(World world) {
             _world = world;
             _world.BeginDeferred();
         }
