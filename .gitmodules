@@ -16,3 +16,6 @@
 [submodule "submodules/StaticEcs"]
 	path = submodules/StaticEcs
 	url = git@github.com:Felid-Force-Studios/StaticEcs.git
+[submodule "submodules/massive-ecs"]
+	path = submodules/massive-ecs
+	url = git@github.com:nilpunch/massive-ecs.git
