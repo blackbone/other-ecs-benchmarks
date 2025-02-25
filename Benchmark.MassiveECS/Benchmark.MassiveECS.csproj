@@ -3,9 +3,10 @@
     <PropertyGroup>
         <TargetFramework>net9.0</TargetFramework>
         <LangVersion>12</LangVersion>
-        <ImplicitUsings>enable</ImplicitUsings>
+        <ImplicitUsings>disable</ImplicitUsings>
         <Nullable>disable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <InvariantGlobalization>true</InvariantGlobalization>
     </PropertyGroup>
 
     <ItemGroup>
@@ -14,10 +15,6 @@
       <ProjectReference Include="..\submodules\massive-ecs\Runtime\Massive.csproj" />
       <ProjectReference Include="..\submodules\morpeh\Scellecs.Morpeh\Scellecs.Morpeh.csproj" />
       <ProjectReference Include="..\submodules\xeno\Xeno.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <PackageReference Include="Friflo.Engine.ECS" Version="3.2.1" />
     </ItemGroup>
 
 </Project>

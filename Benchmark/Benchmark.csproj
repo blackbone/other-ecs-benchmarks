@@ -67,6 +67,7 @@
         <ProjectReference Include="..\Benchmark.FriFlo\Benchmark.FriFlo.csproj" />
         <ProjectReference Include="..\Benchmark.StaticEcs\Benchmark.StaticEcs.csproj" />
         <ProjectReference Include="..\Benchmark.TinyECS\Benchmark.TinyECS.csproj" />
+        <ProjectReference Include="..\Benchmark.MassiveECS\Benchmark.MassiveECS.csproj" />
     </ItemGroup>
 
 
