@@ -25,7 +25,9 @@ public class XenoContext : IBenchmarkContext<Entity>
     }
 
     public void FinishSetup()
-    { }
+    {
+        _world.Start();
+    }
 
     public void Warmup<T1>(in int poolId)
         where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
@@ -51,6 +53,7 @@ public class XenoContext : IBenchmarkContext<Entity>
 
     public void Cleanup()
     {
+        _world.Stop();
     }
 
     public void DeleteEntities(in Entity[] entities) {
