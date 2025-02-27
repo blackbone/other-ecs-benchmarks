@@ -68,7 +68,8 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 	public void DeleteEntities(in Entity[] entitySet)
 	{
 		for (var i = 0; i < entitySet.Length; i++)
-			_registry.Destroy(entitySet[i]);
+			if (_registry.IsAlive(entitySet[i]))
+				_registry.Destroy(entitySet[i]);
 	}
 
 	public Entity[] PrepareSet(in int count)
