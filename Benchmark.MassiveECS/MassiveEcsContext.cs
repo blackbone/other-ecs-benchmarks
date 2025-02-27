@@ -194,7 +194,7 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 	public void RemoveComponent<T1>(in Entity[] entitySet, in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
 		var pools = _pools[poolId];
-		var s1 = (DataSet<T1>)pools[0];
+		var s1 = pools[0];
 		for (var i = 0; i < entitySet.Length; i++)
 		{
 			s1.Unassign(entitySet[i].Id);

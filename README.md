@@ -92,7 +92,7 @@ Command line args:
 
 1. Because of nature of BenchmarkDotNet there's sequential iteration of creating entities happening.
    This leads to case where, for example we creating 100k entities in benchmark, it's properly cleared
-   in Setup and Cleanup but benchma[Xeno.SourceGenerator.csproj](submodules/Xeno/src%7E/Xeno.SourceGenerator/Xeno.SourceGenerator.csproj)rk itself will be called multiple times which will lead to creating 100k entities,
+   in Setup and Cleanup but benchmark itself will be called multiple times which will lead to creating 100k entities,
    then another 100k and in some cases lead to millions of entities in the world which can affect perfomance of creation
    and deletion on certain ECS implementations.
 2. System benchmarks which uses *Padding* property produces up to 1.100.000 entities each because of logic of padding
