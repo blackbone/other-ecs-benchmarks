@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using Benchmark;
 // using Benchmark.Generated;
 using BenchmarkDotNet.Attributes;
 
@@ -10,8 +11,9 @@ const bool IS_ITERATIVE_RUN = true;
 const int ITERATIONS_OR_MILLISECONDS = 10;
 const int ENTITY_COUNT = 100_000;
 
-return 0;
-/*
+RunBenchType(typeof(FourRemoveThreeComponents_XenoContext));
+return;
+
 Console.WriteLine("use this for testing and debugging\n\n");
 
 var results = new Dictionary<Type, double[]>();

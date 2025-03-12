@@ -9,7 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup Condition="$(Configuration) == Release">
-        <PackageReference Include="Flecs.NET.Release" Version="4.0.3" />
+        <PackageReference Include="Flecs.NET.Release" Version="4.0.4-build.548" />
     </ItemGroup>
 
     <ItemGroup Condition="$(Configuration) == Debug">
