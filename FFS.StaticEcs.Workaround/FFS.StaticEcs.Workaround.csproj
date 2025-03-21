@@ -9,11 +9,11 @@
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-        <DefineConstants>FFS_ECS_EMPTY_ENTITY;FFS_ECS_DISABLE_TAGS;FFS_ECS_DISABLE_MASKS</DefineConstants>
+        <DefineConstants>FFS_ECS_DISABLE_TAGS;FFS_ECS_DISABLE_MASKS</DefineConstants>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-        <DefineConstants>FFS_ECS_EMPTY_ENTITY;FFS_ECS_DISABLE_TAGS;FFS_ECS_DISABLE_MASKS</DefineConstants>
+        <DefineConstants>FFS_ECS_DISABLE_TAGS;FFS_ECS_DISABLE_MASKS</DefineConstants>
     </PropertyGroup>
 
     <ItemGroup>
