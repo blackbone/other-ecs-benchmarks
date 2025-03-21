@@ -1,4 +1,3 @@
-using System;
 using Benchmark._Context;
 using BenchmarkDotNet.Attributes;
 
@@ -13,7 +12,6 @@ namespace Benchmark.Benchmarks.Entities.CreateEntity;
 public abstract class CreateEntityWith2RandomComponents<T, TE> : IBenchmark<T, TE> where T : IBenchmarkContext<TE>
 {
     [Params(Constants.EntityCount)] public int EntityCount { get; set; }
-    [Params(1, 4, 32)] public int ChunkSize { get; set; }
     public T Context { get; set; }
     private TE[] _entitySet;
     private TE[] _tmp;
@@ -25,7 +23,7 @@ public abstract class CreateEntityWith2RandomComponents<T, TE> : IBenchmark<T, T
         Context = BenchmarkContext.Create<T>(EntityCount);
         Context.Setup();
         _entitySet =  Context.PrepareSet(EntityCount);
-        _tmp = Context.PrepareSet(ChunkSize);
+        _tmp = Context.PrepareSet(1);
         Context.Warmup<Component1, Component2>(0);
         Context.Warmup<Component2, Component3>(1);
         Context.Warmup<Component3, Component4>(2);
@@ -34,11 +32,10 @@ public abstract class CreateEntityWith2RandomComponents<T, TE> : IBenchmark<T, T
     }
 
     [Benchmark]
-    public void Run() {
-        for (var _i = 0; _i < _entitySet.Length; _i += ChunkSize) {
-            var count = Math.Min(ChunkSize, _entitySet.Length - _i);
-            Array.Copy(_entitySet, 0, _tmp, 0, count);
-
+    public void Run()
+    {
+        for (int _i = 0; _i < _entitySet.Length; _i++) {
+            _tmp[0] = _entitySet[_i];
             switch (ArrayExtensions.Rnd.Next() % 4) {
                 case 0:
                     Context.CreateEntities<Component1, Component2>(_tmp, 0, default(Component1), default(Component2));

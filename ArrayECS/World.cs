@@ -116,6 +116,9 @@ namespace AECS {
 
     public class ArrayWorld : IDisposable {
         private const ulong IS_ALIVE_MASK = 0b1000000000000000000000000000000000000000000000000000000000000000L;
+        private const int ID_SHIFT = 31;
+        private const ulong ID_MASK = 0xFFFFFFFFUL << ID_SHIFT;
+        private const ulong VERSION_MASK = 0x7FFFFFFFUL; // 31 bits for version
 
         private ulong[] entities;
         internal readonly Dictionary<Type, Data> components = new Dictionary<Type, Data>();
@@ -131,7 +134,7 @@ namespace AECS {
 
         private void InitEntities(int min, int max) {
             while (min < max) {
-                entities[min] = ~IS_ALIVE_MASK & ((ulong)min << 31);
+                entities[min] = ~IS_ALIVE_MASK & ((ulong)min << ID_SHIFT);
                 min++;
             }
         }
@@ -142,7 +145,7 @@ namespace AECS {
                 InitEntities(EntityCount, EntityCount * 2);
             }
 
-            entities[EntityCount] &= IS_ALIVE_MASK;
+            entities[EntityCount] |= IS_ALIVE_MASK;
             return entities[EntityCount++];
         }
 
@@ -231,7 +234,8 @@ namespace AECS {
         }
 
 
-        private static uint getIdx(ulong entityId) => (uint)(entityId & ~IS_ALIVE_MASK) >> 31;
+        private static uint getIdx(ulong entityId) => (uint)((entityId & ~IS_ALIVE_MASK) >> ID_SHIFT);
+
         private static int getEnclosingPo2(uint v) {
             v |= v >> 1;
             v |= v >> 2;
@@ -251,26 +255,26 @@ namespace AECS {
             public Data(int count) => data = new T[count];
 
             public void Add(in uint idx, in T c) {
-                if (indices.Add(idx)) return;
-                if (idx >= data.Length) System.Array.Resize(ref data, getEnclosingPo2(idx));
+                if (!indices.Add(idx)) return;
+                if (idx >= data.Length) System.Array.Resize(ref data, getEnclosingPo2(idx + 1));
                 data[idx] = c;
             }
 
             public void Remove(in uint idx) {
                 if (idx >= data.Length) return;
-                if (indices.Remove(idx)) return;
+                if (!indices.Remove(idx)) return;
                 data[idx] = default;
             }
 
             public T Get(in uint idx) {
                 if (idx >= data.Length) return default;
-                if (indices.Contains(idx)) return default;
+                if (!indices.Contains(idx)) return default;
                 return data[idx];
             }
 
             public bool Ref(in uint idx, ref T c) {
                 if (idx >= data.Length) return false;
-                if (indices.Contains(idx)) return false;
+                if (!indices.Contains(idx)) return false;
                 c = ref data[idx];
                 return true;
             }
