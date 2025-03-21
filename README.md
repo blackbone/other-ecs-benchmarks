@@ -26,31 +26,32 @@ General flow of any benchmark execution is divided into 3 steps:
     * Creating initial entities if needed
     * Initialize filters and queries or other stuff which used to gain perfomance
 * Benchmark call
-    * Aquiring lock of world
+    * Acquiring lock of world
     * Run main logic
     * Commiting changes
-* Cleanup - mostly omited
+* Cleanup - mostly omitted
 
 > [!IMPORTANT]
 > Don't search truth here. There won't be any.
 
 # Implemented contexts
 
-|                                                           ECS | Version                                                                                                    | Implemented | Verified |      Notes      |
-|--------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------------|:-----------:|:--------:|:---------------:|
-|                       [Arch](https://github.com/genaray/Arch) | [2.0.0](https://www.nuget.org/packages/Arch/2.0.0)                                                         |      ✅      |    ❌     |       N/A       |
-|                              [fennecs](https://fennecs.tech/) | [0.5.15-beta](https://www.nuget.org/packages/fennecs/0.5.15-beta)                                          |      ✅      |    ❌     |       N/A       |
-|                  [Morpeh](https://github.com/scellecs/morpeh) | [stage-2024.1.1-rc21](https://github.com/scellecs/morpeh/releases/tag/2024.1.1-rc21)                       |      ✅      |    ❌     |       N/A       |
-|          [DragonECS](https://github.com/DCFApixels/DragonECS) | [0.9.1](https://github.com/DCFApixels/DragonECS/releases/tag/0.9.1)                                        |      ✅      |    ❌     |       N/A       |
-|                     [LeoECS](https://github.com/Leopotam/ecs) | [2023.6.22](https://github.com/Leopotam/ecs/releases/tag/2023.6.22)                                        |      ✅      |    ❌     |       N/A       |
-|             [LeoECSLite](https://github.com/Leopotam/ecslite) | [2024.5.22](https://github.com/Leopotam/ecslite/releases/tag/2024.5.22)                                    |      ✅      |    ❌     |       N/A       |
-|            [DefaultECS](https://github.com/Doraku/DefaultEcs) | [0.18.0-beta01](https://github.com/Doraku/DefaultEcs/releases/tag/0.18.0-beta01)                           |      ✅      |    ❌     | Analyzer 0.17.0 |
-|    [FlecsNET](https://github.com/BeanCheeseBurrito/Flecs.NET) | [4.0.4-build.548](https://www.nuget.org/packages/Flecs.NET.Release/4.0.4-build.548)                        |      ✅      |    ❌     |       N/A       |
-|           [TinyEcs](https://github.com/andreakarasho/TinyEcs) | [2.0.0](https://www.nuget.org/packages/TinyEcs.Main/2.0.0)                                                 |      ✅      |    ❌     |       N/A       |
-|                     [Xeno](https://github.com/blackbone/xeno) | [0.1.7](https://github.com/blackbone/xeno/releases/tag/0.1.7)                                              |      ✅      |    ✅     |       N/A       |
-|         [FriFlo](https://github.com/friflo/Friflo.Engine.ECS) | [3.2.3](https://www.nuget.org/packages/Friflo.Engine.ECS/3.2.3)                                            |      ✅      |    ❌     |       N/A       |
-| [StaticEcs](https://github.com/Felid-Force-Studios/StaticEcs) | [0.9.31](https://github.com/Felid-Force-Studios/StaticEcs/commit/f54a57ec5dd9007eda2b71c9f9e18cc6082c539a) |      ✅      |    ✅     |       N/A       |
-|        [Massive ECS](https://github.com/nilpunch/massive-ecs) | [v18.1.2](https://github.com/nilpunch/massive-ecs/releases/tag/v18.1.2)                                    |      ✅      |    ✅     |       N/A       |
+|                                                                              ECS | Version                                                                                                    | Implemented | Verified |         Notes          |
+|---------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------------|:-----------:|:--------:|:----------------------:|
+| [ArrayECS](https://github.com/blackbone/other-ecs-benchmarks/tree/main/ArrayECS) | [1.0.0](#)                                                                                                 |      ✅      |    ✅     |   dumb ecs on arrays   |
+|                                          [Arch](https://github.com/genaray/Arch) | [2.0.0](https://www.nuget.org/packages/Arch/2.0.0)                                                         |      ✅      |    ❌     | Source Generator 2.0.0 |
+|                                                 [fennecs](https://fennecs.tech/) | [0.5.15-beta](https://www.nuget.org/packages/fennecs/0.5.15-beta)                                          |      ✅      |    ❌     |          N/A           |
+|                                     [Morpeh](https://github.com/scellecs/morpeh) | [stage-2024.1.1-rc21](https://github.com/scellecs/morpeh/releases/tag/2024.1.1-rc21)                       |      ✅      |    ❌     |          N/A           |
+|                             [DragonECS](https://github.com/DCFApixels/DragonECS) | [0.9.4](https://github.com/DCFApixels/DragonECS/releases/tag/0.9.4)                                        |      ✅      |    ❌     |          N/A           |
+|                                        [LeoECS](https://github.com/Leopotam/ecs) | [2023.6.22](https://github.com/Leopotam/ecs/releases/tag/2023.6.22)                                        |      ✅      |    ❌     |          N/A           |
+|                                [LeoECSLite](https://github.com/Leopotam/ecslite) | [2024.5.22](https://github.com/Leopotam/ecslite/releases/tag/2024.5.22)                                    |      ✅      |    ❌     |          N/A           |
+|                               [DefaultECS](https://github.com/Doraku/DefaultEcs) | [0.18.0-beta01](https://github.com/Doraku/DefaultEcs/releases/tag/0.18.0-beta01)                           |      ✅      |    ❌     |    Analyzer 0.17.0     |
+|                       [FlecsNET](https://github.com/BeanCheeseBurrito/Flecs.NET) | [4.0.4-build.548](https://www.nuget.org/packages/Flecs.NET.Release/4.0.4-build.548)                        |      ✅      |    ❌     |          N/A           |
+|                              [TinyEcs](https://github.com/andreakarasho/TinyEcs) | [2.0.0](https://www.nuget.org/packages/TinyEcs.Main/2.0.0)                                                 |      ✅      |    ❌     |          N/A           |
+|                                        [Xeno](https://github.com/blackbone/xeno) | [0.1.7](https://github.com/blackbone/xeno/releases/tag/0.1.7)                                              |      ✅      |    ✅     |          N/A           |
+|                            [FriFlo](https://github.com/friflo/Friflo.Engine.ECS) | [3.2.3](https://www.nuget.org/packages/Friflo.Engine.ECS/3.2.3)                                            |      ✅      |    ❌     |          N/A           |
+|                    [StaticEcs](https://github.com/Felid-Force-Studios/StaticEcs) | [0.9.31](https://github.com/Felid-Force-Studios/StaticEcs/commit/f54a57ec5dd9007eda2b71c9f9e18cc6082c539a) |      ✅      |    ✅     |          N/A           |
+|                           [Massive ECS](https://github.com/nilpunch/massive-ecs) | [v18.1.2](https://github.com/nilpunch/massive-ecs/releases/tag/v18.1.2)                                    |      ✅      |    ✅     |          N/A           |
 
 # Implemented benchmarks
 
@@ -91,19 +92,16 @@ Command line args:
 # Problems
 
 1. Because of nature of BenchmarkDotNet there's sequential iteration of creating entities happening.
-   This leads to case where, for example we creating 100k entities in benchmark, it's properly cleared
+   This leads to case where, for example we're creating 100k entities in benchmark, it's properly cleared
    in Setup and Cleanup but benchmark itself will be called multiple times which will lead to creating 100k entities,
-   then another 100k and in some cases lead to millions of entities in the world which can affect perfomance of creation
+   then another 100k and in some cases lead to millions of entities in the world which can affect performance of creation
    and deletion on certain ECS implementations.
 2. System benchmarks which uses *Padding* property produces up to 1.100.000 entities each because of logic of padding
    generation. It affects runs duration but for now i'm not sure about correct way do fix that (maybe keep entire
-   entities
-   count up to *EntityCount* so it'll not affect speed but it'll reduce actual entity count to about 9.9k so archetype
-   ecs
-   implementation will gain significant boost).
+   entities count up to *EntityCount* so it'll not affect speed, but it'll reduce actual entity count to about 9.9k so archetype
+   ecs implementation will gain significant boost).
 3. Because some framework deleting entity on delete last components there are differences in behaviours in tests and
    benchmarks.
-   For example **RemoveComponent** benchmark will work faster with Arch and FennECS because they're not deleting entity.
+   For example **RemoveComponent** benchmark will work faster with Arch and Fennecs because they're not deleting entity.
    Because of that special property called `DeletesEntityOnLastComponentDeletion` is required to be implemented in each
    context.
-4. **TinyECS** - Deleting entities during lock causing stackoverflow on merge so get rid of lock during deletions.

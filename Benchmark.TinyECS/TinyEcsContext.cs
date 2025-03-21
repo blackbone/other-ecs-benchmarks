@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Security.Cryptography;
 using Benchmark._Context;
 using DCFApixels.DragonECS;
-using FFS.Libraries.StaticEcs;
 using TinyEcs;
 using IComponent = Scellecs.Morpeh.IComponent;
 
@@ -13,7 +10,6 @@ public sealed class TinyEcsContext : IBenchmarkContext<EntityView>
 {
     private TinyEcs.World _world;
     private Scheduler _scheduler;
-    private readonly Dictionary<int, Query> _queries = new();
 
     public bool DeletesEntityOnLastComponentDeletion => false;
     public int NumberOfLivingEntities { get; private set; }
@@ -25,23 +21,12 @@ public sealed class TinyEcsContext : IBenchmarkContext<EntityView>
 
     public void FinishSetup() {}
 
-    public void Warmup<T1>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
-        => _queries![poolId] = _world.QueryBuilder().With<T1>().Build();
+    public void Warmup<T1>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent {}
 
-    public void Warmup<T1, T2>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
-        => _queries![poolId] = _world.QueryBuilder().With<T1>().With<T2>().Build();
-
-    public void Warmup<T1, T2, T3>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
-        => _queries![poolId] = _world.QueryBuilder().With<T1>().With<T2>().With<T3>().Build();
-
-    public void Warmup<T1, T2, T3, T4>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
-        => _queries![poolId] = _world.QueryBuilder().With<T1>().With<T2>().With<T3>().With<T4>().Build();
-
-    public void Cleanup() {
-        _queries.Clear();
-
-    }
-
+    public void Warmup<T1, T2>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent {}
+    public void Warmup<T1, T2, T3>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent {}
+    public void Warmup<T1, T2, T3, T4>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent {}
+    public void Cleanup() {}
     public void Dispose()
     {
         _scheduler = null;
@@ -202,10 +187,9 @@ public sealed class TinyEcsContext : IBenchmarkContext<EntityView>
         where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent {
         var sysDelegate = Sys;
         _scheduler.AddSystem(sysDelegate);
-        return;
 
         void Sys(Query<Data<T1>> query) {
-            foreach (var (_, c) in query)
+            foreach (var (_, c)  in query)
                 method(ref c.Ref);
         }
     }
@@ -216,10 +200,9 @@ public sealed class TinyEcsContext : IBenchmarkContext<EntityView>
     {
         var sysDelegate = Sys;
         _scheduler.AddSystem(sysDelegate);
-        return;
 
         void Sys(Query<Data<T1, T2>> query) {
-            foreach (var (_, c1, c2) in query)
+            foreach (var (c1, c2) in query)
                 method(ref c1.Ref, ref c2.Ref);
         }
     }
@@ -231,10 +214,9 @@ public sealed class TinyEcsContext : IBenchmarkContext<EntityView>
     {
         var sysDelegate = Sys;
         _scheduler.AddSystem(sysDelegate);
-        return;
 
         void Sys(Query<Data<T1, T2, T3>> query) {
-            foreach (var (_, c1, c2, c3) in query)
+            foreach (var (c1, c2, c3) in query)
                 method(ref c1.Ref, ref c2.Ref, ref c3.Ref);
         }
     }
@@ -247,21 +229,10 @@ public sealed class TinyEcsContext : IBenchmarkContext<EntityView>
     {
         var sysDelegate = Sys;
         _scheduler.AddSystem(sysDelegate);
-        return;
 
         void Sys(Query<Data<T1, T2, T3, T4>> query) {
-            foreach (var (_, c1, c2, c3, c4) in query)
+            foreach (var (c1, c2, c3, c4) in query)
                 method(ref c1.Ref, ref c2.Ref, ref c3.Ref, ref c4.Ref);
         }
-    }
-
-    private readonly struct Defer : IDisposable {
-        private readonly World _world;
-        public Defer(World world) {
-            _world = world;
-            _world.BeginDeferred();
-        }
-
-        public void Dispose() => _world.EndDeferred();
     }
 }

@@ -53,6 +53,7 @@ IConfig configuration = DefaultConfig.Instance
     .WithOptions(ConfigOptions.DisableOptimizationsValidator)
     .WithOption(ConfigOptions.JoinSummary, true)
     .AddColumn(new ContextColumn())
+    .AddColumn(HashColumn.Default)
     .WithSummaryStyle(SummaryStyle.Default.WithRatioStyle(RatioStyle.Trend))
     .HideColumns(Column.Gen0, Column.Gen1, Column.Gen2, Column.Type, Column.Method, Column.Namespace);
 

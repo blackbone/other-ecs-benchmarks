@@ -38,6 +38,8 @@ public interface IBenchmarkContext : IDisposable {
 
 public interface IBenchmarkContext<E> : IBenchmarkContext
 {
+    #region Warmup
+
     /// <summary>
     ///     Place where you can set up your stashes, caches, etc.
     /// </summary>
@@ -84,6 +86,7 @@ public interface IBenchmarkContext<E> : IBenchmarkContext
         where T3 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
         where T4 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent;
 
+#endregion
 
     #region Entity - Delete
 
@@ -95,12 +98,16 @@ public interface IBenchmarkContext<E> : IBenchmarkContext
 
     #endregion
 
+    #region Utility
+
     /// <summary>
     ///     Prepares entity set.
     /// </summary>
     /// <param name="count"> Count of entities to be stored. </param>
     /// <returns> New or existing shuffled set. </returns>
     public E[] PrepareSet(in int count);
+
+    #endregion
 
     #region Entity - Create
 

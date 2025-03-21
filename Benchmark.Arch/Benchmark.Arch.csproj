@@ -13,7 +13,7 @@
         <ProjectReference Include="..\Benchmark._Context\Benchmark._Context.csproj"/>
         <PackageReference Include="Arch" Version="2.0.0" />
         <PackageReference Include="Arch.System" Version="1.0.5"/>
-        <PackageReference Include="Arch.System.SourceGenerator" Version="1.2.1" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
+        <PackageReference Include="Arch.System.SourceGenerator" Version="2.0.0" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 
 </Project>
