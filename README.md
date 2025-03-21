@@ -36,21 +36,21 @@ General flow of any benchmark execution is divided into 3 steps:
 
 # Implemented contexts
 
-|                                                           ECS | Version                                                                                                   | Implemented | Verified |      Notes      |
-|--------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------|:-----------:|:--------:|:---------------:|
-|                       [Arch](https://github.com/genaray/Arch) | [2.0.0](https://www.nuget.org/packages/Arch/2.0.0)                                                        |      ✅      |    ❌     |       N/A       |
-|                              [fennecs](https://fennecs.tech/) | [0.5.15-beta](https://www.nuget.org/packages/fennecs/0.5.15-beta)                                         |      ✅      |    ❌     |       N/A       |
-|                  [Morpeh](https://github.com/scellecs/morpeh) | [stage-2024.1.1-rc21](https://github.com/scellecs/morpeh/releases/tag/2024.1.1-rc21)                      |      ✅      |    ❌     |       N/A       |
-|          [DragonECS](https://github.com/DCFApixels/DragonECS) | [0.9.1](https://github.com/DCFApixels/DragonECS/releases/tag/0.9.1)                                       |      ✅      |    ❌     |       N/A       |
-|                     [LeoECS](https://github.com/Leopotam/ecs) | [2023.6.22](https://github.com/Leopotam/ecs/releases/tag/2023.6.22)                                       |      ✅      |    ❌     |       N/A       |
-|             [LeoECSLite](https://github.com/Leopotam/ecslite) | [2024.5.22](https://github.com/Leopotam/ecslite/releases/tag/2024.5.22)                                   |      ✅      |    ❌     |       N/A       |
-|            [DefaultECS](https://github.com/Doraku/DefaultEcs) | [0.18.0-beta01](https://github.com/Doraku/DefaultEcs/releases/tag/0.18.0-beta01)                          |      ✅      |    ❌     | Analyzer 0.17.0 |
-|    [FlecsNET](https://github.com/BeanCheeseBurrito/Flecs.NET) | [4.0.4-build.548](https://www.nuget.org/packages/Flecs.NET.Release/4.0.4-build.548)                       |      ✅      |    ❌     |       N/A       |
-|           [TinyEcs](https://github.com/andreakarasho/TinyEcs) | [2.0.0](https://www.nuget.org/packages/TinyEcs.Main/2.0.0)                                                |      ✅      |    ❌     |       N/A       |
-|                     [Xeno](https://github.com/blackbone/xeno) | [0.1.7](https://github.com/blackbone/xeno/releases/tag/0.1.7)                                             |      ✅      |    ✅     |       N/A       |
-|         [FriFlo](https://github.com/friflo/Friflo.Engine.ECS) | [3.2.3](https://www.nuget.org/packages/Friflo.Engine.ECS/3.2.3)                                           |      ✅      |    ❌     |       N/A       |
-| [StaticEcs](https://github.com/Felid-Force-Studios/StaticEcs) | [0.9.1](https://github.com/Felid-Force-Studios/StaticEcs/commit/e0914dc1aec394f200245c0cd5c6a44f32759ac4) |      ✅      |    ✅     |       N/A       |
-|        [Massive ECS](https://github.com/nilpunch/massive-ecs) | [v18.1.2](https://github.com/nilpunch/massive-ecs/releases/tag/v18.1.2)                                   |      ✅      |    ✅     |       N/A       |
+|                                                           ECS | Version                                                                                                    | Implemented | Verified |      Notes      |
+|--------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------------|:-----------:|:--------:|:---------------:|
+|                       [Arch](https://github.com/genaray/Arch) | [2.0.0](https://www.nuget.org/packages/Arch/2.0.0)                                                         |      ✅      |    ❌     |       N/A       |
+|                              [fennecs](https://fennecs.tech/) | [0.5.15-beta](https://www.nuget.org/packages/fennecs/0.5.15-beta)                                          |      ✅      |    ❌     |       N/A       |
+|                  [Morpeh](https://github.com/scellecs/morpeh) | [stage-2024.1.1-rc21](https://github.com/scellecs/morpeh/releases/tag/2024.1.1-rc21)                       |      ✅      |    ❌     |       N/A       |
+|          [DragonECS](https://github.com/DCFApixels/DragonECS) | [0.9.1](https://github.com/DCFApixels/DragonECS/releases/tag/0.9.1)                                        |      ✅      |    ❌     |       N/A       |
+|                     [LeoECS](https://github.com/Leopotam/ecs) | [2023.6.22](https://github.com/Leopotam/ecs/releases/tag/2023.6.22)                                        |      ✅      |    ❌     |       N/A       |
+|             [LeoECSLite](https://github.com/Leopotam/ecslite) | [2024.5.22](https://github.com/Leopotam/ecslite/releases/tag/2024.5.22)                                    |      ✅      |    ❌     |       N/A       |
+|            [DefaultECS](https://github.com/Doraku/DefaultEcs) | [0.18.0-beta01](https://github.com/Doraku/DefaultEcs/releases/tag/0.18.0-beta01)                           |      ✅      |    ❌     | Analyzer 0.17.0 |
+|    [FlecsNET](https://github.com/BeanCheeseBurrito/Flecs.NET) | [4.0.4-build.548](https://www.nuget.org/packages/Flecs.NET.Release/4.0.4-build.548)                        |      ✅      |    ❌     |       N/A       |
+|           [TinyEcs](https://github.com/andreakarasho/TinyEcs) | [2.0.0](https://www.nuget.org/packages/TinyEcs.Main/2.0.0)                                                 |      ✅      |    ❌     |       N/A       |
+|                     [Xeno](https://github.com/blackbone/xeno) | [0.1.7](https://github.com/blackbone/xeno/releases/tag/0.1.7)                                              |      ✅      |    ✅     |       N/A       |
+|         [FriFlo](https://github.com/friflo/Friflo.Engine.ECS) | [3.2.3](https://www.nuget.org/packages/Friflo.Engine.ECS/3.2.3)                                            |      ✅      |    ❌     |       N/A       |
+| [StaticEcs](https://github.com/Felid-Force-Studios/StaticEcs) | [0.9.31](https://github.com/Felid-Force-Studios/StaticEcs/commit/f54a57ec5dd9007eda2b71c9f9e18cc6082c539a) |      ✅      |    ✅     |       N/A       |
+|        [Massive ECS](https://github.com/nilpunch/massive-ecs) | [v18.1.2](https://github.com/nilpunch/massive-ecs/releases/tag/v18.1.2)                                    |      ✅      |    ✅     |       N/A       |
 
 # Implemented benchmarks
 
