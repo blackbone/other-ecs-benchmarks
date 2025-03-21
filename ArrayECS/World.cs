@@ -52,7 +52,7 @@ namespace AECS {
             this.delta = delta;
 
             var ids = data1.indices
-                .Except(data2.indices);
+                .Intersect(data2.indices);
 
             foreach (var idx in ids)
                 OnUpdate(ref data1.data[idx], ref data2.data[idx]);
@@ -76,8 +76,8 @@ namespace AECS {
             this.delta = delta;
 
             var ids = data1.indices
-                .Except(data2.indices)
-                .Except(data3.indices);
+                .Intersect(data2.indices)
+                .Intersect(data3.indices);
 
             foreach (var idx in ids)
                 OnUpdate(ref data1.data[idx], ref data2.data[idx], ref data3.data[idx]);
@@ -103,9 +103,9 @@ namespace AECS {
             this.delta = delta;
 
             var ids = data1.indices
-                .Except(data2.indices)
-                .Except(data3.indices)
-                .Except(data4.indices);
+                .Intersect(data2.indices)
+                .Intersect(data3.indices)
+                .Intersect(data4.indices);
 
             foreach (var idx in ids)
                 OnUpdate(ref data1.data[idx], ref data2.data[idx], ref data3.data[idx], ref data4.data[idx]);
