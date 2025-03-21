@@ -13,9 +13,9 @@ public abstract class Systems : Ecs.Systems<DefaultSystemsId> {}
 
 public sealed class StaticEcsContext : IBenchmarkContext<Ecs<Default>.Entity>
 {
-    public bool DeletesEntityOnLastComponentDeletion => true;
+    public bool DeletesEntityOnLastComponentDeletion => false;
 
-    public int NumberOfLivingEntities => World.EntitiesCount();
+    public int NumberOfLivingEntities => (int) World.EntitiesCount();
 
     public void Setup()
     {
