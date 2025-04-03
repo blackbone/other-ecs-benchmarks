@@ -322,9 +322,9 @@ public unsafe struct System<T1> : IUpdateSystem
 {
 
     public void Update() {
-        foreach (ref var c1 in World.QueryComponents.For<T1>()) {
+        World.QueryComponents.For(static (Ecs.Entity _, ref T1 c1) => {
             Ecs.Context<DelegateHolder<T1>>.Get().method(ref c1);
-        }
+        });
     }
 }
 
