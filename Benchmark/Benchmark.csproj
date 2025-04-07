@@ -41,7 +41,7 @@
         <PackageReference Include="Arch" Version="2.0.0" />
         <PackageReference Include="BenchmarkDotNet" Version="0.14.0" />
         <PackageReference Include="DefaultEcs" Version="0.18.0-beta01" />
-        <PackageReference Include="fennecs" Version="0.5.15-beta" />
+        <PackageReference Include="fennecs" Version="0.5.16-beta" />
         <PackageReference Condition="$(Configuration) == Release" Include="Flecs.NET.Release" Version="4.0.4-build.548" />
         <PackageReference Condition="$(Configuration) == Debug" Include="Flecs.NET.Debug" Version="4.0.3" />
     </ItemGroup>

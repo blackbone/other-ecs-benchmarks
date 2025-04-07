@@ -15,15 +15,15 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 	private readonly Dictionary<int, SparseSet[]> _pools = new();
 	private readonly Dictionary<int, Filter> _filters = new();
 	private readonly List<Action> _systems = new();
-	private Registry _registry;
+	private MassiveWorld _world;
 
 	public bool DeletesEntityOnLastComponentDeletion => false;
 
-	public int NumberOfLivingEntities => _registry.Entities.Count;
+	public int NumberOfLivingEntities => _world.Entities.Count;
 
 	public void Setup()
 	{
-		_registry = new Registry();
+		_world = new MassiveWorld();
 	}
 
 	public void FinishSetup()
@@ -43,33 +43,33 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 
 	public void Warmup<T1>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		_pools[poolId] = [_registry.Set<T1>()];
-		_filters[poolId] = _registry.Filter<Include<T1>>();
+		_pools[poolId] = [_world.SetRegistry.Get<T1>()];
+		_filters[poolId] = _world.Filter<Include<T1>>();
 	}
 
 	public void Warmup<T1, T2>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		_pools[poolId] = [_registry.Set<T1>(), _registry.Set<T2>()];
-		_filters[poolId] = _registry.Filter<Include<T1, T2>>();
+		_pools[poolId] = [_world.SetRegistry.Get<T1>(), _world.SetRegistry.Get<T2>()];
+		_filters[poolId] = _world.Filter<Include<T1, T2>>();
 	}
 
 	public void Warmup<T1, T2, T3>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		_pools[poolId] = [_registry.Set<T1>(), _registry.Set<T2>(), _registry.Set<T3>()];
-		_filters[poolId] = _registry.Filter<Include<T1, T2, T3>>();
+		_pools[poolId] = [_world.SetRegistry.Get<T1>(), _world.SetRegistry.Get<T2>(), _world.SetRegistry.Get<T3>()];
+		_filters[poolId] = _world.Filter<Include<T1, T2, T3>>();
 	}
 
 	public void Warmup<T1, T2, T3, T4>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		_pools[poolId] = [_registry.Set<T1>(), _registry.Set<T2>(), _registry.Set<T3>(), _registry.Set<T4>()];
-		_filters[poolId] = _registry.Filter<Include<T1, T2, T3, Include<T4>>>();
+		_pools[poolId] = [_world.SetRegistry.Get<T1>(), _world.SetRegistry.Get<T2>(), _world.SetRegistry.Get<T3>(), _world.SetRegistry.Get<T4>()];
+		_filters[poolId] = _world.Filter<Include<T1, T2, T3, Include<T4>>>();
 	}
 
 	public void DeleteEntities(in Entity[] entitySet)
 	{
 		for (var i = 0; i < entitySet.Length; i++)
-			if (_registry.IsAlive(entitySet[i]))
-				_registry.Destroy(entitySet[i]);
+			if (_world.IsAlive(entitySet[i]))
+				_world.Destroy(entitySet[i]);
 	}
 
 	public Entity[] PrepareSet(in int count)
@@ -80,7 +80,7 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 	public void CreateEntities(in Entity[] entitySet)
 	{
 		for (var i = 0; i < entitySet.Length; i++)
-			entitySet[i] = _registry.CreateEntity();
+			entitySet[i] = _world.CreateEntity();
 	}
 
 	public void CreateEntities<T1>(in Entity[] entitySet, in int poolId, in T1 c1) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
@@ -89,8 +89,8 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 		var s1 = (DataSet<T1>)pools[0];
 		for (var i = 0; i < entitySet.Length; i++)
 		{
-			entitySet[i] = _registry.CreateEntity();
-			s1.Assign(entitySet[i].Id, c1);
+			entitySet[i] = _world.CreateEntity();
+			s1.Set(entitySet[i].Id, c1);
 		}
 	}
 
@@ -101,9 +101,9 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 		var s2 = (DataSet<T2>)pools[1];
 		for (var i = 0; i < entitySet.Length; i++)
 		{
-			entitySet[i] = _registry.CreateEntity();
-			s1.Assign(entitySet[i].Id, c1);
-			s2.Assign(entitySet[i].Id, c2);
+			entitySet[i] = _world.CreateEntity();
+			s1.Set(entitySet[i].Id, c1);
+			s2.Set(entitySet[i].Id, c2);
 		}
 	}
 
@@ -115,10 +115,10 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 		var s3 = (DataSet<T3>)pools[2];
 		for (var i = 0; i < entitySet.Length; i++)
 		{
-			entitySet[i] = _registry.CreateEntity();
-			s1.Assign(entitySet[i].Id, c1);
-			s2.Assign(entitySet[i].Id, c2);
-			s3.Assign(entitySet[i].Id, c3);
+			entitySet[i] = _world.CreateEntity();
+			s1.Set(entitySet[i].Id, c1);
+			s2.Set(entitySet[i].Id, c2);
+			s3.Set(entitySet[i].Id, c3);
 		}
 	}
 
@@ -131,11 +131,11 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 		var s4 = (DataSet<T4>)pools[3];
 		for (var i = 0; i < entitySet.Length; i++)
 		{
-			entitySet[i] = _registry.CreateEntity();
-			s1.Assign(entitySet[i].Id, c1);
-			s2.Assign(entitySet[i].Id, c2);
-			s3.Assign(entitySet[i].Id, c3);
-			s4.Assign(entitySet[i].Id, c4);
+			entitySet[i] = _world.CreateEntity();
+			s1.Set(entitySet[i].Id, c1);
+			s2.Set(entitySet[i].Id, c2);
+			s3.Set(entitySet[i].Id, c3);
+			s4.Set(entitySet[i].Id, c4);
 		}
 	}
 
@@ -145,7 +145,7 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 		var s1 = (DataSet<T1>)pools[0];
 		for (var i = 0; i < entitySet.Length; i++)
 		{
-			s1.Assign(entitySet[i].Id, c1);
+			s1.Set(entitySet[i].Id, c1);
 		}
 	}
 
@@ -156,8 +156,8 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 		var s2 = (DataSet<T2>)pools[1];
 		for (var i = 0; i < entitySet.Length; i++)
 		{
-			s1.Assign(entitySet[i].Id, c1);
-			s2.Assign(entitySet[i].Id, c2);
+			s1.Set(entitySet[i].Id, c1);
+			s2.Set(entitySet[i].Id, c2);
 		}
 	}
 
@@ -169,9 +169,9 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 		var s3 = (DataSet<T3>)pools[2];
 		for (var i = 0; i < entitySet.Length; i++)
 		{
-			s1.Assign(entitySet[i].Id, c1);
-			s2.Assign(entitySet[i].Id, c2);
-			s3.Assign(entitySet[i].Id, c3);
+			s1.Set(entitySet[i].Id, c1);
+			s2.Set(entitySet[i].Id, c2);
+			s3.Set(entitySet[i].Id, c3);
 		}
 	}
 
@@ -184,10 +184,10 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 		var s4 = (DataSet<T4>)pools[3];
 		for (var i = 0; i < entitySet.Length; i++)
 		{
-			s1.Assign(entitySet[i].Id, c1);
-			s2.Assign(entitySet[i].Id, c2);
-			s3.Assign(entitySet[i].Id, c3);
-			s4.Assign(entitySet[i].Id, c4);
+			s1.Set(entitySet[i].Id, c1);
+			s2.Set(entitySet[i].Id, c2);
+			s3.Set(entitySet[i].Id, c3);
+			s4.Set(entitySet[i].Id, c4);
 		}
 	}
 
@@ -197,7 +197,7 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 		var s1 = pools[0];
 		for (var i = 0; i < entitySet.Length; i++)
 		{
-			s1.Unassign(entitySet[i].Id);
+			s1.Remove(entitySet[i].Id);
 		}
 	}
 
@@ -208,8 +208,8 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 		var s2 = pools[1];
 		for (var i = 0; i < entitySet.Length; i++)
 		{
-			s1.Unassign(entitySet[i].Id);
-			s2.Unassign(entitySet[i].Id);
+			s1.Remove(entitySet[i].Id);
+			s2.Remove(entitySet[i].Id);
 		}
 	}
 
@@ -221,9 +221,9 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 		var s3 = pools[2];
 		for (var i = 0; i < entitySet.Length; i++)
 		{
-			s1.Unassign(entitySet[i].Id);
-			s2.Unassign(entitySet[i].Id);
-			s3.Unassign(entitySet[i].Id);
+			s1.Remove(entitySet[i].Id);
+			s2.Remove(entitySet[i].Id);
+			s3.Remove(entitySet[i].Id);
 		}
 	}
 
@@ -236,31 +236,31 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 		var s4 = pools[3];
 		for (var i = 0; i < entitySet.Length; i++)
 		{
-			s1.Unassign(entitySet[i].Id);
-			s2.Unassign(entitySet[i].Id);
-			s3.Unassign(entitySet[i].Id);
-			s4.Unassign(entitySet[i].Id);
+			s1.Remove(entitySet[i].Id);
+			s2.Remove(entitySet[i].Id);
+			s3.Remove(entitySet[i].Id);
+			s4.Remove(entitySet[i].Id);
 		}
 	}
 
 	public int CountWith<T1>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		return _registry.View().Filter(_filters[poolId]).Count();
+		return _world.View().Filter(_filters[poolId]).Count();
 	}
 
 	public int CountWith<T1, T2>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		return _registry.View().Filter(_filters[poolId]).Count();
+		return _world.View().Filter(_filters[poolId]).Count();
 	}
 
 	public int CountWith<T1, T2, T3>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		return _registry.View().Filter(_filters[poolId]).Count();
+		return _world.View().Filter(_filters[poolId]).Count();
 	}
 
 	public int CountWith<T1, T2, T3, T4>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		return _registry.View().Filter(_filters[poolId]).Count();
+		return _world.View().Filter(_filters[poolId]).Count();
 	}
 
 	public bool GetSingle<T1>(in Entity entity, in int poolId, ref T1 c1) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
@@ -324,7 +324,7 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 		_systems.Add(() =>
 		{
 			var entityAction = new PointerInvocationEntityAction<T1> { Method = method };
-			_registry.View().ForEach<PointerInvocationEntityAction<T1>, T1>(ref entityAction);
+			_world.View().ForEach<PointerInvocationEntityAction<T1>, T1>(ref entityAction);
 		});
 	}
 
@@ -333,7 +333,7 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 		_systems.Add(() =>
 		{
 			var entityAction = new PointerInvocationEntityAction<T1, T2> { Method = method };
-			_registry.View().ForEach<PointerInvocationEntityAction<T1, T2>, T1, T2>(ref entityAction);
+			_world.View().ForEach<PointerInvocationEntityAction<T1, T2>, T1, T2>(ref entityAction);
 		});
 	}
 
@@ -342,7 +342,7 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 		_systems.Add(() =>
 		{
 			var entityAction = new PointerInvocationEntityAction<T1, T2, T3> { Method = method };
-			_registry.View().ForEach<PointerInvocationEntityAction<T1, T2, T3>, T1, T2, T3>(ref entityAction);
+			_world.View().ForEach<PointerInvocationEntityAction<T1, T2, T3>, T1, T2, T3>(ref entityAction);
 		});
 	}
 
@@ -351,7 +351,7 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 		_systems.Add(() =>
 		{
 			var entityAction = new PointerInvocationEntityAction<T1, T2, T3, T4> { Method = method };
-			_registry.View().ForEach<PointerInvocationEntityAction<T1, T2, T3, T4>, T1, T2, T3, T4>(ref entityAction);
+			_world.View().ForEach<PointerInvocationEntityAction<T1, T2, T3, T4>, T1, T2, T3, T4>(ref entityAction);
 		});
 	}
 }
