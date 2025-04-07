@@ -43,33 +43,32 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 
 	public void Warmup<T1>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		_pools[poolId] = [_world.SetRegistry.Get<T1>()];
+		_pools[poolId] = [_world.SparseSet<T1>()];
 		_filters[poolId] = _world.Filter<Include<T1>>();
 	}
 
 	public void Warmup<T1, T2>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		_pools[poolId] = [_world.SetRegistry.Get<T1>(), _world.SetRegistry.Get<T2>()];
+		_pools[poolId] = [_world.SparseSet<T1>(), _world.SparseSet<T2>()];
 		_filters[poolId] = _world.Filter<Include<T1, T2>>();
 	}
 
 	public void Warmup<T1, T2, T3>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		_pools[poolId] = [_world.SetRegistry.Get<T1>(), _world.SetRegistry.Get<T2>(), _world.SetRegistry.Get<T3>()];
+		_pools[poolId] = [_world.SparseSet<T1>(), _world.SparseSet<T2>(), _world.SparseSet<T3>()];
 		_filters[poolId] = _world.Filter<Include<T1, T2, T3>>();
 	}
 
 	public void Warmup<T1, T2, T3, T4>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		_pools[poolId] = [_world.SetRegistry.Get<T1>(), _world.SetRegistry.Get<T2>(), _world.SetRegistry.Get<T3>(), _world.SetRegistry.Get<T4>()];
+		_pools[poolId] = [_world.SparseSet<T1>(), _world.SparseSet<T2>(), _world.SparseSet<T3>(), _world.SparseSet<T4>()];
 		_filters[poolId] = _world.Filter<Include<T1, T2, T3, Include<T4>>>();
 	}
 
 	public void DeleteEntities(in Entity[] entitySet)
 	{
 		for (var i = 0; i < entitySet.Length; i++)
-			if (_world.IsAlive(entitySet[i]))
-				_world.Destroy(entitySet[i]);
+			_world.Entities.Destroy(entitySet[i].Id);
 	}
 
 	public Entity[] PrepareSet(in int count)
@@ -321,37 +320,21 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 
 	public unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		_systems.Add(() =>
-		{
-			var entityAction = new PointerInvocationEntityAction<T1> { Method = method };
-			_world.View().ForEach<PointerInvocationEntityAction<T1>, T1>(ref entityAction);
-		});
+		_systems.Add(() => _world.View().ForEach((ref T1 c1) => method(ref c1)));
 	}
 
 	public unsafe void AddSystem<T1, T2>(delegate*<ref T1, ref T2, void> method, int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		_systems.Add(() =>
-		{
-			var entityAction = new PointerInvocationEntityAction<T1, T2> { Method = method };
-			_world.View().ForEach<PointerInvocationEntityAction<T1, T2>, T1, T2>(ref entityAction);
-		});
+		_systems.Add(() => _world.View().ForEach((ref T1 c1, ref T2 c2) => method(ref c1, ref c2)));
 	}
 
 	public unsafe void AddSystem<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> method, int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		_systems.Add(() =>
-		{
-			var entityAction = new PointerInvocationEntityAction<T1, T2, T3> { Method = method };
-			_world.View().ForEach<PointerInvocationEntityAction<T1, T2, T3>, T1, T2, T3>(ref entityAction);
-		});
+		_systems.Add(() => _world.View().ForEach((ref T1 c1, ref T2 c2, ref T3 c3) => method(ref c1, ref c2, ref c3)));
 	}
 
 	public unsafe void AddSystem<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> method, int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		_systems.Add(() =>
-		{
-			var entityAction = new PointerInvocationEntityAction<T1, T2, T3, T4> { Method = method };
-			_world.View().ForEach<PointerInvocationEntityAction<T1, T2, T3, T4>, T1, T2, T3, T4>(ref entityAction);
-		});
+		_systems.Add(() => _world.View().ForEach((ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4) => method(ref c1, ref c2, ref c3, ref c4)));
 	}
 }
