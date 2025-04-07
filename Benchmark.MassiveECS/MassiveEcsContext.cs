@@ -7,6 +7,7 @@ using Massive;
 using Scellecs.Morpeh;
 using Entity = Massive.Entity;
 using Filter = Massive.Filter;
+using World = Massive.World;
 
 namespace Benchmark.MassiveECS;
 
@@ -15,7 +16,7 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 	private readonly Dictionary<int, SparseSet[]> _pools = new();
 	private readonly Dictionary<int, Filter> _filters = new();
 	private readonly List<Action> _systems = new();
-	private MassiveWorld _world;
+	private World _world;
 
 	public bool DeletesEntityOnLastComponentDeletion => false;
 
@@ -23,7 +24,7 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 
 	public void Setup()
 	{
-		_world = new MassiveWorld();
+		_world = new World();
 	}
 
 	public void FinishSetup()
@@ -68,7 +69,8 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 	public void DeleteEntities(in Entity[] entitySet)
 	{
 		for (var i = 0; i < entitySet.Length; i++)
-			_world.Entities.Destroy(entitySet[i].Id);
+			if (_world.IsAlive(entitySet[i]))
+				_world.Destroy(entitySet[i]);
 	}
 
 	public Entity[] PrepareSet(in int count)
