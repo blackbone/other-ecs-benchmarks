@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -32,8 +33,10 @@ namespace AECS {
 
         protected internal sealed override void Update(float delta) {
             this.delta = delta;
-            foreach (var i in data.indices) {
-                OnUpdate(ref data.data[i]);
+            var mask = data.mask;
+            for (int i = 0; i < base.world.EntityCount; i++) {
+                if (mask.Get(i))
+                    OnUpdate(ref data.data[i]);
             }
         }
 
@@ -52,11 +55,11 @@ namespace AECS {
         protected internal  sealed override void Update(float delta) {
             this.delta = delta;
 
-            var ids = data1.indices
-                .Intersect(data2.indices);
-
-            foreach (var idx in ids)
-                OnUpdate(ref data1.data[idx], ref data2.data[idx]);
+            var mask = new BitArray(data1.mask).And(data2.mask);
+            for (int i = 0; i < base.world.EntityCount; i++) {
+                if (mask.Get(i))
+                    OnUpdate(ref data1.data[i], ref data2.data[i]);
+            }
         }
 
         protected abstract void OnUpdate(ref T1 c1, ref T2 c2);
@@ -76,12 +79,11 @@ namespace AECS {
         protected internal  sealed override void Update(float delta) {
             this.delta = delta;
 
-            var ids = data1.indices
-                .Intersect(data2.indices)
-                .Intersect(data3.indices);
-
-            foreach (var idx in ids)
-                OnUpdate(ref data1.data[idx], ref data2.data[idx], ref data3.data[idx]);
+            var mask = new BitArray(data1.mask).And(data2.mask).And(data3.mask);
+            for (int i = 0; i < base.world.EntityCount; i++) {
+                if (mask.Get(i))
+                    OnUpdate(ref data1.data[i], ref data2.data[i], ref data3.data[i]);
+            }
         }
 
         protected abstract void OnUpdate(ref T1 c1, ref T2 c2, ref T3 c3);
@@ -103,13 +105,11 @@ namespace AECS {
         protected internal  sealed override void Update(float delta) {
             this.delta = delta;
 
-            var ids = data1.indices
-                .Intersect(data2.indices)
-                .Intersect(data3.indices)
-                .Intersect(data4.indices);
-
-            foreach (var idx in ids)
-                OnUpdate(ref data1.data[idx], ref data2.data[idx], ref data3.data[idx], ref data4.data[idx]);
+            var mask = new BitArray(data1.mask).And(data2.mask).And(data3.mask).And(data4.mask);
+            for (int i = 0; i < base.world.EntityCount; i++) {
+                if (mask.Get(i))
+                    OnUpdate(ref data1.data[i], ref data2.data[i], ref data3.data[i], ref data4.data[i]);
+            }
         }
 
         protected abstract void OnUpdate(ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4);
@@ -183,7 +183,7 @@ namespace AECS {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int Count<T1>() {
             if (!components.TryGetValue(typeof(T1), out var data1)) return 0;
-            return data1.indices.Count;
+            return data1.mask.Count;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -191,9 +191,7 @@ namespace AECS {
             if (!components.TryGetValue(typeof(T1), out var data1)) return 0;
             if (!components.TryGetValue(typeof(T2), out var data2)) return 0;
 
-            return data1.indices
-                .Intersect(data2.indices)
-                .Count();
+            return new BitArray(data1.mask).And(data2.mask).Count;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -202,10 +200,7 @@ namespace AECS {
             if (!components.TryGetValue(typeof(T2), out var data2)) return 0;
             if (!components.TryGetValue(typeof(T3), out var data3)) return 0;
 
-            return data1.indices
-                .Intersect(data2.indices)
-                .Intersect(data3.indices)
-                .Count();
+            return new BitArray(data1.mask).And(data2.mask).And(data3.mask).Count;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -215,11 +210,7 @@ namespace AECS {
             if (!components.TryGetValue(typeof(T3), out var data3)) return 0;
             if (!components.TryGetValue(typeof(T4), out var data4)) return 0;
 
-            return data1.indices
-                .Intersect(data2.indices)
-                .Intersect(data3.indices)
-                .Intersect(data4.indices)
-                .Count();
+            return new BitArray(data1.mask).And(data2.mask).And(data3.mask).And(data4.mask).Count;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -255,17 +246,18 @@ namespace AECS {
         private static uint getIdx(ulong entityId) => (uint)((entityId & ~IS_ALIVE_MASK) >> ID_SHIFT);
 
         internal class Data {
-            public readonly HashSet<uint> indices = new HashSet<uint>();
+            public readonly BitArray mask;
+            public Data(int count) => mask = new BitArray(count);
         }
 
         internal class Data<T> : Data {
             internal readonly T[] data;
 
-            public Data(int count) => data = new T[count];
+            public Data(int count):base(count) => data = new T[count];
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void Add(in uint idx, in T c) {
-                if (!indices.Add(idx)) return;
+                if (mask.Get((int)idx)) return;
                 if (idx >= data.Length) throw new IndexOutOfRangeException();
                 data[idx] = c;
             }
@@ -273,21 +265,21 @@ namespace AECS {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void Remove(in uint idx) {
                 if (idx >= data.Length) return;
-                if (!indices.Remove(idx)) return;
+                if (!mask.Get((int)idx)) return;
                 data[idx] = default;
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public T Get(in uint idx) {
                 if (idx >= data.Length) return default;
-                if (!indices.Contains(idx)) return default;
+                if (!mask.Get((int)idx)) return default;
                 return data[idx];
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public bool Ref(in uint idx, ref T c) {
                 if (idx >= data.Length) return false;
-                if (!indices.Contains(idx)) return false;
+                if (!mask.Get((int)idx)) return false;
                 c = ref data[idx];
                 return true;
             }
