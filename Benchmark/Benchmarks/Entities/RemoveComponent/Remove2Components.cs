@@ -43,7 +43,7 @@ public abstract class Remove2Components<T, TE> : IBenchmark<T, TE> where T : cla
     [IterationCleanup]
     public void IterationCleanup()
     {
-        if (Context.DeletesEntityOnLastComponentDeletion)
+        if (!Context.DeletesEntityOnLastComponentDeletion)
             Context.DeleteEntities(_entitySet);
     }
 

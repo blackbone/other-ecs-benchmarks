@@ -6,13 +6,15 @@ using Scellecs.Morpeh;
 namespace Benchmark.ArrayECS;
 
 public class ArrayECSContext : IBenchmarkContext<ulong> {
+    [Ignore] private int EntityCount;
+
     private ArrayWorld _world;
 
     public bool DeletesEntityOnLastComponentDeletion => false;
     public int NumberOfLivingEntities => _world.EntityCount;
 
     public void Setup() {
-        _world = new ArrayWorld();
+        _world = new ArrayWorld(EntityCount);
     }
 
     public void FinishSetup() { }
@@ -24,12 +26,22 @@ public class ArrayECSContext : IBenchmarkContext<ulong> {
     public void Dispose() {}
 
     public void Warmup<T1>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent {
+        _world.Preallocate<T1>(EntityCount);
     }
     public void Warmup<T1, T2>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent {
+        _world.Preallocate<T1>(EntityCount);
+        _world.Preallocate<T2>(EntityCount);
     }
     public void Warmup<T1, T2, T3>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent {
+        _world.Preallocate<T1>(EntityCount);
+        _world.Preallocate<T2>(EntityCount);
+        _world.Preallocate<T3>(EntityCount);
     }
     public void Warmup<T1, T2, T3, T4>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent {
+        _world.Preallocate<T1>(EntityCount);
+        _world.Preallocate<T2>(EntityCount);
+        _world.Preallocate<T3>(EntityCount);
+        _world.Preallocate<T4>(EntityCount);
     }
     public void DeleteEntities(in ulong[] entitySet) {
         for (int i = 0; i < entitySet.Length; i++) {

@@ -50,6 +50,7 @@ public abstract class CreateEntityWith3RandomComponents<T, TE> : IBenchmark<T, T
                     Context.CreateEntities<Component4, Component1, Component2>(_tmp, 3, default(Component4), default(Component1), default(Component2));
                     break;
             }
+            _entitySet[_i] = _tmp[0];
         }
     }
 

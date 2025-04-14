@@ -45,7 +45,7 @@ public abstract class Remove1ComponentRandomOrder<T, TE> : IBenchmark<T, TE> whe
     [IterationCleanup]
     public void IterationCleanup()
     {
-        if (Context.DeletesEntityOnLastComponentDeletion)
+        if (!Context.DeletesEntityOnLastComponentDeletion)
             Context.DeleteEntities(_entitySet);
     }
 

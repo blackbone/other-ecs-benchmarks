@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace AECS {
     public abstract class ArraySystem
@@ -117,8 +118,6 @@ namespace AECS {
     public class ArrayWorld : IDisposable {
         private const ulong IS_ALIVE_MASK = 0b1000000000000000000000000000000000000000000000000000000000000000L;
         private const int ID_SHIFT = 31;
-        private const ulong ID_MASK = 0xFFFFFFFFUL << ID_SHIFT;
-        private const ulong VERSION_MASK = 0x7FFFFFFFUL; // 31 bits for version
 
         private ulong[] entities;
         internal readonly Dictionary<Type, Data> components = new Dictionary<Type, Data>();
@@ -126,12 +125,14 @@ namespace AECS {
 
         public int EntityCount { get; private set; }
 
-        public ArrayWorld() {
-            entities = new ulong[1024];
-            InitEntities(0, 1024);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ArrayWorld(int entityCount) {
+            entities = new ulong[entityCount];
+            InitEntities(0, entityCount);
             EntityCount = 0;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void InitEntities(int min, int max) {
             while (min < max) {
                 entities[min] = ~IS_ALIVE_MASK & ((ulong)min << ID_SHIFT);
@@ -139,22 +140,25 @@ namespace AECS {
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ulong CreateEntity() {
             if (EntityCount == entities.Length) {
-                Array.Resize(ref entities, EntityCount * 2);
-                InitEntities(EntityCount, EntityCount * 2);
+                throw new IndexOutOfRangeException();
             }
 
             entities[EntityCount] |= IS_ALIVE_MASK;
             return entities[EntityCount++];
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void DestroyEntity(ulong e) {
             var idx = getIdx(e);
             if (e != entities[idx]) return;
             entities[idx] = ++e & ~IS_ALIVE_MASK;
+            EntityCount--;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddComponent<T>(in ulong e, in T c1) {
             var idx = getIdx(e);
             if (e != entities[idx]) return;
@@ -167,6 +171,7 @@ namespace AECS {
             tData.Add(idx, c1);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void RemoveComponent<T>(in ulong e) {
             var idx = getIdx(e);
             if (e != entities[idx]) return;
@@ -175,11 +180,13 @@ namespace AECS {
             ((Data<T>)data).Remove(idx);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int Count<T1>() {
             if (!components.TryGetValue(typeof(T1), out var data1)) return 0;
             return data1.indices.Count;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int Count<T1, T2>() {
             if (!components.TryGetValue(typeof(T1), out var data1)) return 0;
             if (!components.TryGetValue(typeof(T2), out var data2)) return 0;
@@ -189,6 +196,7 @@ namespace AECS {
                 .Count();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int Count<T1, T2, T3>() {
             if (!components.TryGetValue(typeof(T1), out var data1)) return 0;
             if (!components.TryGetValue(typeof(T2), out var data2)) return 0;
@@ -200,6 +208,7 @@ namespace AECS {
                 .Count();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int Count<T1, T2, T3, T4>() {
             if (!components.TryGetValue(typeof(T1), out var data1)) return 0;
             if (!components.TryGetValue(typeof(T2), out var data2)) return 0;
@@ -213,6 +222,7 @@ namespace AECS {
                 .Count();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T Get<T>(in ulong e) {
             var idx = getIdx(e);
             if (e != entities[idx]) return default;
@@ -221,6 +231,7 @@ namespace AECS {
             return ((Data<T>)data).Get(idx);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Ref<T>(in ulong e, ref T c) {
             var idx = getIdx(e);
             if (e != entities[idx]) return default;
@@ -229,49 +240,51 @@ namespace AECS {
             return ((Data<T>)data).Ref(idx, ref c);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Dispose() {
             entities = null;
         }
 
-
-        private static uint getIdx(ulong entityId) => (uint)((entityId & ~IS_ALIVE_MASK) >> ID_SHIFT);
-
-        private static int getEnclosingPo2(uint v) {
-            v |= v >> 1;
-            v |= v >> 2;
-            v |= v >> 4;
-            v |= v >> 8;
-            v |= v >> 16;
-            return (int)(v + 1);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Preallocate<T>(int entityCount) {
+            components[typeof(T)] = new Data<T>(entityCount);
         }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static uint getIdx(ulong entityId) => (uint)((entityId & ~IS_ALIVE_MASK) >> ID_SHIFT);
 
         internal class Data {
             public readonly HashSet<uint> indices = new HashSet<uint>();
         }
 
         internal class Data<T> : Data {
-            internal T[] data;
+            internal readonly T[] data;
 
             public Data(int count) => data = new T[count];
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void Add(in uint idx, in T c) {
                 if (!indices.Add(idx)) return;
-                if (idx >= data.Length) System.Array.Resize(ref data, getEnclosingPo2(idx + 1));
+                if (idx >= data.Length) throw new IndexOutOfRangeException();
                 data[idx] = c;
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void Remove(in uint idx) {
                 if (idx >= data.Length) return;
                 if (!indices.Remove(idx)) return;
                 data[idx] = default;
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public T Get(in uint idx) {
                 if (idx >= data.Length) return default;
                 if (!indices.Contains(idx)) return default;
                 return data[idx];
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public bool Ref(in uint idx, ref T c) {
                 if (idx >= data.Length) return false;
                 if (!indices.Contains(idx)) return false;
@@ -280,15 +293,19 @@ namespace AECS {
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Update(float delta) {
             foreach (var system in systems)
                 system.Update(delta);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddSystem(ArraySystem system) {
             system.world = this;
             systems.Add(system);
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal Data<T> GetData<T>() {
             Data<T> data;
             if (!components.TryGetValue(typeof(T), out var d))

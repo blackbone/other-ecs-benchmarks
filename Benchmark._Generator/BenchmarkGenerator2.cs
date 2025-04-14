@@ -250,6 +250,21 @@ public class BenchmarksGenerator : ISourceGenerator {
                     .ToArray());
     }
 
+    private static bool NotIgnored(ISymbol member) {
+        var attrs = member.GetAttributes();
+        if (attrs.Length == 0) return true;
+        return attrs.All(a => a.AttributeClass!.Name != "IgnoreAttribute");
+    }
+
+    private static bool NotIgnored(MemberDeclarationSyntax syntax) {
+        if (syntax.AttributeLists.Count == 0)
+            return true;
+
+        var attrs = syntax.AttributeLists.SelectMany(list => list.Attributes).ToImmutableArray();
+        if (attrs.Length == 0) return true;
+        return attrs.All(a => a.Name.ToString() != "Ignore" && a.Name.ToString() != "IgnoreAttribute");
+    }
+
     private static string GetEntityTypeName(INamedTypeSymbol contextType) {
         var iface = contextType.Interfaces.FirstOrDefault();
         var type = iface?.TypeArguments.ElementAtOrDefault(0);
@@ -268,12 +283,15 @@ public class BenchmarksGenerator : ISourceGenerator {
         var benchmarkSyntax = type.GetTypeDeclarationSyntax();
         return benchmarkSyntax?.Members
             .OfType<PropertyDeclarationSyntax>()
+            .Where(NotIgnored)
             .Where(p => p.Identifier.Text != "Context")
             .ToArray() ?? Enumerable.Empty<MemberDeclarationSyntax>();
     }
 
     private static IEnumerable<MemberDeclarationSyntax> GetFields(INamedTypeSymbol contextType, string entityTypeName) {
-        foreach (var field in contextType.GetMembers().OfType<IFieldSymbol>().Where(f => !f.Name.Contains("k__"))) {
+        foreach (var field in contextType.GetMembers().OfType<IFieldSymbol>()
+                     .Where(f => NotIgnored(f))
+                     .Where(f => !f.Name.Contains("k__"))) {
 
             var type = field.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
             type = type switch {

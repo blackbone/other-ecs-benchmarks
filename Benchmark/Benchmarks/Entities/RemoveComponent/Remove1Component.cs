@@ -44,7 +44,7 @@ public abstract class Remove1Component<T, TE> : IBenchmark<T, TE> where T : IBen
     [IterationCleanup]
     public void IterationCleanup()
     {
-        if (Context.DeletesEntityOnLastComponentDeletion)
+        if (!Context.DeletesEntityOnLastComponentDeletion)
             Context.DeleteEntities(_entitySet);
     }
 
