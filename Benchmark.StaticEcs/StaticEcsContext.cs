@@ -7,25 +7,24 @@ namespace Benchmark.StaticEcs;
 public readonly struct Default : IWorldType;
 public readonly struct DefaultSystemsId : ISystemsType;
 
-public abstract class Ecs : Ecs<Default> {}
-public abstract class World : Ecs<Default>.World {}
-public abstract class Systems : Ecs.Systems<DefaultSystemsId> {}
+public abstract class W : World<Default> {}
+public abstract class Systems : W.Systems<DefaultSystemsId> {}
 
-public sealed class StaticEcsContext : IBenchmarkContext<Ecs<Default>.Entity>
+public sealed class StaticEcsContext : IBenchmarkContext<W.Entity>
 {
     public bool DeletesEntityOnLastComponentDeletion => false;
 
-    public int NumberOfLivingEntities => (int) World.EntitiesCount();
+    public int NumberOfLivingEntities => (int) W.EntitiesCount();
 
     public void Setup()
     {
-        Ecs.Create(EcsConfig.Default());
+        W.Create(WorldConfig.Default());
         Systems.Create();
     }
 
     public void FinishSetup()
     {
-        Ecs.Initialize();
+        W.Initialize();
         Systems.Initialize();
     }
 
@@ -36,28 +35,28 @@ public sealed class StaticEcsContext : IBenchmarkContext<Ecs<Default>.Entity>
 
     public void Dispose()
     {
-        Ecs.Destroy();
+        W.Destroy();
     }
 
     public void Warmup<T1>(in int poolId) where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
-        World.RegisterComponentType<T1>();
+        W.RegisterComponentType<T1>();
     }
 
     public void Warmup<T1, T2>(in int poolId) where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T2 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
-        World.RegisterComponentType<T1>();
-        World.RegisterComponentType<T2>();
+        W.RegisterComponentType<T1>();
+        W.RegisterComponentType<T2>();
     }
 
     public void Warmup<T1, T2, T3>(in int poolId) where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T2 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T3 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
-        World.RegisterComponentType<T1>();
-        World.RegisterComponentType<T2>();
-        World.RegisterComponentType<T3>();
+        W.RegisterComponentType<T1>();
+        W.RegisterComponentType<T2>();
+        W.RegisterComponentType<T3>();
     }
 
     public void Warmup<T1, T2, T3, T4>(in int poolId) where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
@@ -65,51 +64,51 @@ public sealed class StaticEcsContext : IBenchmarkContext<Ecs<Default>.Entity>
         where T3 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T4 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
-        World.RegisterComponentType<T1>();
-        World.RegisterComponentType<T2>();
-        World.RegisterComponentType<T3>();
-        World.RegisterComponentType<T4>();
+        W.RegisterComponentType<T1>();
+        W.RegisterComponentType<T2>();
+        W.RegisterComponentType<T3>();
+        W.RegisterComponentType<T4>();
     }
 
-    public void CreateEntities(in Ecs.Entity[] entities)
+    public void CreateEntities(in W.Entity[] entities)
     {
         for (var i = 0; i < entities.Length; i++)
-            entities[i] = Ecs.Entity.New();
+            entities[i] = W.Entity.New();
     }
 
-    public void CreateEntities<T1>(in Ecs.Entity[] entities, in int poolId, in T1 c1)
+    public void CreateEntities<T1>(in W.Entity[] entities, in int poolId, in T1 c1)
         where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
         for (var i = 0; i < entities.Length; i++)
         {
-            entities[i] = Ecs.Entity.New(c1);
+            entities[i] = W.Entity.New(c1);
         }
     }
 
-    public void CreateEntities<T1, T2>(in Ecs.Entity[] entities, in int poolId, in T1 c1, in T2 c2)
+    public void CreateEntities<T1, T2>(in W.Entity[] entities, in int poolId, in T1 c1, in T2 c2)
         where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T2 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
         for (var i = 0; i < entities.Length; i++)
         {
-            entities[i] = Ecs.Entity.New(c1, c2);
+            entities[i] = W.Entity.New(c1, c2);
 
         }
     }
 
-    public void CreateEntities<T1, T2, T3>(in Ecs.Entity[] entities, in int poolId, in T1 c1,
+    public void CreateEntities<T1, T2, T3>(in W.Entity[] entities, in int poolId, in T1 c1,
         in T2 c2, in T3 c3) where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T2 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T3 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
         for (var i = 0; i < entities.Length; i++)
         {
-            entities[i] = Ecs.Entity.New(c1, c2, c3);
+            entities[i] = W.Entity.New(c1, c2, c3);
 
         }
     }
 
-    public void CreateEntities<T1, T2, T3, T4>(in Ecs.Entity[] entities, in int poolId, in T1 c1,
+    public void CreateEntities<T1, T2, T3, T4>(in W.Entity[] entities, in int poolId, in T1 c1,
         in T2 c2, in T3 c3, in T4 c4) where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T2 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T3 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
@@ -117,25 +116,25 @@ public sealed class StaticEcsContext : IBenchmarkContext<Ecs<Default>.Entity>
     {
         for (var i = 0; i < entities.Length; i++)
         {
-            entities[i] = Ecs.Entity.New(c1, c2, c3, c4);
+            entities[i] = W.Entity.New(c1, c2, c3, c4);
 
         }
     }
 
-    public void DeleteEntities(in Ecs.Entity[] entities)
+    public void DeleteEntities(in W.Entity[] entities)
     {
         for (var i = 0; i < entities.Length; i++)
             entities[i].Destroy();
     }
 
-    public void AddComponent<T1>(in Ecs.Entity[] entities, in int poolId, in T1 c1)
+    public void AddComponent<T1>(in W.Entity[] entities, in int poolId, in T1 c1)
         where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
         for (var i = 0; i < entities.Length; i++)
             entities[i].Add(c1);
     }
 
-    public void AddComponent<T1, T2>(in Ecs.Entity[] entities, in int poolId, in T1 c1, in T2 c2)
+    public void AddComponent<T1, T2>(in W.Entity[] entities, in int poolId, in T1 c1, in T2 c2)
         where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T2 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
@@ -145,7 +144,7 @@ public sealed class StaticEcsContext : IBenchmarkContext<Ecs<Default>.Entity>
         }
     }
 
-    public void AddComponent<T1, T2, T3>(in Ecs.Entity[] entities, in int poolId, in T1 c1, in T2 c2,
+    public void AddComponent<T1, T2, T3>(in W.Entity[] entities, in int poolId, in T1 c1, in T2 c2,
         in T3 c3) where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T2 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T3 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
@@ -156,7 +155,7 @@ public sealed class StaticEcsContext : IBenchmarkContext<Ecs<Default>.Entity>
         }
     }
 
-    public void AddComponent<T1, T2, T3, T4>(in Ecs.Entity[] entities, in int poolId, in T1 c1,
+    public void AddComponent<T1, T2, T3, T4>(in W.Entity[] entities, in int poolId, in T1 c1,
         in T2 c2, in T3 c3, in T4 c4) where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T2 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T3 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
@@ -168,13 +167,13 @@ public sealed class StaticEcsContext : IBenchmarkContext<Ecs<Default>.Entity>
         }
     }
 
-    public void RemoveComponent<T1>(in Ecs.Entity[] entities, in int poolId) where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
+    public void RemoveComponent<T1>(in W.Entity[] entities, in int poolId) where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
         for (var i = 0; i < entities.Length; i++)
             entities[i].Delete<T1>();
     }
 
-    public void RemoveComponent<T1, T2>(in Ecs.Entity[] entities, in int poolId)
+    public void RemoveComponent<T1, T2>(in W.Entity[] entities, in int poolId)
         where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T2 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
@@ -184,7 +183,7 @@ public sealed class StaticEcsContext : IBenchmarkContext<Ecs<Default>.Entity>
         }
     }
 
-    public void RemoveComponent<T1, T2, T3>(in Ecs.Entity[] entities, in int poolId)
+    public void RemoveComponent<T1, T2, T3>(in W.Entity[] entities, in int poolId)
         where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T2 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T3 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
@@ -195,7 +194,7 @@ public sealed class StaticEcsContext : IBenchmarkContext<Ecs<Default>.Entity>
         }
     }
 
-    public void RemoveComponent<T1, T2, T3, T4>(in Ecs.Entity[] entities, in int poolId)
+    public void RemoveComponent<T1, T2, T3, T4>(in W.Entity[] entities, in int poolId)
         where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T2 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T3 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
@@ -209,20 +208,20 @@ public sealed class StaticEcsContext : IBenchmarkContext<Ecs<Default>.Entity>
 
     public int CountWith<T1>(in int poolId) where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
-        return World.QueryEntities.For<All<T1>>().EntitiesCount();
+        return W.QueryEntities.For<All<T1>>().EntitiesCount();
     }
 
     public int CountWith<T1, T2>(in int poolId) where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T2 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
-        return World.QueryEntities.For<All<T1, T2>>().EntitiesCount();
+        return W.QueryEntities.For<All<T1, T2>>().EntitiesCount();
     }
 
     public int CountWith<T1, T2, T3>(in int poolId) where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T2 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T3 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
-        return World.QueryEntities.For<All<T1, T2, T3>>().EntitiesCount();
+        return W.QueryEntities.For<All<T1, T2, T3>>().EntitiesCount();
     }
 
     public int CountWith<T1, T2, T3, T4>(in int poolId) where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
@@ -230,16 +229,16 @@ public sealed class StaticEcsContext : IBenchmarkContext<Ecs<Default>.Entity>
         where T3 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T4 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
-        return World.QueryEntities.For<All<T1, T2, T3, T4>>().EntitiesCount();
+        return W.QueryEntities.For<All<T1, T2, T3, T4>>().EntitiesCount();
     }
 
-    public bool GetSingle<T1>(in Ecs.Entity e, in int poolId, ref T1 c1) where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
+    public bool GetSingle<T1>(in W.Entity e, in int poolId, ref T1 c1) where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
         c1 = e.Ref<T1>();
         return true;
     }
 
-    public bool GetSingle<T1, T2>(in Ecs.Entity e, in int poolId, ref T1 c1, ref T2 c2)
+    public bool GetSingle<T1, T2>(in W.Entity e, in int poolId, ref T1 c1, ref T2 c2)
         where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T2 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
@@ -248,7 +247,7 @@ public sealed class StaticEcsContext : IBenchmarkContext<Ecs<Default>.Entity>
         return true;
     }
 
-    public bool GetSingle<T1, T2, T3>(in Ecs.Entity e, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3)
+    public bool GetSingle<T1, T2, T3>(in W.Entity e, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3)
         where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T2 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T3 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
@@ -259,7 +258,7 @@ public sealed class StaticEcsContext : IBenchmarkContext<Ecs<Default>.Entity>
         return true;
     }
 
-    public bool GetSingle<T1, T2, T3, T4>(in Ecs.Entity e, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4)
+    public bool GetSingle<T1, T2, T3, T4>(in W.Entity e, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4)
         where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T2 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T3 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
@@ -280,7 +279,7 @@ public sealed class StaticEcsContext : IBenchmarkContext<Ecs<Default>.Entity>
     public unsafe void AddSystem<T1>(delegate*<ref T1, void> @delegate, int poolId)
         where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
-        Ecs.Context.Value.Replace(new DelegateHolder<T1> { method = @delegate });
+        W.Context.Value.Replace(new DelegateHolder<T1> { method = @delegate });
         Systems.AddUpdate(new System<T1>());
     }
 
@@ -288,7 +287,7 @@ public sealed class StaticEcsContext : IBenchmarkContext<Ecs<Default>.Entity>
         where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T2 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
-        Ecs.Context.Value.Replace(new DelegateHolder<T1, T2> { method = @delegate });
+        W.Context.Value.Replace(new DelegateHolder<T1, T2> { method = @delegate });
         Systems.AddUpdate(new System<T1, T2>());
     }
 
@@ -297,7 +296,7 @@ public sealed class StaticEcsContext : IBenchmarkContext<Ecs<Default>.Entity>
         where T2 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T3 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
-        Ecs.Context.Value.Replace(new DelegateHolder<T1, T2, T3> { method = @delegate });
+        W.Context.Value.Replace(new DelegateHolder<T1, T2, T3> { method = @delegate });
         Systems.AddUpdate(new System<T1, T2, T3>());
     }
 
@@ -307,13 +306,13 @@ public sealed class StaticEcsContext : IBenchmarkContext<Ecs<Default>.Entity>
         where T3 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T4 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
-        Ecs.Context.Value.Replace(new DelegateHolder<T1, T2, T3, T4> { method = @delegate });
+        W.Context.Value.Replace(new DelegateHolder<T1, T2, T3, T4> { method = @delegate });
         Systems.AddUpdate(new System<T1, T2, T3, T4>());
     }
 
-    public Ecs.Entity[] PrepareSet(in int count)
+    public W.Entity[] PrepareSet(in int count)
     {
-        return count > 0 ? new Ecs.Entity[count] : [];
+        return count > 0 ? new W.Entity[count] : [];
     }
 }
 
@@ -322,8 +321,8 @@ public unsafe struct System<T1> : IUpdateSystem
 {
 
     public void Update() {
-        World.QueryComponents.For(static (Ecs.Entity _, ref T1 c1) => {
-            Ecs.Context<DelegateHolder<T1>>.Get().method(ref c1);
+        W.QueryComponents.For(static (W.Entity _, ref T1 c1) => {
+            W.Context<DelegateHolder<T1>>.Get().method(ref c1);
         });
     }
 }
@@ -335,8 +334,8 @@ public unsafe struct System<T1, T2> : IUpdateSystem
 
     public void Update()
     {
-        World.QueryComponents.For(static (Ecs.Entity _, ref T1 c1, ref T2 c2) => {
-            Ecs.Context<DelegateHolder<T1, T2>>.Get().method(ref c1, ref c2);
+        W.QueryComponents.For(static (W.Entity _, ref T1 c1, ref T2 c2) => {
+            W.Context<DelegateHolder<T1, T2>>.Get().method(ref c1, ref c2);
         });
     }
 }
@@ -348,8 +347,8 @@ public unsafe struct System<T1, T2, T3> : IUpdateSystem
 {
     public void Update()
     {
-        World.QueryComponents.For(static (Ecs.Entity _, ref T1 c1, ref T2 c2, ref T3 c3) => {
-            Ecs.Context<DelegateHolder<T1, T2, T3>>.Get().method(ref c1, ref c2, ref c3);
+        W.QueryComponents.For(static (W.Entity _, ref T1 c1, ref T2 c2, ref T3 c3) => {
+            W.Context<DelegateHolder<T1, T2, T3>>.Get().method(ref c1, ref c2, ref c3);
         });
     }
 }
@@ -362,8 +361,8 @@ public unsafe struct System<T1, T2, T3, T4> : IUpdateSystem
 
     public void Update()
     {
-        World.QueryComponents.For(static (Ecs.Entity _, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4) => {
-            Ecs.Context<DelegateHolder<T1, T2, T3, T4>>.Get().method(ref c1, ref c2, ref c3, ref c4);
+        W.QueryComponents.For(static (W.Entity _, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4) => {
+            W.Context<DelegateHolder<T1, T2, T3, T4>>.Get().method(ref c1, ref c2, ref c3, ref c4);
         });
     }
 
