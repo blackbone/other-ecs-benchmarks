@@ -183,22 +183,18 @@ namespace AECS {
         public void AddComponent<T>(in ulong e, in T c1) {
             var idx = getIdx(e);
             if (e != entities[idx]) return;
-            Data<T> tData;
-            if (!components.TryGetValue(typeof(T), out var data))
-                components[typeof(T)] = tData = new Data<T>(EntityCount);
-            else
-                tData = (Data<T>)data;
-
-            tData.Add(idx, c1);
+            GetData(out T[] data, out var mask);
+            data[idx] = c1;
+            mask.Set((int)idx, true);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void RemoveComponent<T>(in ulong e) {
             var idx = getIdx(e);
             if (e != entities[idx]) return;
-
-            if (!components.TryGetValue(typeof(T), out var data)) return;
-            ((Data<T>)data).Remove(idx);
+            GetData(out T[] data, out var mask);
+            data[idx] = default;
+            mask.Set((int)idx, false);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
