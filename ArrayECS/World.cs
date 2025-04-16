@@ -25,18 +25,18 @@ namespace AECS {
     }
 
     public abstract class ArraySystem<T> : ArraySystem {
-        private ArrayWorld.Data<T> data;
+        private T[] data;
+        private BitArray mask;
 
         protected sealed override void OnWorldInjected() {
-            data = world.GetData<T>();
+            world.GetData(out data, out mask);
         }
 
         protected internal sealed override void Update(float delta) {
             this.delta = delta;
-            var mask = data.mask;
             for (int i = 0; i < base.world.EntityCount; i++) {
                 if (mask.Get(i))
-                    OnUpdate(ref data.data[i]);
+                    OnUpdate(ref data[i]);
             }
         }
 
@@ -44,21 +44,28 @@ namespace AECS {
     }
 
     public abstract class ArraySystem<T1, T2> : ArraySystem {
-        private ArrayWorld.Data<T1> data1;
-        private ArrayWorld.Data<T2> data2;
+        private T1[] data1;
+        private T2[] data2;
+        private BitArray mask1;
+        private BitArray mask2;
+        private BitArray mask3;
+
+        private BitArray crossMask;
 
         protected sealed override void OnWorldInjected() {
-            data1 = world.GetData<T1>();
-            data2 = world.GetData<T2>();
+            world.GetData(out data1, out mask1);
+            world.GetData(out data2, out mask2);
+
+            crossMask = new BitArray(mask1.Length);
         }
 
         protected internal  sealed override void Update(float delta) {
             this.delta = delta;
 
-            var mask = new BitArray(data1.mask).And(data2.mask);
+            crossMask.Or(mask1).And(mask2).And(mask3);
             for (int i = 0; i < base.world.EntityCount; i++) {
-                if (mask.Get(i))
-                    OnUpdate(ref data1.data[i], ref data2.data[i]);
+                if (crossMask.Get(i))
+                    OnUpdate(ref data1[i], ref data2[i]);
             }
         }
 
@@ -66,23 +73,30 @@ namespace AECS {
     }
 
     public abstract class ArraySystem<T1, T2, T3> : ArraySystem {
-        private ArrayWorld.Data<T1> data1;
-        private ArrayWorld.Data<T2> data2;
-        private ArrayWorld.Data<T3> data3;
+        private T1[] data1;
+        private T2[] data2;
+        private T3[] data3;
+        private BitArray mask1;
+        private BitArray mask2;
+        private BitArray mask3;
+
+        private BitArray crossMask;
 
         protected sealed override void OnWorldInjected() {
-            data1 = world.GetData<T1>();
-            data2 = world.GetData<T2>();
-            data3 = world.GetData<T3>();
+            world.GetData(out data1, out mask1);
+            world.GetData(out data2, out mask2);
+            world.GetData(out data3, out mask3);
+
+            crossMask = new BitArray(mask1.Length);
         }
 
         protected internal  sealed override void Update(float delta) {
             this.delta = delta;
 
-            var mask = new BitArray(data1.mask).And(data2.mask).And(data3.mask);
+            crossMask.Or(mask1).And(mask2).And(mask3);
             for (int i = 0; i < base.world.EntityCount; i++) {
-                if (mask.Get(i))
-                    OnUpdate(ref data1.data[i], ref data2.data[i], ref data3.data[i]);
+                if (crossMask.Get(i))
+                    OnUpdate(ref data1[i], ref data2[i], ref data3[i]);
             }
         }
 
@@ -90,25 +104,33 @@ namespace AECS {
     }
 
     public abstract class ArraySystem<T1, T2, T3, T4> : ArraySystem {
-        private ArrayWorld.Data<T1> data1;
-        private ArrayWorld.Data<T2> data2;
-        private ArrayWorld.Data<T3> data3;
-        private ArrayWorld.Data<T4> data4;
+        private T1[] data1;
+        private T2[] data2;
+        private T3[] data3;
+        private T4[] data4;
+        private BitArray mask1;
+        private BitArray mask2;
+        private BitArray mask3;
+        private BitArray mask4;
+
+        private BitArray crossMask;
 
         protected sealed override void OnWorldInjected() {
-            data1 = world.GetData<T1>();
-            data2 = world.GetData<T2>();
-            data3 = world.GetData<T3>();
-            data4 = world.GetData<T4>();
+            world.GetData(out data1, out mask1);
+            world.GetData(out data2, out mask2);
+            world.GetData(out data3, out mask3);
+            world.GetData(out data4, out mask4);
+
+            crossMask = new BitArray(mask1.Length);
         }
 
         protected internal  sealed override void Update(float delta) {
             this.delta = delta;
 
-            var mask = new BitArray(data1.mask).And(data2.mask).And(data3.mask).And(data4.mask);
+            crossMask.Or(mask1).And(mask2).And(mask3).And(mask4);
             for (int i = 0; i < base.world.EntityCount; i++) {
-                if (mask.Get(i))
-                    OnUpdate(ref data1.data[i], ref data2.data[i], ref data3.data[i], ref data4.data[i]);
+                if (crossMask.Get(i))
+                    OnUpdate(ref data1[i], ref data2[i], ref data3[i], ref data4[i]);
             }
         }
 
@@ -120,7 +142,7 @@ namespace AECS {
         private const int ID_SHIFT = 31;
 
         private ulong[] entities;
-        internal readonly Dictionary<Type, Data> components = new Dictionary<Type, Data>();
+        private readonly Dictionary<Type, Data> components = new Dictionary<Type, Data>();
         private readonly List<ArraySystem> systems = new List<ArraySystem>();
 
         public int EntityCount { get; private set; }
@@ -218,17 +240,15 @@ namespace AECS {
             var idx = getIdx(e);
             if (e != entities[idx]) return default;
 
-            if (!components.TryGetValue(typeof(T), out var data)) return default;
-            return ((Data<T>)data).Get(idx);
+            return !components.TryGetValue(typeof(T), out var data) ? default : ((Data<T>)data).Get(idx);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Ref<T>(in ulong e, ref T c) {
             var idx = getIdx(e);
-            if (e != entities[idx]) return default;
+            if (e != entities[idx]) return false;
 
-            if (!components.TryGetValue(typeof(T), out var data)) return default;
-            return ((Data<T>)data).Ref(idx, ref c);
+            return components.TryGetValue(typeof(T), out var data) && ((Data<T>)data).Ref(idx, ref c);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -245,12 +265,12 @@ namespace AECS {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static uint getIdx(ulong entityId) => (uint)((entityId & ~IS_ALIVE_MASK) >> ID_SHIFT);
 
-        internal class Data {
+        private class Data {
             public readonly BitArray mask;
-            public Data(int count) => mask = new BitArray(count);
+            protected Data(int count) => mask = new BitArray(count);
         }
 
-        internal class Data<T> : Data {
+        private class Data<T> : Data {
             internal readonly T[] data;
 
             public Data(int count):base(count) => data = new T[count];
@@ -298,14 +318,15 @@ namespace AECS {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal Data<T> GetData<T>() {
-            Data<T> data;
+        internal void GetData<T>(out T[] data, out BitArray mask) {
+            Data<T> dataWrapper;
             if (!components.TryGetValue(typeof(T), out var d))
-                components[typeof(T)] = data = new Data<T>(EntityCount);
+                components[typeof(T)] = dataWrapper = new Data<T>(entities.Length);
             else
-                data = (Data<T>)d;
+                dataWrapper = (Data<T>)d;
 
-            return data;
+            data = dataWrapper.data;
+            mask = dataWrapper.mask;
         }
     }
 }
