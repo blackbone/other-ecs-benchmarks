@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Benchmark;
-using Benchmark._Context;
+using Benchmark.Context;
 
-namespace Bentchmark.Tests;
+namespace Benchmark.Tests;
 
 // [TestFixture]
 public class TestContexts {

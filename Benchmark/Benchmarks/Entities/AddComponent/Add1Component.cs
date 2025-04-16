@@ -1,4 +1,4 @@
-using Benchmark._Context;
+using Benchmark.Context;
 using BenchmarkDotNet.Attributes;
 
 namespace Benchmark.Benchmarks.Entities.AddComponent;

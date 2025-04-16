@@ -48,7 +48,6 @@ namespace AECS {
         private T2[] data2;
         private BitArray mask1;
         private BitArray mask2;
-        private BitArray mask3;
 
         private BitArray crossMask;
 
@@ -62,7 +61,7 @@ namespace AECS {
         protected internal  sealed override void Update(float delta) {
             this.delta = delta;
 
-            crossMask.Or(mask1).And(mask2).And(mask3);
+            crossMask.Or(mask1).And(mask2);
             for (int i = 0; i < base.world.EntityCount; i++) {
                 if (crossMask.Get(i))
                     OnUpdate(ref data1[i], ref data2[i]);

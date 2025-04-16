@@ -1,6 +1,6 @@
 using System;
 
-namespace Benchmark._Context;
+namespace Benchmark.Context;
 
 public static class BenchmarkContext
 {

@@ -5,7 +5,7 @@ using XenoComponent = Xeno.IComponent;
 using FrifloComponent = Friflo.Engine.ECS.IComponent;
 using StaticEcsComponent = FFS.Libraries.StaticEcs.IComponent;
 
-namespace Benchmark._Context;
+namespace Benchmark.Context;
 
 public interface IBenchmarkContext : IDisposable {
     /// <summary>

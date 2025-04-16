@@ -1,4 +1,4 @@
-using Benchmark._Context;
+using Benchmark.Context;
 using BenchmarkDotNet.Attributes;
 
 namespace Benchmark.Benchmarks.Systems;
@@ -23,40 +23,36 @@ public abstract class SystemWith3Components<T, TE> : IBenchmark<T, TE> where T :
         Context = BenchmarkContext.Create<T>(EntityCount);
         Context.Setup();
 
-        Context.Warmup<Component1>(0);
-        Context.Warmup<Component2>(1);
-        Context.Warmup<Component3>(2);
-        Context.Warmup<Component1, Component2, Component3>(3);
+        Context.Warmup<Component1, Component2, Component3>(0);
+        Context.Warmup<Component1>(1);
+        Context.Warmup<Component2>(2);
+        Context.Warmup<Component3>(3);
 
         unsafe
         {
             // set up systems
-            Context.AddSystem<Component1, Component2, Component3>(&Update, 3);
+            Context.AddSystem<Component1, Component2, Component3>(&Update, 0);
         }
 
         Context.FinishSetup();
 
         set = Context.PrepareSet(1);
-        // set up entities
-        for (var _i = 0; _i < EntityCount; ++_i)
-        {
-            for (var j = 0; j < Padding; ++j)
-                switch (j % 2)
-                {
-                    case 0:
-                        Context.CreateEntities<Component1>(set, 0, default(Component1));
-                        break;
-                    case 1:
-                        Context.CreateEntities<Component2>(set, 1, default(Component2));
-                        break;
-                    case 2:
-                        Context.CreateEntities<Component3>(set, 2, default(Component3));
-                        break;
-                }
-
+        var _i = 0;
+        while (_i < EntityCount) {
             {
-                Context.CreateEntities<Component1, Component2, Component3>(set, 3, default(Component1), new Component2 { Value = 1 },
-                    new Component3 { Value = 1 });
+                Context.CreateEntities<Component1, Component2, Component3>(set, 0, default(Component1), new Component2 { Value = 1 }, new Component3 { Value = 1 });
+                _i++;
+            }
+
+            for (var j = 0; j < Padding; ++j) {
+                switch (j % 3) {
+                    case 0: Context.CreateEntities<Component1>(set, 1, default(Component1)); break;
+                    case 1: Context.CreateEntities<Component2>(set, 2, default(Component2)); break;
+                    case 2: Context.CreateEntities<Component3>(set, 3, default(Component3)); break;
+                }
+                ++_i;
+
+                if (_i >= EntityCount) return;
             }
         }
     }

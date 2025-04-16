@@ -1,3 +1,3 @@
-namespace Benchmark._Context;
+namespace Benchmark.Context;
 
 public class IgnoreAttribute : System.Attribute;

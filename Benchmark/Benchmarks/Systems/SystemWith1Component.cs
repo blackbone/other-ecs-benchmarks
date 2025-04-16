@@ -1,4 +1,4 @@
-using Benchmark._Context;
+using Benchmark.Context;
 using BenchmarkDotNet.Attributes;
 
 namespace Benchmark.Benchmarks.Systems;
@@ -23,6 +23,7 @@ public abstract class SystemWith1Component<T, TE> : IBenchmark<T, TE> where T : 
         Context = BenchmarkContext.Create<T>(EntityCount);
         Context.Setup();
         Context.Warmup<Component1>(0);
+        Context.Warmup<Padding1>(1);
 
         unsafe
         {
@@ -33,12 +34,19 @@ public abstract class SystemWith1Component<T, TE> : IBenchmark<T, TE> where T : 
         Context.FinishSetup();
 
         set = Context.PrepareSet(1);
-        for (var _i = 0; _i < EntityCount; ++_i)
-        {
-            for (var j = 0; j < Padding; ++j)
-                Context.CreateEntities(set);
+        var _i = 0;
+        while (_i < EntityCount) {
+            {
+                Context.CreateEntities<Component1>(set, 0, new Component1 { Value = 0 });
+                _i++;
+            }
 
-            Context.CreateEntities<Component1>(set, 0, new Component1 { Value = 0 });
+            for (var j = 0; j < Padding; ++j) {
+                Context.CreateEntities<Padding1>(set, 1, default(Padding1));
+                ++_i;
+
+                if (_i >= EntityCount) return;
+            }
         }
     }
 

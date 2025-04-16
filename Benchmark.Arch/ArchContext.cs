@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Arch.Core;
 using Arch.Core.Extensions;
 using Arch.Core.Utils;
-using Benchmark._Context;
+using Benchmark.Context;
 using DCFApixels.DragonECS;
 using Scellecs.Morpeh;
 using Entity = Arch.Core.Entity;

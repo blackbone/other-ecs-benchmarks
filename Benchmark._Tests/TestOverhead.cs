@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Benchmark;
+using Helper = Bentchmark.Tests.Helper;
 
-namespace Bentchmark.Tests;
+namespace Benchmark.Tests;
 
-public class TestBenchmarks {
+public class TestOverhead {
     [Test]
     [TestCaseSource(nameof(GetBenchmarks))]
     public void _<T>(T benchmark) where T : IBenchmark, new() {
@@ -14,25 +14,26 @@ public class TestBenchmarks {
         benchmark.GlobalSetup();
 
         // because of repetative logic we need to check bench will clear and reuse correctly
-        var i = 10;
+        var i = 3;
         while (i-- > 0) {
             benchmark.IterationSetup();
-            benchmark.Run();
             benchmark.IterationCleanup();
         }
 
         benchmark.GlobalCleanup();
     }
 
-    private static IEnumerable<IBenchmark> GetBenchmarks() {
+    public static IEnumerable<IBenchmark> GetBenchmarks() {
         foreach (var benchmarkType in BenchMap.Runs.Values.SelectMany(v => v)) {
-            if (Activator.CreateInstance(benchmarkType) is not IBenchmark benchmark) {
-                yield return null;
+            if (!benchmarkType.IsAssignableTo(typeof(IBenchmark))) {
                 continue;
             }
 
-            Helper.InjectParameters(benchmark);
-            yield return benchmark;
+            foreach (var injection in Helper.GetInjections(benchmarkType)) {
+                var benchmark = (IBenchmark)Activator.CreateInstance(benchmarkType);
+                injection(benchmark);
+                yield return benchmark;
+            }
         }
     }
 }

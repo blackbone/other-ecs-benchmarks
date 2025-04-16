@@ -25,7 +25,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Benchmark.DragonECS", "Benc
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Submodules and workarounds", "Submodules and workarounds", "{64C65D00-EC65-44E7-9D84-CD077BB23E45}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bentchmark.Tests", "Bentchmark.Tests\Bentchmark.Tests.csproj", "{36A677FA-8326-495A-85F0-AE43B1D3F00A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Benchmark._Tests", "Benchmark._Tests\Benchmark._Tests.csproj", "{36A677FA-8326-495A-85F0-AE43B1D3F00A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scellecs.Morpeh.Workaround", "Scellecs.Morpeh.Workaround\Scellecs.Morpeh.Workaround.csproj", "{A11D1569-FB29-446F-A55B-C3CD7C8B2856}"
 EndProject

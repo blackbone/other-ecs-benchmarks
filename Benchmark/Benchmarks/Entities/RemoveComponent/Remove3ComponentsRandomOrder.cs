@@ -1,5 +1,5 @@
 using System;
-using Benchmark._Context;
+using Benchmark.Context;
 using Benchmark.Utils;
 using BenchmarkDotNet.Attributes;
 

@@ -1,14 +1,50 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
+using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
-using System.Linq;
-using System.Text;
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace Benchmark._Generator;
+
+[Generator]
+public class ComponentsGenerator : ISourceGenerator {
+    public void Initialize(GeneratorInitializationContext ctx) {
+        // no op
+    }
+    public void Execute(GeneratorExecutionContext ctx) {
+        var source = CompilationUnit()
+            .AddUsings(
+                UsingDirective(ParseName("MorpehComponent = Scellecs.Morpeh.IComponent")),
+                UsingDirective(ParseName("DragonComponent = DCFApixels.DragonECS.IEcsComponent")),
+                UsingDirective(ParseName("XenoComponent = Xeno.IComponent")),
+                UsingDirective(ParseName("FrifloComponent = Friflo.Engine.ECS.IComponent")),
+                UsingDirective(ParseName("StaticEcsComponent = FFS.Libraries.StaticEcs.IComponent")))
+            .AddMembers(NamespaceDeclaration(ParseName("Benchmark"))
+                .AddMembers(GetComponentTypes().ToArray())
+                .AddMembers(GetPaddingTypes().ToArray()))
+            .NormalizeWhitespace()
+            .ToFullString();
+
+        ctx.AddSource("BenchmarksGenerator/Components.g.cs", SourceText.From($"{source}", Encoding.UTF8));
+    }
+
+    private IEnumerable<MemberDeclarationSyntax> GetComponentTypes() {
+        for (int i = 1; i <= 100; i++) {
+            yield return ParseMemberDeclaration($"public struct Component{i} : MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent {{ public int Value; }}");
+        }
+    }
+
+    private IEnumerable<MemberDeclarationSyntax> GetPaddingTypes() {
+        for (int i = 1; i <= 100; i++) {
+            yield return ParseMemberDeclaration($"public struct Padding{i} : MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent {{ public long Value1; public long Value2; public long Value3; public long Value4; }}");
+        }
+    }
+}
 
 [Generator]
 public class BenchmarksGenerator : ISourceGenerator {
@@ -65,7 +101,7 @@ public class BenchmarksGenerator : ISourceGenerator {
 
     private static void GenerateBenchmarks(Compilation compilation, GeneratorExecutionContext context) {
         // Get the benchmark and context interfaces
-        var contextInterface = compilation.GetTypeByMetadataName("Benchmark._Context.IBenchmarkContext");
+        var contextInterface = compilation.GetTypeByMetadataName("Benchmark.Context.IBenchmarkContext");
         var benchmarkInterface = compilation.GetTypeByMetadataName("Benchmark.IBenchmark");
 
         if (contextInterface == null || benchmarkInterface == null)
@@ -101,15 +137,15 @@ public class BenchmarksGenerator : ISourceGenerator {
         }
 
         {
-            var typeSyntax = SyntaxFactory.ClassDeclaration("BenchMap")
-                .WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.PublicKeyword), SyntaxFactory.Token(SyntaxKind.StaticKeyword)))
+            var typeSyntax = ClassDeclaration("BenchMap")
+                .WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.StaticKeyword)))
                 .AddMembers(GenerateBenchmarkMapping(byBenchmark, byContext));
 
-            var source = SyntaxFactory.CompilationUnit()
+            var source = CompilationUnit()
                 .AddUsings(
-                    SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System")),
-                    SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System.Collections.Generic")))
-                .AddMembers(SyntaxFactory.NamespaceDeclaration(SyntaxFactory.ParseName("Benchmark"))
+                    UsingDirective(ParseName("System")),
+                    UsingDirective(ParseName("System.Collections.Generic")))
+                .AddMembers(NamespaceDeclaration(ParseName("Benchmark"))
                     .AddMembers(typeSyntax))
                 .NormalizeWhitespace()
                 .ToFullString();
@@ -125,7 +161,7 @@ public class BenchmarksGenerator : ISourceGenerator {
         foreach (var (bench, impls) in byBenchmark.OrderBy(kv => kv.Key))
             sb.AppendLine($"{{typeof({bench}<,>), [{string.Join(", ", impls.Select(i => $"typeof({i})"))}]}},");
         sb.AppendLine("};");
-        var member = SyntaxFactory.ParseMemberDeclaration(sb.ToString());
+        var member = ParseMemberDeclaration(sb.ToString());
         if (member != null)
             members[0] = member.NormalizeWhitespace();
 
@@ -135,7 +171,7 @@ public class BenchmarksGenerator : ISourceGenerator {
             sb.AppendLine($"{{typeof({ctx}), [{string.Join(", ", impls.Select(i => $"typeof({i})"))}]}},");
         sb.AppendLine("};");
 
-        member = SyntaxFactory.ParseMemberDeclaration(sb.ToString());
+        member = ParseMemberDeclaration(sb.ToString());
         if (member != null)
             members[1] = member.NormalizeWhitespace();
 
@@ -153,15 +189,15 @@ public class BenchmarksGenerator : ISourceGenerator {
         var originalUsings = GetOriginalUsings(benchmark);
         var contextUsings = GetOriginalUsings(contextType);
         var mergedUsings = MergeUsings(originalUsings, contextUsings)
-            .Concat([SyntaxFactory.UsingDirective(SyntaxFactory.ParseName(contextType.ContainingNamespace.ToDisplayString()))]);
+            .Concat([UsingDirective(ParseName(contextType.ContainingNamespace.ToDisplayString()))]);
 
         // Generate the benchmark class
         var benchmarkClass = GetBenchmarkClassDeclaration(className, benchmark, contextType)
             .WithAttributeLists(ReplaceArtifactsPathAttribute(benchmark, artifactsPathArgument));
 
-        var compilationUnit = SyntaxFactory.CompilationUnit()
+        var compilationUnit = CompilationUnit()
             .AddUsings(mergedUsings.ToArray())
-            .AddMembers(SyntaxFactory.NamespaceDeclaration(SyntaxFactory.ParseName(namespaceName))
+            .AddMembers(NamespaceDeclaration(ParseName(namespaceName))
                 .AddMembers(benchmarkClass))
             .NormalizeWhitespace();
 
@@ -186,16 +222,16 @@ public class BenchmarksGenerator : ISourceGenerator {
                 attr.Name.ToString().Contains("ArtifactsPath")));
 
         // Add the updated ArtifactsPath attribute
-        var newArtifactsPathAttribute = SyntaxFactory.AttributeList(
-            SyntaxFactory.SingletonSeparatedList(
-                SyntaxFactory.Attribute(SyntaxFactory.IdentifierName("ArtifactsPath"))
-                    .WithArgumentList(SyntaxFactory.AttributeArgumentList(
-                        SyntaxFactory.SingletonSeparatedList(
-                            SyntaxFactory.AttributeArgument(SyntaxFactory.LiteralExpression(
+        var newArtifactsPathAttribute = AttributeList(
+            SingletonSeparatedList(
+                Attribute(IdentifierName("ArtifactsPath"))
+                    .WithArgumentList(AttributeArgumentList(
+                        SingletonSeparatedList(
+                            AttributeArgument(LiteralExpression(
                                 SyntaxKind.StringLiteralExpression,
-                                SyntaxFactory.Literal(artifactsPathValue))))))));
+                                Literal(artifactsPathValue))))))));
 
-        return SyntaxFactory.List(updatedAttributes.Concat([newArtifactsPathAttribute]));
+        return List(updatedAttributes.Concat([newArtifactsPathAttribute]));
     }
 
     private static IEnumerable<UsingDirectiveSyntax> GetOriginalUsings(INamedTypeSymbol symbol) {
@@ -235,9 +271,9 @@ public class BenchmarksGenerator : ISourceGenerator {
         var benchmarkMethods = InlineBenchmarkMethods(benchmarkType, contextType);
 
         // Generate the benchmark class
-        return SyntaxFactory.ClassDeclaration(className)
-            .AddBaseListTypes(SyntaxFactory.SimpleBaseType(SyntaxFactory.ParseTypeName("IBenchmark")))
-            .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+        return ClassDeclaration(className)
+            .AddBaseListTypes(SimpleBaseType(ParseTypeName("IBenchmark")))
+            .AddModifiers(Token(SyntaxKind.PublicKeyword))
             .AddAttributeLists(classAttributes.ToArray())
             .AddMembers(
                 contextFields
@@ -300,13 +336,13 @@ public class BenchmarksGenerator : ISourceGenerator {
                 _ => type
             };
 
-            yield return SyntaxFactory.FieldDeclaration(
-                    SyntaxFactory.VariableDeclaration(SyntaxFactory.ParseTypeName(type))
+            yield return FieldDeclaration(
+                    VariableDeclaration(ParseTypeName(type))
                         .AddVariables(
-                            SyntaxFactory.VariableDeclarator(field.Name)
+                            VariableDeclarator(field.Name)
                                 .WithInitializer(GetInitializer(field))
                             ))
-                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword));
+                .AddModifiers(Token(SyntaxKind.PrivateKeyword));
         }
     }
 
@@ -348,7 +384,7 @@ public class BenchmarksGenerator : ISourceGenerator {
         node = node.ReplaceNodes(node.DescendantNodes().OfType<MemberAccessExpressionSyntax>(),
             (original, _)
                 => original.Expression is IdentifierNameSyntax { Identifier.Text: "Context" }
-                    ? SyntaxFactory.IdentifierName(original.Name.Identifier.Text)
+                    ? IdentifierName(original.Name.Identifier.Text)
                     : original);
 
         return node;
@@ -359,7 +395,7 @@ public class BenchmarksGenerator : ISourceGenerator {
             return method;
 
         // log.AppendLine($"mod \"{method.WithBody(null).WithAttributeLists(SyntaxFactory.List<AttributeListSyntax>())}\"");
-        return method.WithBody(SyntaxFactory.Block(ModifyStatementsRecursive(contextType, method.Body.Statements)));
+        return method.WithBody(Block(ModifyStatementsRecursive(contextType, method.Body.Statements)));
     }
 
     // ReSharper disable once CognitiveComplexity
@@ -373,7 +409,7 @@ public class BenchmarksGenerator : ISourceGenerator {
                     continue; // Skip the Context assignment
                 // Recursively process inner blocks
                 case BlockSyntax block:
-                    newStatements.Add(SyntaxFactory.Block(ModifyStatementsRecursive(contextType, block.Statements)));
+                    newStatements.Add(Block(ModifyStatementsRecursive(contextType, block.Statements)));
                     continue;
                 // Handle if statements with optional else clause
                 case IfStatementSyntax ifStatement: {
@@ -382,9 +418,9 @@ public class BenchmarksGenerator : ISourceGenerator {
                     var updatedIf =
                         ifStatement
                             .WithCondition(updatedCondition)
-                            .WithStatement(SyntaxFactory.Block(ModifyStatementsRecursive(contextType, ifStatement.Statement.AsBlock().Statements)))
+                            .WithStatement(Block(ModifyStatementsRecursive(contextType, ifStatement.Statement.AsBlock().Statements)))
                             .WithElse(ifStatement.Else != null
-                                ? SyntaxFactory.ElseClause(SyntaxFactory.Block(ModifyStatementsRecursive(contextType, ifStatement.Else.Statement.AsBlock().Statements)))
+                                ? ElseClause(Block(ModifyStatementsRecursive(contextType, ifStatement.Else.Statement.AsBlock().Statements)))
                                 : null);
 
                     newStatements.Add(updatedIf);
@@ -400,11 +436,11 @@ public class BenchmarksGenerator : ISourceGenerator {
 
                         var updatedStatements = ModifyStatementsRecursive(contextType, section.Statements);
                         return section
-                            .WithLabels(SyntaxFactory.List(updatedLabels))
-                            .WithStatements(SyntaxFactory.SingletonList<StatementSyntax>(SyntaxFactory.Block(updatedStatements)));
+                            .WithLabels(List(updatedLabels))
+                            .WithStatements(SingletonList<StatementSyntax>(Block(updatedStatements)));
                     });
 
-                    newStatements.Add(switchStatement.WithSections(SyntaxFactory.List(updatedSections)));
+                    newStatements.Add(switchStatement.WithSections(List(updatedSections)));
                     continue;
                 }
                 // Handle loops (while, for, foreach, do-while)
@@ -413,7 +449,7 @@ public class BenchmarksGenerator : ISourceGenerator {
                     var updatedCondition = ReplaceContextPropertyAccess(whileStatement.Condition);
                     var updatedWhile = whileStatement
                         .WithCondition(updatedCondition)
-                        .WithStatement(SyntaxFactory.Block(ModifyStatementsRecursive(contextType, whileStatement.Statement.AsBlock().Statements)));
+                        .WithStatement(Block(ModifyStatementsRecursive(contextType, whileStatement.Statement.AsBlock().Statements)));
                     newStatements.Add(updatedWhile);
                     continue;
                 }
@@ -430,9 +466,9 @@ public class BenchmarksGenerator : ISourceGenerator {
                     // Recursively process the inner statements
                     var updatedFor = forStatement
                         .WithCondition(updatedCondition)
-                        .WithInitializers(SyntaxFactory.SeparatedList(updatedInitializers))
-                        .WithIncrementors(SyntaxFactory.SeparatedList(updatedIncrementors))
-                        .WithStatement(SyntaxFactory.Block(ModifyStatementsRecursive(contextType, forStatement.Statement.AsBlock().Statements)));
+                        .WithInitializers(SeparatedList(updatedInitializers))
+                        .WithIncrementors(SeparatedList(updatedIncrementors))
+                        .WithStatement(Block(ModifyStatementsRecursive(contextType, forStatement.Statement.AsBlock().Statements)));
 
                     newStatements.Add(updatedFor);
                     continue;
@@ -444,7 +480,7 @@ public class BenchmarksGenerator : ISourceGenerator {
                     // Recursively process the inner statements
                     var updatedForEach = foreachStatement
                         .WithExpression(updatedExpression)
-                        .WithStatement(SyntaxFactory.Block(ModifyStatementsRecursive(contextType, foreachStatement.Statement.AsBlock().Statements)));
+                        .WithStatement(Block(ModifyStatementsRecursive(contextType, foreachStatement.Statement.AsBlock().Statements)));
 
                     newStatements.Add(updatedForEach);
                     continue;
@@ -455,13 +491,13 @@ public class BenchmarksGenerator : ISourceGenerator {
 
                     var updatedDo = doStatement
                         .WithCondition(updatedCondition)
-                        .WithStatement(SyntaxFactory.Block(ModifyStatementsRecursive(contextType, doStatement.Statement.AsBlock().Statements)));
+                        .WithStatement(Block(ModifyStatementsRecursive(contextType, doStatement.Statement.AsBlock().Statements)));
                     newStatements.Add(updatedDo);
                     continue;
                 }
                 case UnsafeStatementSyntax unsafeStatement: {
                     var updatedUnsafe = unsafeStatement.WithBlock(
-                        SyntaxFactory.Block(ModifyStatementsRecursive(contextType, unsafeStatement.Block.Statements)));
+                        Block(ModifyStatementsRecursive(contextType, unsafeStatement.Block.Statements)));
                     newStatements.Add(updatedUnsafe);
                     continue;
                 }
@@ -560,8 +596,8 @@ public class BenchmarksGenerator : ISourceGenerator {
             // Handle member access to properties
             if (statement is ExpressionStatementSyntax { Expression: MemberAccessExpressionSyntax propertyAccess } &&
                 propertyAccess.Expression.ToString() == "Context") {
-                var updatedExpression = SyntaxFactory.IdentifierName(propertyAccess.Name.Identifier.Text);
-                newStatements.Add(SyntaxFactory.ExpressionStatement(updatedExpression));
+                var updatedExpression = IdentifierName(propertyAccess.Name.Identifier.Text);
+                newStatements.Add(ExpressionStatement(updatedExpression));
                 continue;
             }
 
@@ -665,22 +701,22 @@ public class BenchmarksGenerator : ISourceGenerator {
         var expression = methodSyntax.ExpressionBody.Expression.ReplaceNodes(
             methodSyntax.ExpressionBody.Expression.DescendantNodes().OfType<IdentifierNameSyntax>(),
             (original, _) => substitutions.TryGetValue(original.Identifier.Text, out var replacement)
-                ? SyntaxFactory.IdentifierName(replacement)
+                ? IdentifierName(replacement)
                 : genericSubstitutions.TryGetValue(original.Identifier.Text, out var genericReplacement)
-                    ? SyntaxFactory.IdentifierName(genericReplacement)
+                    ? IdentifierName(genericReplacement)
                     : original);
 
         if (returnVariable != null)
         {
-            inlinedStatements.Add(SyntaxFactory.ExpressionStatement(
-                SyntaxFactory.AssignmentExpression(
+            inlinedStatements.Add(ExpressionStatement(
+                AssignmentExpression(
                     SyntaxKind.SimpleAssignmentExpression,
-                    SyntaxFactory.IdentifierName(returnVariable),
+                    IdentifierName(returnVariable),
                     expression)));
         }
         else
         {
-            inlinedStatements.Add(SyntaxFactory.ExpressionStatement(expression));
+            inlinedStatements.Add(ExpressionStatement(expression));
         }
     }
     private static void HandleMethodBody(MethodDeclarationSyntax methodSyntax, Dictionary<string, string> substitutions, Dictionary<string, string> genericSubstitutions, string returnVariable, List<StatementSyntax> inlinedStatements) {
@@ -690,16 +726,16 @@ public class BenchmarksGenerator : ISourceGenerator {
                 statement.DescendantNodes().OfType<IdentifierNameSyntax>(),
                 (original, _)
                     => substitutions.TryGetValue(original.Identifier.Text, out var replacement)
-                        ? SyntaxFactory.IdentifierName(replacement)
+                        ? IdentifierName(replacement)
                         : genericSubstitutions.TryGetValue(original.Identifier.Text, out var genericReplacement)
-                            ? SyntaxFactory.IdentifierName(genericReplacement)
+                            ? IdentifierName(genericReplacement)
                             : original);
 
             if (updatedStatement is ReturnStatementSyntax returnStatement && returnVariable != null) {
-                updatedStatement = SyntaxFactory.ExpressionStatement(
-                    SyntaxFactory.AssignmentExpression(
+                updatedStatement = ExpressionStatement(
+                    AssignmentExpression(
                         SyntaxKind.SimpleAssignmentExpression,
-                        SyntaxFactory.IdentifierName(returnVariable),
+                        IdentifierName(returnVariable),
                         returnStatement.Expression!));
             }
 
@@ -740,7 +776,7 @@ public class BenchmarksGenerator : ISourceGenerator {
             expression.DescendantNodes().OfType<MemberAccessExpressionSyntax>(),
             (original, _)
                 => original.Expression.ToString() == "Context"
-                    ? SyntaxFactory.IdentifierName(original.Name.Identifier.Text)
+                    ? IdentifierName(original.Name.Identifier.Text)
                     : original);
         var updated = expression.ToFullString();
         if (updated != origin)

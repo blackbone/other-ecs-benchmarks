@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Benchmark._Context;
+using Benchmark.Context;
 using DCFApixels.DragonECS;
 using Leopotam.EcsLite;
 using Scellecs.Morpeh;
