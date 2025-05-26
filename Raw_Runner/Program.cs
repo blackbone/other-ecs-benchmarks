@@ -9,13 +9,8 @@ using BenchmarkDotNet.Attributes;
 
 const bool IS_ITERATIVE_RUN = true;
 const int ITERATIONS_OR_MILLISECONDS = 1_000;
-const int ENTITY_COUNT = 100_000;
+const int ENTITY_COUNT = 1_000_000;
 
-RunBenchType(typeof(Add1Component_ArrayECSContext));
-RunBenchType(typeof(SystemWith3Components_LeoEcsLiteContext));
-RunBenchType(typeof(SystemWith3Components_MorpehContext));
-RunBenchType(typeof(SystemWith3Components_MassiveEcsContext));
-RunBenchType(typeof(SystemWith3Components_StaticEcsContext));
 RunBenchType(typeof(SystemWith3Components_ArrayECSContext));
 return;
 

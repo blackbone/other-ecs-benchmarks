@@ -18,7 +18,7 @@
       <ProjectReference Include="..\submodules\massive-ecs\Runtime\Massive.csproj" />
       <ProjectReference Include="..\submodules\morpeh\Scellecs.Morpeh\Scellecs.Morpeh.csproj" />
       <ProjectReference Include="..\submodules\xeno\Xeno.csproj" />
-        <PackageReference Include="Friflo.Engine.ECS" Version="3.2.3" />
+        <PackageReference Include="Friflo.Engine.ECS" Version="3.4.2" />
     </ItemGroup>
 
 </Project>
