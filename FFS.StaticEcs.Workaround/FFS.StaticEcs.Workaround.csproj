@@ -20,6 +20,9 @@
         <Compile Include="..\submodules\StaticEcs\Src\**\*.cs">
             <Link>Src\%(RecursiveDir)/%(FileName)%(Extension)</Link>
         </Compile>
+        <Compile Include="..\submodules\StaticPack\Src\**\*.cs">
+            <Link>Src\%(RecursiveDir)/%(FileName)%(Extension)</Link>
+        </Compile>
     </ItemGroup>
 
 </Project>

@@ -40,23 +40,23 @@ public sealed class StaticEcsContext : IBenchmarkContext<W.Entity>
 
     public void Warmup<T1>(in int poolId) where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
-        W.RegisterComponentType<T1>();
+        TryRegisterComponent<T1>();
     }
 
     public void Warmup<T1, T2>(in int poolId) where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T2 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
-        W.RegisterComponentType<T1>();
-        W.RegisterComponentType<T2>();
+        TryRegisterComponent<T1>();
+        TryRegisterComponent<T2>();
     }
 
     public void Warmup<T1, T2, T3>(in int poolId) where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T2 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T3 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
-        W.RegisterComponentType<T1>();
-        W.RegisterComponentType<T2>();
-        W.RegisterComponentType<T3>();
+        TryRegisterComponent<T1>();
+        TryRegisterComponent<T2>();
+        TryRegisterComponent<T3>();
     }
 
     public void Warmup<T1, T2, T3, T4>(in int poolId) where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
@@ -64,10 +64,18 @@ public sealed class StaticEcsContext : IBenchmarkContext<W.Entity>
         where T3 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T4 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
-        W.RegisterComponentType<T1>();
-        W.RegisterComponentType<T2>();
-        W.RegisterComponentType<T3>();
-        W.RegisterComponentType<T4>();
+        TryRegisterComponent<T1>();
+        TryRegisterComponent<T2>();
+        TryRegisterComponent<T3>();
+        TryRegisterComponent<T4>();
+    }
+
+    private void TryRegisterComponent<T>() where T : struct, IComponent {
+        if (W.Components<T>.Value.IsRegistered()) {
+            return;
+        }
+        
+        W.RegisterComponentType<T>();
     }
 
     public void CreateEntities(in W.Entity[] entities)
