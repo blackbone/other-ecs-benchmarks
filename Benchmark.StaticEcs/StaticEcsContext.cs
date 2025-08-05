@@ -287,16 +287,18 @@ public sealed class StaticEcsContext : IBenchmarkContext<W.Entity>
     public unsafe void AddSystem<T1>(delegate*<ref T1, void> @delegate, int poolId)
         where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
-        W.Context.Value.Replace(new DelegateHolder<T1> { method = @delegate });
-        Systems.AddUpdate(new System<T1>());
+        Systems.AddUpdate(new System<T1> {
+            method = @delegate
+        });
     }
 
     public unsafe void AddSystem<T1, T2>(delegate*<ref T1, ref T2, void> @delegate, int poolId)
         where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T2 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
-        W.Context.Value.Replace(new DelegateHolder<T1, T2> { method = @delegate });
-        Systems.AddUpdate(new System<T1, T2>());
+        Systems.AddUpdate(new System<T1, T2> {
+            method = @delegate
+        });
     }
 
     public unsafe void AddSystem<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> @delegate, int poolId)
@@ -304,8 +306,9 @@ public sealed class StaticEcsContext : IBenchmarkContext<W.Entity>
         where T2 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T3 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
-        W.Context.Value.Replace(new DelegateHolder<T1, T2, T3> { method = @delegate });
-        Systems.AddUpdate(new System<T1, T2, T3>());
+        Systems.AddUpdate(new System<T1, T2, T3> {
+            method = @delegate
+        });
     }
 
     public unsafe void AddSystem<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> @delegate, int poolId)
@@ -314,8 +317,9 @@ public sealed class StaticEcsContext : IBenchmarkContext<W.Entity>
         where T3 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T4 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
-        W.Context.Value.Replace(new DelegateHolder<T1, T2, T3, T4> { method = @delegate });
-        Systems.AddUpdate(new System<T1, T2, T3, T4>());
+        Systems.AddUpdate(new System<T1, T2, T3, T4> {
+            method = @delegate
+        });
     }
 
     public W.Entity[] PrepareSet(in int count)
@@ -328,9 +332,11 @@ public unsafe struct System<T1> : IUpdateSystem
     where T1 : struct, IComponent
 {
 
+    public delegate*<ref T1, void> method;
+    
     public void Update() {
-        W.QueryComponents.For(static (W.Entity _, ref T1 c1) => {
-            W.Context<DelegateHolder<T1>>.Get().method(ref c1);
+        W.QueryComponents.For(ref this, static (ref System<T1> self, ref T1 c1) => {
+            self.method(ref c1);
         });
     }
 }
@@ -339,11 +345,13 @@ public unsafe struct System<T1, T2> : IUpdateSystem
     where T1 : struct, IComponent
     where T2 : struct, IComponent
 {
+    
+    public delegate*<ref T1, ref T2, void> method;
 
     public void Update()
     {
-        W.QueryComponents.For(static (W.Entity _, ref T1 c1, ref T2 c2) => {
-            W.Context<DelegateHolder<T1, T2>>.Get().method(ref c1, ref c2);
+        W.QueryComponents.For(ref this, static (ref System<T1, T2> self, ref T1 c1, ref T2 c2) => {
+            self.method(ref c1, ref c2);
         });
     }
 }
@@ -353,10 +361,13 @@ public unsafe struct System<T1, T2, T3> : IUpdateSystem
     where T2 : struct, IComponent
     where T3 : struct, IComponent
 {
+    
+    public delegate*<ref T1, ref T2, ref T3, void> method;
+    
     public void Update()
     {
-        W.QueryComponents.For(static (W.Entity _, ref T1 c1, ref T2 c2, ref T3 c3) => {
-            W.Context<DelegateHolder<T1, T2, T3>>.Get().method(ref c1, ref c2, ref c3);
+        W.QueryComponents.For(ref this, static (ref System<T1, T2, T3> self, ref T1 c1, ref T2 c2, ref T3 c3) => {
+            self.method(ref c1, ref c2, ref c3);
         });
     }
 }
@@ -366,38 +377,15 @@ public unsafe struct System<T1, T2, T3, T4> : IUpdateSystem
     where T2 : struct, IComponent
     where T3 : struct, IComponent
     where T4 : struct, IComponent {
+    
+    
+    public delegate*<ref T1, ref T2, ref T3, ref T4, void> method;
 
     public void Update()
     {
-        W.QueryComponents.For(static (W.Entity _, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4) => {
-            W.Context<DelegateHolder<T1, T2, T3, T4>>.Get().method(ref c1, ref c2, ref c3, ref c4);
+        W.QueryComponents.For(ref this, static (ref System<T1, T2, T3, T4> self, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4) => {
+            self.method(ref c1, ref c2, ref c3, ref c4);
         });
     }
 
-}
-
-public struct DelegateHolder<T1>
-    where T1 : struct, IComponent {
-    public unsafe delegate*<ref T1, void> method;
-}
-
-public struct DelegateHolder<T1, T2>
-    where T1 : struct, IComponent
-    where T2 : struct, IComponent {
-    public unsafe delegate*<ref T1, ref T2, void> method;
-}
-
-public struct DelegateHolder<T1, T2, T3>
-    where T1 : struct, IComponent
-    where T2 : struct, IComponent
-    where T3 : struct, IComponent {
-    public unsafe delegate*<ref T1, ref T2, ref T3, void> method;
-}
-
-public struct DelegateHolder<T1, T2, T3, T4>
-    where T1 : struct, IComponent
-    where T2 : struct, IComponent
-    where T3 : struct, IComponent
-    where T4 : struct, IComponent {
-    public unsafe delegate*<ref T1, ref T2, ref T3, ref T4, void> method;
 }
