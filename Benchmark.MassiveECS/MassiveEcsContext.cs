@@ -6,7 +6,6 @@ using DCFApixels.DragonECS;
 using Massive;
 using Scellecs.Morpeh;
 using Entity = Massive.Entifier;
-using Filter = Massive.Filter;
 using World = Massive.World;
 
 namespace Benchmark.MassiveECS;
@@ -321,21 +320,21 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 
 	public unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		_systems.Add(() => _world.View().ForEach((ref T1 c1) => method(ref c1)));
+		_systems.Add(() => _world.ForEach((ref T1 c1) => method(ref c1)));
 	}
 
 	public unsafe void AddSystem<T1, T2>(delegate*<ref T1, ref T2, void> method, int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		_systems.Add(() => _world.View().ForEach((ref T1 c1, ref T2 c2) => method(ref c1, ref c2)));
+		_systems.Add(() => _world.ForEach((ref T1 c1, ref T2 c2) => method(ref c1, ref c2)));
 	}
 
 	public unsafe void AddSystem<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> method, int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		_systems.Add(() => _world.View().ForEach((ref T1 c1, ref T2 c2, ref T3 c3) => method(ref c1, ref c2, ref c3)));
+		_systems.Add(() => _world.ForEach((ref T1 c1, ref T2 c2, ref T3 c3) => method(ref c1, ref c2, ref c3)));
 	}
 
 	public unsafe void AddSystem<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> method, int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		_systems.Add(() => _world.View().ForEach((ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4) => method(ref c1, ref c2, ref c3, ref c4)));
+		_systems.Add(() => _world.ForEach((ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4) => method(ref c1, ref c2, ref c3, ref c4)));
 	}
 }
