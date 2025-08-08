@@ -681,7 +681,7 @@ public sealed class BenchGenerator3 : IIncrementalGenerator {
 
             static string ReplaceAddressOfInvocations(string code) {
                 // Remove any & directly preceding a method name followed by (
-                return Regex.Replace(code, @"&(?=\s*[A-Za-z_][A-Za-z0-9_]*\s*\()", string.Empty);
+                return Regex.Replace(code, @"&(?=\s*[A-Za-z_][A-Za-z0-9_]*(\s*<[^>]+>)?\s*\()", string.Empty);
             }
 
             static string ReplaceEntityTypes(string code, string entityType) {
