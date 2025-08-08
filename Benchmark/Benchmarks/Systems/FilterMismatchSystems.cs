@@ -1,6 +1,11 @@
 using System;
 using Benchmark.Context;
 using BenchmarkDotNet.Attributes;
+using MorpehComponent = Scellecs.Morpeh.IComponent;
+using DragonComponent = DCFApixels.DragonECS.IEcsComponent;
+using XenoComponent = Xeno.IComponent;
+using FrifloComponent = Friflo.Engine.ECS.IComponent;
+using StaticEcsComponent = FFS.Libraries.StaticEcs.IComponent;
 
 namespace Benchmark.Benchmarks.Systems;
 
@@ -9,7 +14,9 @@ namespace Benchmark.Benchmarks.Systems;
 #if CHECK_CACHE_MISSES
 [HardwareCounters(BenchmarkDotNet.Diagnosers.HardwareCounter.CacheMisses)]
 #endif
-public abstract class FilterMismatchSystems<T, TE> : IBenchmark<T, TE> where T : IBenchmarkContext<TE> {
+public abstract class FilterMismatchSystems<T, TE> : IBenchmark<T, TE>
+    where T : IBenchmarkContext<TE>
+{
     private const int SystemCount = 100;
     private const float Delta = 0.1f;
 
@@ -159,8 +166,8 @@ public abstract class FilterMismatchSystems<T, TE> : IBenchmark<T, TE> where T :
     }
 
     private void SetupSystem<T1, T2>(int index, int count)
-        where T1 : struct, Scellecs.Morpeh.IComponent, DCFApixels.DragonECS.IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
-        where T2 : struct, Scellecs.Morpeh.IComponent, DCFApixels.DragonECS.IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T1 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
+        where T2 : struct, MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent
     {
         Context.Warmup<T1>(index + SystemCount);
         Context.Warmup<T1, T2>(index);
