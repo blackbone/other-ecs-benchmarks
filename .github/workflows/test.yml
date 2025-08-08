@@ -2,7 +2,23 @@ name: Test
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
+    paths:
+      - './github/workflows/benchmark.yml'
+      - './github/workflows/test.yml'
+      - '**.cs'
+      - '**.csproj'
+      - '**.sln'
+  pull_request:
+    branches: ["main"]
+    paths:
+      - './github/workflows/benchmark.yml'
+      - './github/workflows/test.yml'
+      - '**.cs'
+      - '**.csproj'
+      - '**.sln'
+  merge_group:
+    branches: ["main"]
     paths:
       - './github/workflows/benchmark.yml'
       - './github/workflows/test.yml'
@@ -10,6 +26,12 @@ on:
       - '**.csproj'
       - '**.sln'
   workflow_dispatch:
+
+env:
+  DOTNET_VERSION: '9.0.x'
+  CONFIGURATION: 'Release'
+  CHECK_CACHE_MISSES: 'false'
+  TEST_LOGGER: 'console;verbosity=normal'
 
 jobs:
   build:
@@ -24,10 +46,10 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 9.0.x
+          dotnet-version: ${{ env.DOTNET_VERSION }}
       - name: Restore Benchmark
         run: dotnet restore
       - name: Build Benchmark
-        run: dotnet build -c Release /p:CheckCacheMisses=false
+        run: dotnet build -c ${{ env.CONFIGURATION }} /p:CheckCacheMisses=${{ env.CHECK_CACHE_MISSES }}
       - name: Run Tests
-        run: dotnet test -c Release -v quiet --nologo -l:"console;verbosity=normal"
+        run: dotnet test -c ${{ env.CONFIGURATION }} -v quiet --nologo -l:"${{ env.TEST_LOGGER }}"
