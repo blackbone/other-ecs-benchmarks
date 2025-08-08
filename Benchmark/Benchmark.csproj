@@ -38,8 +38,8 @@
 
     <!-- NUGET REFERENCES -->
     <ItemGroup>
-        <PackageReference Include="Arch" Version="2.1.0-beta" />
-        <PackageReference Include="BenchmarkDotNet" Version="0.15.0" />
+        <PackageReference Include="Arch" Version="2.1.0" />
+        <PackageReference Include="BenchmarkDotNet" Version="0.15.2" />
         <PackageReference Include="DefaultEcs" Version="0.18.0-beta01" />
         <PackageReference Include="fennecs" Version="0.5.16-beta" />
         <PackageReference Condition="$(Configuration) == Release" Include="Flecs.NET.Release" Version="4.0.4-build.548" />
