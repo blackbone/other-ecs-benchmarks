@@ -191,7 +191,7 @@ public sealed class BenchGenerator3 : IIncrementalGenerator {
                 .NormalizeWhitespace();
 
             var code = compilationUnit.ToFullString();
-            code = StringReplacements(code);
+            code = StringReplacements(code, GetEntityTypeName(contextType));
 
             context.AddSource($"BenchmarksGenerator/{className}.g.cs", SourceText.From(code, Encoding.UTF8));
             log.AppendLine($"Generating: {className} done\n");
@@ -314,12 +314,6 @@ public sealed class BenchGenerator3 : IIncrementalGenerator {
                          .Where(f => !f.Name.Contains("k__"))) {
 
                 var type = field.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
-                type = type switch {
-                    "TE" => entityTypeName,
-                    "TE[]" => $"{entityTypeName}[]",
-                    _ => type
-                };
-
                 yield return FieldDeclaration(
                         VariableDeclaration(ParseTypeName(type))
                             .AddVariables(
@@ -679,13 +673,19 @@ public sealed class BenchGenerator3 : IIncrementalGenerator {
             return expression;
         }
 
-        private static string StringReplacements(string code) {
+        private static string StringReplacements(string code, string entityType) {
             code = ReplaceAddressOfInvocations(code);
+            code = ReplaceEntityTypes(code, entityType);
+
             return code;
 
             static string ReplaceAddressOfInvocations(string code) {
                 // Remove any & directly preceding a method name followed by (
                 return Regex.Replace(code, @"&(?=\s*[A-Za-z_][A-Za-z0-9_]*\s*\()", string.Empty);
+            }
+
+            static string ReplaceEntityTypes(string code, string entityType) {
+                return code.Replace("TE", entityType);
             }
         }
     }
