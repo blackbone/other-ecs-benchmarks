@@ -61,65 +61,65 @@ public class ArrayECSContext : IBenchmarkContext<ulong> {
         for (int i = 0; i < entitySet.Length; i++) {
             var e = _world.CreateEntity();
             entitySet[i] = e;
-            _world.AddComponent(e, c1);
+            _world.AddComponent<T1>(e, c1);
         }
     }
     public void CreateEntities<T1, T2>(in ulong[] entitySet, in int poolId, in T1 c1, in T2 c2) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent {
         for (int i = 0; i < entitySet.Length; i++) {
             var e = _world.CreateEntity();
             entitySet[i] = e;
-            _world.AddComponent(e, c1);
-            _world.AddComponent(e, c2);
+            _world.AddComponent<T1>(e, c1);
+            _world.AddComponent<T2>(e, c2);
         }
     }
     public void CreateEntities<T1, T2, T3>(in ulong[] entitySet, in int poolId, in T1 c1, in T2 c2, in T3 c3) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent {
         for (int i = 0; i < entitySet.Length; i++) {
             var e = _world.CreateEntity();
             entitySet[i] = e;
-            _world.AddComponent(e, c1);
-            _world.AddComponent(e, c2);
-            _world.AddComponent(e, c3);
+            _world.AddComponent<T1>(e, c1);
+            _world.AddComponent<T2>(e, c2);
+            _world.AddComponent<T3>(e, c3);
         }
     }
     public void CreateEntities<T1, T2, T3, T4>(in ulong[] entitySet, in int poolId, in T1 c1, in T2 c2, in T3 c3, in T4 c4) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent {
         for (int i = 0; i < entitySet.Length; i++) {
             var e = _world.CreateEntity();
             entitySet[i] = e;
-            _world.AddComponent(e, c1);
-            _world.AddComponent(e, c2);
-            _world.AddComponent(e, c3);
-            _world.AddComponent(e, c4);
+            _world.AddComponent<T1>(e, c1);
+            _world.AddComponent<T2>(e, c2);
+            _world.AddComponent<T3>(e, c3);
+            _world.AddComponent<T4>(e, c4);
         }
     }
     public void AddComponent<T1>(in ulong[] entitySet, in int poolId, in T1 c1) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent {
         for (int i = 0; i < entitySet.Length; i++) {
             var e = entitySet[i];
-            _world.AddComponent(e, c1);
+            _world.AddComponent<T1>(e, c1);
         }
     }
     public void AddComponent<T1, T2>(in ulong[] entitySet, in int poolId, in T1 c1, in T2 c2) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent {
         for (int i = 0; i < entitySet.Length; i++) {
             var e = entitySet[i];
-            _world.AddComponent(e, c1);
-            _world.AddComponent(e, c2);
+            _world.AddComponent<T1>(e, c1);
+            _world.AddComponent<T2>(e, c2);
         }
     }
     public void AddComponent<T1, T2, T3>(in ulong[] entitySet, in int poolId, in T1 c1, in T2 c2, in T3 c3) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent {
         for (int i = 0; i < entitySet.Length; i++) {
             var e = entitySet[i];
-            _world.AddComponent(e, c1);
-            _world.AddComponent(e, c2);
-            _world.AddComponent(e, c3);
+            _world.AddComponent<T1>(e, c1);
+            _world.AddComponent<T2>(e, c2);
+            _world.AddComponent<T3>(e, c3);
         }
     }
 
     public void AddComponent<T1, T2, T3, T4>(in ulong[] entitySet, in int poolId, in T1 c1, in T2 c2, in T3 c3, in T4 c4) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent {
         for (int i = 0; i < entitySet.Length; i++) {
             var e = entitySet[i];
-            _world.AddComponent(e, c1);
-            _world.AddComponent(e, c2);
-            _world.AddComponent(e, c3);
-            _world.AddComponent(e, c4);
+            _world.AddComponent<T1>(e, c1);
+            _world.AddComponent<T2>(e, c2);
+            _world.AddComponent<T3>(e, c3);
+            _world.AddComponent<T4>(e, c4);
         }
     }
     public void RemoveComponent<T1>(in ulong[] entitySet, in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent {

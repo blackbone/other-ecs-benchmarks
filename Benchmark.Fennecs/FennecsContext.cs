@@ -72,14 +72,14 @@ public sealed class FennecsContext : IBenchmarkContext<Entity>
         where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         for (var i = 0; i < entities.Length; i++)
-            entities[i] = _world.Spawn().Add(c1);
+            entities[i] = _world.Spawn().Add<T1>(c1);
     }
 
     public void CreateEntities<T1, T2>(in fennecs.Entity[] entities, in int poolId, in T1 c1, in T2 c2)
         where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         for (var i = 0; i < entities.Length; i++)
-            entities[i] = _world.Spawn().Add(c1).Add(c2);
+            entities[i] = _world.Spawn().Add<T1>(c1).Add<T2>(c2);
     }
 
     public void CreateEntities<T1, T2, T3>(in fennecs.Entity[] entities, in int poolId, in T1 c1,
@@ -88,7 +88,7 @@ public sealed class FennecsContext : IBenchmarkContext<Entity>
         where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         for (var i = 0; i < entities.Length; i++)
-            entities[i] = _world.Spawn().Add(c1).Add(c2).Add(c3);
+            entities[i] = _world.Spawn().Add<T1>(c1).Add<T2>(c2).Add<T3>(c3);
     }
 
     public void CreateEntities<T1, T2, T3, T4>(in fennecs.Entity[] entities, in int poolId, in T1 c1,
@@ -98,7 +98,7 @@ public sealed class FennecsContext : IBenchmarkContext<Entity>
         where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         for (var i = 0; i < entities.Length; i++)
-            entities[i] = _world.Spawn().Add(c1).Add(c2).Add(c3).Add(c4);
+            entities[i] = _world.Spawn().Add<T1>(c1).Add<T2>(c2).Add<T3>(c3).Add<T4>(c4);
     }
 
     public void DeleteEntities(in fennecs.Entity[] entities)
@@ -112,14 +112,14 @@ public sealed class FennecsContext : IBenchmarkContext<Entity>
         where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         for (var i = 0; i < entities.Length; i++)
-            entities[i].Add(c1);
+            entities[i].Add<T1>(c1);
     }
 
     public void AddComponent<T1, T2>(in fennecs.Entity[] entities, in int poolId, in T1 c1, in T2 c2)
         where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         for (var i = 0; i < entities.Length; i++)
-            entities[i].Add(c1).Add(c2);
+            entities[i].Add<T1>(c1).Add<T2>(c2);
     }
 
     public void AddComponent<T1, T2, T3>(in fennecs.Entity[] entities, in int poolId, in T1 c1, in T2 c2,
@@ -128,7 +128,7 @@ public sealed class FennecsContext : IBenchmarkContext<Entity>
         where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         for (var i = 0; i < entities.Length; i++)
-            entities[i].Add(c1).Add(c2).Add(c3);
+            entities[i].Add<T1>(c1).Add<T2>(c2).Add<T3>(c3);
     }
 
     public void AddComponent<T1, T2, T3, T4>(in fennecs.Entity[] entities, in int poolId, in T1 c1,
@@ -138,7 +138,7 @@ public sealed class FennecsContext : IBenchmarkContext<Entity>
         where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         for (var i = 0; i < entities.Length; i++)
-            entities[i].Add(c1).Add(c2).Add(c3).Add(c4);
+            entities[i].Add<T1>(c1).Add<T2>(c2).Add<T3>(c3).Add<T4>(c4);
     }
 
     public void RemoveComponent<T1>(in fennecs.Entity[] entities, in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent

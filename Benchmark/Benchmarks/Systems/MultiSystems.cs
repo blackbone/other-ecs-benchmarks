@@ -52,9 +52,9 @@ public abstract class MultiSystems<T, TE> : IBenchmark<T, TE> where T : IBenchma
     [IterationSetup]
     public void IterationSetup()
     {
-        Context.CreateEntities<Component1>(_set1, System1, default);
-        Context.CreateEntities<Component2>(_set2, System2, default);
-        Context.CreateEntities<Component1, Component2>(_set3, System3, default, default);
+        Context.CreateEntities<Component1>(_set1, System1, default(Component1));
+        Context.CreateEntities<Component2>(_set2, System2, default(Component2));
+        Context.CreateEntities<Component1, Component2>(_set3, System3, default(Component1), default(Component2));
     }
 
     [Benchmark]
