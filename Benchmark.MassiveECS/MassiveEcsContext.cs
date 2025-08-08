@@ -14,13 +14,13 @@ namespace Benchmark.MassiveECS;
 public class MassiveEcsContext : IBenchmarkContext<Entity>
 {
 	private readonly Dictionary<int, SparseSet[]> _pools = new();
-	private readonly Dictionary<int, Filter> _filters = new();
+	private readonly Dictionary<int, FilterView> _filters = new();
 	private readonly List<Action> _systems = new();
 	private World _world;
 
 	public bool DeletesEntityOnLastComponentDeletion => false;
 
-	public int NumberOfLivingEntities => _world.Entities.Count;
+	public int NumberOfLivingEntities => _world.Entifiers.Count;
 
 	public void Setup()
 	{
@@ -245,22 +245,22 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 
 	public int CountWith<T1>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		return _world.View().Filter(_filters[poolId]).Count();
+		return _filters[poolId].Count();
 	}
 
 	public int CountWith<T1, T2>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		return _world.View().Filter(_filters[poolId]).Count();
+		return _filters[poolId].Count();
 	}
 
 	public int CountWith<T1, T2, T3>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		return _world.View().Filter(_filters[poolId]).Count();
+		return _filters[poolId].Count();
 	}
 
 	public int CountWith<T1, T2, T3, T4>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		return _world.View().Filter(_filters[poolId]).Count();
+		return _filters[poolId].Count();
 	}
 
 	public bool GetSingle<T1>(in Entity entity, in int poolId, ref T1 c1) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
