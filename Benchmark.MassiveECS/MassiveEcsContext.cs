@@ -5,7 +5,7 @@ using Benchmark.Context;
 using DCFApixels.DragonECS;
 using Massive;
 using Scellecs.Morpeh;
-using Entity = Massive.Entity;
+using Entity = Massive.Entifier;
 using Filter = Massive.Filter;
 using World = Massive.World;
 
@@ -69,8 +69,7 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 	public void DeleteEntities(in Entity[] entitySet)
 	{
 		for (var i = 0; i < entitySet.Length; i++)
-			if (_world.IsAlive(entitySet[i]))
-				_world.Destroy(entitySet[i]);
+			_world.Destroy(entitySet[i]);
 	}
 
 	public Entity[] PrepareSet(in int count)
@@ -81,7 +80,7 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 	public void CreateEntities(in Entity[] entitySet)
 	{
 		for (var i = 0; i < entitySet.Length; i++)
-			entitySet[i] = _world.CreateEntity();
+			entitySet[i] = _world.CreateEntifier();
 	}
 
 	public void CreateEntities<T1>(in Entity[] entitySet, in int poolId, in T1 c1) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
@@ -90,7 +89,7 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 		var s1 = (DataSet<T1>)pools[0];
 		for (var i = 0; i < entitySet.Length; i++)
 		{
-			entitySet[i] = _world.CreateEntity();
+			entitySet[i] = _world.CreateEntifier();
 			s1.Set(entitySet[i].Id, c1);
 		}
 	}
@@ -102,7 +101,7 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 		var s2 = (DataSet<T2>)pools[1];
 		for (var i = 0; i < entitySet.Length; i++)
 		{
-			entitySet[i] = _world.CreateEntity();
+			entitySet[i] = _world.CreateEntifier();
 			s1.Set(entitySet[i].Id, c1);
 			s2.Set(entitySet[i].Id, c2);
 		}
@@ -116,7 +115,7 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 		var s3 = (DataSet<T3>)pools[2];
 		for (var i = 0; i < entitySet.Length; i++)
 		{
-			entitySet[i] = _world.CreateEntity();
+			entitySet[i] = _world.CreateEntifier();
 			s1.Set(entitySet[i].Id, c1);
 			s2.Set(entitySet[i].Id, c2);
 			s3.Set(entitySet[i].Id, c3);
@@ -132,7 +131,7 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 		var s4 = (DataSet<T4>)pools[3];
 		for (var i = 0; i < entitySet.Length; i++)
 		{
-			entitySet[i] = _world.CreateEntity();
+			entitySet[i] = _world.CreateEntifier();
 			s1.Set(entitySet[i].Id, c1);
 			s2.Set(entitySet[i].Id, c2);
 			s3.Set(entitySet[i].Id, c3);

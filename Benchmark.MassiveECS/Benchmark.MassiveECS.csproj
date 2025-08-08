@@ -9,6 +9,14 @@
         <InvariantGlobalization>true</InvariantGlobalization>
     </PropertyGroup>
 
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <DefineConstants>TRACE;MASSIVE_DISABLE_ASSERT</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <DefineConstants>TRACE;MASSIVE_DISABLE_ASSERT</DefineConstants>
+    </PropertyGroup>
+
     <ItemGroup>
       <ProjectReference Include="..\Benchmark._Context\Benchmark._Context.csproj" />
       <ProjectReference Include="..\submodules\DragonECS\DragonECS.csproj" />
