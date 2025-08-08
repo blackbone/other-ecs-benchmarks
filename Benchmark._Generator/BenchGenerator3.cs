@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -481,7 +482,7 @@ public sealed class BenchGenerator3 : IIncrementalGenerator {
 
                             var inlinedStatements = InlineMethodBodyWithArgumentsAndGenerics(inlinedMethod, substitutions, genericSubstitutions, returnVariable);
 
-                            newStatements.AddRange(inlinedStatements);
+                            newStatements.Add(Block(inlinedStatements));
                         }
 
                         continue;
@@ -498,7 +499,7 @@ public sealed class BenchGenerator3 : IIncrementalGenerator {
                             var substitutions = GetInvocationSubstitutions(fieldInvocation, inlinedMethod, symbol);
                             var genericSubstitutions = GetGenericTypeSubstitutions(fieldInvocation, symbol);
                             var inlinedStatements = InlineMethodBodyWithArgumentsAndGenerics(inlinedMethod, substitutions, genericSubstitutions, returnVariable);
-                            newStatements.AddRange(inlinedStatements);
+                            newStatements.Add(Block(inlinedStatements));
                             continue;
                         }
                         break;
@@ -516,7 +517,7 @@ public sealed class BenchGenerator3 : IIncrementalGenerator {
 
                             var inlinedStatements = InlineMethodBodyWithArgumentsAndGenerics(inlinedMethod, substitutions, genericSubstitutions);
 
-                            newStatements.AddRange(inlinedStatements);
+                            newStatements.Add(Block(inlinedStatements));
                         }
 
                         continue;
@@ -683,9 +684,9 @@ public sealed class BenchGenerator3 : IIncrementalGenerator {
             return code;
 
             static string ReplaceAddressOfInvocations(string code) {
-                return code.Replace("&Update(", "Update(");
+                // Remove any & directly preceding a method name followed by (
+                return Regex.Replace(code, @"&(?=\s*[A-Za-z_][A-Za-z0-9_]*\s*\()", string.Empty);
             }
         }
     }
 }
-

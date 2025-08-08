@@ -274,15 +274,13 @@ public sealed class ArchContext : IBenchmarkContext<Entity>
     public unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId)
         where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        var system = new Arch.System<T1>(method);
-        _systems.Add(system.ForEachQuery);
+        _systems.Add(new Arch.System<T1>(method).ForEachQuery);
     }
 
     public unsafe void AddSystem<T1, T2>(delegate*<ref T1, ref T2, void> method, int poolId)
         where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        var system = new Arch.System<T1, T2>(method);
-        _systems.Add(system.ForEachQuery);
+        _systems.Add(new Arch.System<T1, T2>(method).ForEachQuery);
     }
 
     public unsafe void AddSystem<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> method, int poolId)
@@ -290,8 +288,7 @@ public sealed class ArchContext : IBenchmarkContext<Entity>
         where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
         where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        var system = new Arch.System<T1, T2, T3>(method);
-        _systems.Add(system.ForEachQuery);
+        _systems.Add(new Arch.System<T1, T2, T3>(method).ForEachQuery);
     }
 
     public unsafe void AddSystem<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> method, int poolId)
@@ -300,8 +297,7 @@ public sealed class ArchContext : IBenchmarkContext<Entity>
         where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
         where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        var system = new Arch.System<T1, T2, T3, T4>(method);
-        _systems.Add(system.ForEachQuery);
+        _systems.Add(new Arch.System<T1, T2, T3, T4>(method).ForEachQuery);
     }
 
     public global::Arch.Core.Entity[] PrepareSet(in int count)

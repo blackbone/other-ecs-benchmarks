@@ -83,7 +83,7 @@ public sealed class DefaultECSContext : IBenchmarkContext<Entity>
         for (var i = 0; i < entities.Length; i++)
         {
             entities[i] = _world.CreateEntity();
-            entities[i].Set(c1);
+            entities[i].Set<T1>(c1);
         }
     }
 
@@ -93,8 +93,8 @@ public sealed class DefaultECSContext : IBenchmarkContext<Entity>
         for (var i = 0; i < entities.Length; i++)
         {
             entities[i] = _world.CreateEntity();
-            entities[i].Set(c1);
-            entities[i].Set(c2);
+            entities[i].Set<T1>(c1);
+            entities[i].Set<T2>(c2);
         }
     }
 
@@ -107,9 +107,9 @@ public sealed class DefaultECSContext : IBenchmarkContext<Entity>
         for (var i = 0; i < entities.Length; i++)
         {
             entities[i] = _world.CreateEntity();
-            entities[i].Set(c1);
-            entities[i].Set(c2);
-            entities[i].Set(c3);
+            entities[i].Set<T1>(c1);
+            entities[i].Set<T2>(c2);
+            entities[i].Set<T3>(c3);
         }
     }
 
@@ -123,10 +123,10 @@ public sealed class DefaultECSContext : IBenchmarkContext<Entity>
         for (var i = 0; i < entities.Length; i++)
         {
             entities[i] = _world.CreateEntity();
-            entities[i].Set(c1);
-            entities[i].Set(c2);
-            entities[i].Set(c3);
-            entities[i].Set(c4);
+            entities[i].Set<T1>(c1);
+            entities[i].Set<T2>(c2);
+            entities[i].Set<T3>(c3);
+            entities[i].Set<T4>(c4);
         }
     }
 
@@ -141,8 +141,8 @@ public sealed class DefaultECSContext : IBenchmarkContext<Entity>
     {
         for (var i = 0; i < entities.Length; i++)
         {
-            entities[i].Set(c1);
-            entities[i].Set(c2);
+            entities[i].Set<T1>(c1);
+            entities[i].Set<T2>(c2);
         }
     }
 
@@ -153,9 +153,9 @@ public sealed class DefaultECSContext : IBenchmarkContext<Entity>
     {
         for (var i = 0; i < entities.Length; i++)
         {
-            entities[i].Set(c1);
-            entities[i].Set(c2);
-            entities[i].Set(c3);
+            entities[i].Set<T1>(c1);
+            entities[i].Set<T2>(c2);
+            entities[i].Set<T3>(c3);
         }
     }
 
@@ -168,10 +168,10 @@ public sealed class DefaultECSContext : IBenchmarkContext<Entity>
     {
         for (var i = 0; i < entities.Length; i++)
         {
-            entities[i].Set(c1);
-            entities[i].Set(c2);
-            entities[i].Set(c3);
-            entities[i].Set(c4);
+            entities[i].Set<T1>(c1);
+            entities[i].Set<T2>(c2);
+            entities[i].Set<T3>(c3);
+            entities[i].Set<T4>(c4);
         }
     }
 
