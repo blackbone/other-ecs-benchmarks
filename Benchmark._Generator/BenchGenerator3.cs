@@ -12,7 +12,7 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace Benchmark._Generator;
 
-[Generator]
+// [Generator]
 public sealed class BenchGenerator3 : IIncrementalGenerator {
     public void Initialize(IncrementalGeneratorInitializationContext context) {
         var additionalTexts = context.AdditionalTextsProvider
