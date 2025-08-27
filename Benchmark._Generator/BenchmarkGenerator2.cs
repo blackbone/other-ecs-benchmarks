@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -60,7 +61,6 @@ public class BenchmarksGenerator : ISourceGenerator {
         }
 
         try {
-
             // Get the existing compilation
             var compilation = context.Compilation;
 
@@ -202,7 +202,8 @@ public class BenchmarksGenerator : ISourceGenerator {
             .NormalizeWhitespace();
 
         var code = compilationUnit.ToFullString();
-        code = StringReplacements(code);
+        var entityTypeName = GetEntityTypeName(contextType);
+        code = StringReplacements(code, entityTypeName);
 
         // Add the source to the generator context
         context.AddSource($"BenchmarksGenerator/{className}.g.cs", SourceText.From(code, Encoding.UTF8));
@@ -259,14 +260,13 @@ public class BenchmarksGenerator : ISourceGenerator {
     private static ClassDeclarationSyntax GetBenchmarkClassDeclaration(string className, INamedTypeSymbol benchmarkType, INamedTypeSymbol contextType) {
         // Extract fields, properties, and methods
         var classAttributes = CopyClassAttributes(benchmarkType);
-        var entityTypeName = GetEntityTypeName(contextType);
 
-        var contextFields = GetFields(contextType, entityTypeName);
+        var contextFields = GetFields(contextType);
         var contextProperties = GetProperties(contextType);
         var contextMethods = GetContextMethods(contextType);
         var contextInnerTypes = GetInnerTypes(contextType);
 
-        var benchmarkFields = GetFields(benchmarkType, entityTypeName);
+        var benchmarkFields = GetFields(benchmarkType);
         var benchmarkProperties = GetProperties(benchmarkType);
         var benchmarkMethods = InlineBenchmarkMethods(benchmarkType, contextType);
 
@@ -324,18 +324,12 @@ public class BenchmarksGenerator : ISourceGenerator {
             .ToArray() ?? Enumerable.Empty<MemberDeclarationSyntax>();
     }
 
-    private static IEnumerable<MemberDeclarationSyntax> GetFields(INamedTypeSymbol contextType, string entityTypeName) {
+    private static IEnumerable<MemberDeclarationSyntax> GetFields(INamedTypeSymbol contextType) {
         foreach (var field in contextType.GetMembers().OfType<IFieldSymbol>()
                      .Where(f => NotIgnored(f))
                      .Where(f => !f.Name.Contains("k__"))) {
 
             var type = field.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
-            type = type switch {
-                "TE" => entityTypeName,
-                "TE[]" => $"{entityTypeName}[]",
-                _ => type
-            };
-
             yield return FieldDeclaration(
                     VariableDeclaration(ParseTypeName(type))
                         .AddVariables(
@@ -694,7 +688,7 @@ public class BenchmarksGenerator : ISourceGenerator {
         }
 
         // log.AppendLine("ok");
-        return inlinedStatements;
+        return new[]{Block(inlinedStatements)};
     }
     private static void HandleExpressionBody(MethodDeclarationSyntax methodSyntax, Dictionary<string, string> substitutions, Dictionary<string, string> genericSubstitutions, string returnVariable, List<StatementSyntax> inlinedStatements) {
         // ReSharper disable once PossibleNullReferenceException
@@ -785,12 +779,14 @@ public class BenchmarksGenerator : ISourceGenerator {
         return expression;
     }
 
-    private static string StringReplacements(string code) {
+    private static string StringReplacements(string code, string entityTypeName) {
         code = ReplaceAddressOfInvocations(code);
+        code = ReplaceAddressOfInvocationsMassive(code);
+        code = ReplaceEntityType(code, entityTypeName);
         return code;
 
-        static string ReplaceAddressOfInvocations(string code) {
-            return code.Replace("&Update(", "Update(");
-        }
+        string ReplaceAddressOfInvocations(string code) => code.Replace("    &Update", "    Update");
+        string ReplaceAddressOfInvocationsMassive(string code) => code.Replace(" => &Update", " => Update"); // Massive ECS
+        static string ReplaceEntityType(string code, string entityTypeName) => code.Replace("TE", entityTypeName);
     }
 }

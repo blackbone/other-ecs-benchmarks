@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using Benchmark.Context;
 using DCFApixels.DragonECS;
 using Xeno;
@@ -286,7 +288,7 @@ public class XenoContext : IBenchmarkContext<Entity>
 [System]
 public unsafe partial class System1<C1> where C1 : struct, IComponent {
     private readonly delegate*<ref C1, void> _method;
-    public System1(delegate*<ref C1, void> method) : this() {
+    public System1(delegate*<ref C1, void> method) {
         _method = method;
     }
     [SystemMethod(SystemMethodType.Update)]
@@ -297,7 +299,7 @@ public unsafe partial class System1<C1> where C1 : struct, IComponent {
 public unsafe partial class System2<C1, C2> where C1 : struct, IComponent
     where C2 : struct, IComponent {
     private readonly delegate*<ref C1, ref C2, void> _method;
-    public System2(delegate*<ref C1, ref C2, void> method) : this() {
+    public System2(delegate*<ref C1, ref C2, void> method) {
         _method = method;
     }
 
@@ -310,9 +312,10 @@ public unsafe partial class System3<C1, C2, C3> where C1 : struct, IComponent
     where C2 : struct, IComponent
     where C3 : struct, IComponent {
     private readonly delegate*<ref C1, ref C2, ref C3, void> _method;
-    public System3(delegate*<ref C1, ref C2, ref C3, void> method) : this() {
+    public System3(delegate*<ref C1, ref C2, ref C3, void> method) {
         _method = method;
     }
+
     [SystemMethod(SystemMethodType.Update)]
     public void Update(ref C1 c1, ref C2 c2, ref C3 c3) => _method(ref c1, ref c2, ref c3);
 }
@@ -323,7 +326,7 @@ public unsafe partial class System4<C1, C2, C3, C4> where C1 : struct, IComponen
     where C3 : struct, IComponent
     where C4 : struct, IComponent {
     private readonly delegate*<ref C1, ref C2, ref C3, ref C4, void> _method;
-    public System4(delegate*<ref C1, ref C2, ref C3, ref C4, void> method) : this() {
+    public System4(delegate*<ref C1, ref C2, ref C3, ref C4, void> method) {
         _method = method;
     }
     [SystemMethod(SystemMethodType.Update)]
