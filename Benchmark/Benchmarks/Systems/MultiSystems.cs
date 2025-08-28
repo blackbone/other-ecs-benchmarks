@@ -47,14 +47,15 @@ public abstract class MultiSystems<T, TE> : IBenchmark<T, TE> where T : IBenchma
         _set1 = Context.PrepareSet(third);
         _set2 = Context.PrepareSet(third);
         _set3 = Context.PrepareSet(EntityCount - third - third);
+
+        Context.CreateEntities<Component1>(_set1, System1, default(Component1));
+        Context.CreateEntities<Component2>(_set2, System2, default(Component2));
+        Context.CreateEntities<Component1, Component2>(_set3, System3, default(Component1), default(Component2));
     }
 
     [IterationSetup]
     public void IterationSetup()
     {
-        Context.CreateEntities<Component1>(_set1, System1, default(Component1));
-        Context.CreateEntities<Component2>(_set2, System2, default(Component2));
-        Context.CreateEntities<Component1, Component2>(_set3, System3, default(Component1), default(Component2));
     }
 
     [Benchmark]
@@ -66,14 +67,15 @@ public abstract class MultiSystems<T, TE> : IBenchmark<T, TE> where T : IBenchma
     [IterationCleanup]
     public void IterationCleanup()
     {
-        Context.DeleteEntities(_set1);
-        Context.DeleteEntities(_set2);
-        Context.DeleteEntities(_set3);
     }
 
     [GlobalCleanup]
     public void GlobalCleanup()
     {
+        Context.DeleteEntities(_set1);
+        Context.DeleteEntities(_set2);
+        Context.DeleteEntities(_set3);
+
         Context.Cleanup();
         Context.Dispose();
         Context = default;
