@@ -12,8 +12,8 @@ namespace Benchmark.MassiveECS;
 
 public class MassiveEcsContext : IBenchmarkContext<Entity>
 {
-	private readonly Dictionary<int, BitSet[]> _pools = new();
-	private readonly Dictionary<int, FilterView> _filters = new();
+	private readonly Dictionary<int, SparseSet[]> _pools = new();
+	private readonly Dictionary<int, Query> _filters = new();
 	private readonly List<Action> _systems = new();
 	private World _world;
 
@@ -43,26 +43,26 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 
 	public void Warmup<T1>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		_pools[poolId] = [_world.BitSet<T1>()];
-		_filters[poolId] = _world.Filter<Include<T1>>();
+		_pools[poolId] = [_world.SparseSet<T1>()];
+		_filters[poolId] = _world.Include<T1>();
 	}
 
 	public void Warmup<T1, T2>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		_pools[poolId] = [_world.BitSet<T1>(), _world.BitSet<T2>()];
-		_filters[poolId] = _world.Filter<Include<T1, T2>>();
+		_pools[poolId] = [_world.SparseSet<T1>(), _world.SparseSet<T2>()];
+		_filters[poolId] = _world.Include<T1, T2>();
 	}
 
 	public void Warmup<T1, T2, T3>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		_pools[poolId] = [_world.BitSet<T1>(), _world.BitSet<T2>(), _world.BitSet<T3>()];
-		_filters[poolId] = _world.Filter<Include<T1, T2, T3>>();
+		_pools[poolId] = [_world.SparseSet<T1>(), _world.SparseSet<T2>(), _world.SparseSet<T3>()];
+		_filters[poolId] = _world.Include<T1, T2, T3>();
 	}
 
 	public void Warmup<T1, T2, T3, T4>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		_pools[poolId] = [_world.BitSet<T1>(), _world.BitSet<T2>(), _world.BitSet<T3>(), _world.BitSet<T4>()];
-		_filters[poolId] = _world.Filter<Include<T1, T2, T3, Include<T4>>>();
+		_pools[poolId] = [_world.SparseSet<T1>(), _world.SparseSet<T2>(), _world.SparseSet<T3>(), _world.SparseSet<T4>()];
+		_filters[poolId] = _world.Include<T1, T2, T3, Include<T4>>();
 	}
 
 	public void DeleteEntities(in Entity[] entitySet)
