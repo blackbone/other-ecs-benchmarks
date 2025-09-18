@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Benchmark.Context;
 using DCFApixels.DragonECS;
@@ -13,7 +14,6 @@ namespace Benchmark.MassiveECS;
 public class MassiveEcsContext : IBenchmarkContext<Entity>
 {
 	private readonly Dictionary<int, SparseSet[]> _pools = new();
-	private readonly Dictionary<int, Query> _filters = new();
 	private readonly List<Action> _systems = new();
 	private World _world;
 
@@ -33,7 +33,6 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 	public void Cleanup()
 	{
 		_pools.Clear();
-		_filters.Clear();
 		_systems.Clear();
 	}
 
@@ -44,25 +43,21 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 	public void Warmup<T1>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
 		_pools[poolId] = [_world.SparseSet<T1>()];
-		_filters[poolId] = _world.Include<T1>();
 	}
 
 	public void Warmup<T1, T2>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
 		_pools[poolId] = [_world.SparseSet<T1>(), _world.SparseSet<T2>()];
-		_filters[poolId] = _world.Include<T1, T2>();
 	}
 
 	public void Warmup<T1, T2, T3>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
 		_pools[poolId] = [_world.SparseSet<T1>(), _world.SparseSet<T2>(), _world.SparseSet<T3>()];
-		_filters[poolId] = _world.Include<T1, T2, T3>();
 	}
 
 	public void Warmup<T1, T2, T3, T4>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
 		_pools[poolId] = [_world.SparseSet<T1>(), _world.SparseSet<T2>(), _world.SparseSet<T3>(), _world.SparseSet<T4>()];
-		_filters[poolId] = _world.Include<T1, T2, T3, Include<T4>>();
 	}
 
 	public void DeleteEntities(in Entity[] entitySet)
@@ -244,22 +239,22 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 
 	public int CountWith<T1>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		return _filters[poolId].Count();
+		return _world.Include<T1>().Count();
 	}
 
 	public int CountWith<T1, T2>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		return _filters[poolId].Count();
+		return _world.Include<T1, T2>().Count();
 	}
 
 	public int CountWith<T1, T2, T3>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		return _filters[poolId].Count();
+		return _world.Include<T1, T2, T3>().Count();
 	}
 
 	public int CountWith<T1, T2, T3, T4>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		return _filters[poolId].Count();
+		return _world.Include<T1, T2, T3, Include<T4>>().Count();
 	}
 
 	public bool GetSingle<T1>(in Entity entity, in int poolId, ref T1 c1) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
@@ -320,21 +315,49 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 
 	public unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		_systems.Add(() => _world.ForEach((ref T1 c1) => method(ref c1)));
+		var adapter = new FunctionAdapter<T1>(method);
+		_systems.Add(() => _world.ForEach<T1, FunctionAdapter<T1>>(ref adapter));
 	}
 
 	public unsafe void AddSystem<T1, T2>(delegate*<ref T1, ref T2, void> method, int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		_systems.Add(() => _world.ForEach((ref T1 c1, ref T2 c2) => method(ref c1, ref c2)));
+		var adapter = new FunctionAdapter<T1, T2>(method);
+		_systems.Add(() => _world.ForEach<T1, T2, FunctionAdapter<T1, T2>>(ref adapter));
 	}
 
 	public unsafe void AddSystem<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> method, int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		_systems.Add(() => _world.ForEach((ref T1 c1, ref T2 c2, ref T3 c3) => method(ref c1, ref c2, ref c3)));
+		var adapter = new FunctionAdapter<T1, T2, T3>(method);
+		_systems.Add(() => _world.ForEach<T1, T2, T3, FunctionAdapter<T1, T2, T3>>(ref adapter));
 	}
 
 	public unsafe void AddSystem<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> method, int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		_systems.Add(() => _world.ForEach((ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4) => method(ref c1, ref c2, ref c3, ref c4)));
+		var adapter = new FunctionAdapter<T1, T2, T3, T4>(method);
+		_systems.Add(() => _world.ForEach<T1, T2, T3, T4, FunctionAdapter<T1, T2, T3, T4>>(ref adapter));
+	}
+
+	private readonly unsafe struct FunctionAdapter<T1>(delegate*<ref T1, void> Method) : IEntityAction<T1>
+	{
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void Apply(int _, ref T1 a) => Method(ref a);
+	}
+
+	private readonly unsafe struct FunctionAdapter<T1, T2>(delegate*<ref T1, ref T2, void> Method) : IEntityAction<T1, T2>
+	{
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void Apply(int _, ref T1 a, ref T2 b) => Method(ref a, ref b);
+	}
+
+	private readonly unsafe struct FunctionAdapter<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> Method) : IEntityAction<T1, T2, T3>
+	{
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void Apply(int _, ref T1 a, ref T2 b, ref T3 c) => Method(ref a, ref b, ref c);
+	}
+
+	private readonly unsafe struct FunctionAdapter<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> Method) : IEntityAction<T1, T2, T3, T4>
+	{
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public void Apply(int _, ref T1 a, ref T2 b, ref T3 c, ref T4 d) => Method(ref a, ref b, ref c, ref d);
 	}
 }
