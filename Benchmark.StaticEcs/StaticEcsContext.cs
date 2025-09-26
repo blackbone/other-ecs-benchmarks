@@ -1,6 +1,8 @@
-﻿using Benchmark.Context;
+﻿using System.Runtime.CompilerServices;
+using Benchmark.Context;
 using DCFApixels.DragonECS;
 using FFS.Libraries.StaticEcs;
+using static System.Runtime.CompilerServices.MethodImplOptions;
 
 namespace Benchmark.StaticEcs;
 
@@ -14,7 +16,7 @@ public sealed class StaticEcsContext : IBenchmarkContext<W.Entity>
 {
     public bool DeletesEntityOnLastComponentDeletion => false;
 
-    public int NumberOfLivingEntities => (int) W.EntitiesCount();
+    public int NumberOfLivingEntities => (int) W.CalculateEntitiesCount();
 
     public void Setup()
     {
@@ -75,7 +77,7 @@ public sealed class StaticEcsContext : IBenchmarkContext<W.Entity>
             return;
         }
         
-        W.RegisterComponentType<T>();
+        W.RegisterComponentType(new ValueComponentConfig<T, Default>(clearable: false));
     }
 
     public void CreateEntities(in W.Entity[] entities)
@@ -328,64 +330,76 @@ public sealed class StaticEcsContext : IBenchmarkContext<W.Entity>
     }
 }
 
-public unsafe struct System<T1> : IUpdateSystem
+public unsafe struct System<T1> : IUpdateSystem, W.IQueryFunction<T1>
     where T1 : struct, IComponent
 {
 
     public delegate*<ref T1, void> method;
     
+    [MethodImpl(AggressiveInlining)]
     public void Update() {
-        W.QueryComponents.For(ref this, static (ref System<T1> self, ref T1 c1) => {
-            self.method(ref c1);
-        });
+        W.Query.For<T1, System<T1>>(ref this);
+    }
+
+    [MethodImpl(AggressiveInlining)]
+    public void Run(World<Default>.Entity entity, ref T1 c1) {
+        method(ref c1);
     }
 }
 
-public unsafe struct System<T1, T2> : IUpdateSystem
+public unsafe struct System<T1, T2> : IUpdateSystem, W.IQueryFunction<T1, T2>
     where T1 : struct, IComponent
     where T2 : struct, IComponent
 {
-    
-    public delegate*<ref T1, ref T2, void> method;
 
-    public void Update()
-    {
-        W.QueryComponents.For(ref this, static (ref System<T1, T2> self, ref T1 c1, ref T2 c2) => {
-            self.method(ref c1, ref c2);
-        });
+    public delegate*<ref T1, ref T2, void> method;
+    
+    [MethodImpl(AggressiveInlining)]
+    public void Update() {
+        W.Query.For<T1, T2, System<T1, T2>>(ref this);
+    }
+
+    [MethodImpl(AggressiveInlining)]
+    public void Run(World<Default>.Entity entity, ref T1 c1, ref T2 c2) {
+        method(ref c1, ref c2);
     }
 }
 
-public unsafe struct System<T1, T2, T3> : IUpdateSystem
+public unsafe struct System<T1, T2, T3> : IUpdateSystem, W.IQueryFunction<T1, T2, T3>
     where T1 : struct, IComponent
     where T2 : struct, IComponent
     where T3 : struct, IComponent
 {
-    
+
     public delegate*<ref T1, ref T2, ref T3, void> method;
     
-    public void Update()
-    {
-        W.QueryComponents.For(ref this, static (ref System<T1, T2, T3> self, ref T1 c1, ref T2 c2, ref T3 c3) => {
-            self.method(ref c1, ref c2, ref c3);
-        });
+    [MethodImpl(AggressiveInlining)]
+    public void Update() {
+        W.Query.For<T1, T2, T3, System<T1, T2, T3>>(ref this);
+    }
+
+    [MethodImpl(AggressiveInlining)]
+    public void Run(World<Default>.Entity entity, ref T1 c1, ref T2 c2, ref T3 c3) {
+        method(ref c1, ref c2, ref c3);
     }
 }
 
-public unsafe struct System<T1, T2, T3, T4> : IUpdateSystem
+public unsafe struct System<T1, T2, T3, T4> : IUpdateSystem, W.IQueryFunction<T1, T2, T3, T4>
     where T1 : struct, IComponent
     where T2 : struct, IComponent
     where T3 : struct, IComponent
-    where T4 : struct, IComponent {
-    
-    
-    public delegate*<ref T1, ref T2, ref T3, ref T4, void> method;
+    where T4 : struct, IComponent
+{
 
-    public void Update()
-    {
-        W.QueryComponents.For(ref this, static (ref System<T1, T2, T3, T4> self, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4) => {
-            self.method(ref c1, ref c2, ref c3, ref c4);
-        });
+    public delegate*<ref T1, ref T2, ref T3, ref T4, void> method;
+    
+    [MethodImpl(AggressiveInlining)]
+    public void Update() {
+        W.Query.For<T1, T2, T3, T4, System<T1, T2, T3, T4>>(ref this);
     }
 
+    [MethodImpl(AggressiveInlining)]
+    public void Run(World<Default>.Entity entity, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4) {
+        method(ref c1, ref c2, ref c3, ref c4);
+    }
 }
