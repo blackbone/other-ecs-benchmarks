@@ -56,14 +56,17 @@ General flow of any benchmark execution is divided into 3 steps:
 
 # Implemented benchmarks
 
-| Benchmark                                     | Description                                                             |
-|-----------------------------------------------|-------------------------------------------------------------------------|
-| Create Empty Entity                           | Creates [EntityCount] empty entities                                    |
-| Create Entity With N Components               | Creates [EntityCount] entitites with N components                       |
-| Add N Components                              | Adds N components to [EntityCount] entities                             |
-| Remove N Components                           | Adds N components to [EntityCount] entities                             |
-| System with N Components                      | Performs simple operations on entities (numbers sum)                    |
-| System with N Components Multiple Composition | Same as *System with N Components* but with mixture of other components |
+| Benchmark                                     | Description                                                                                |
+|----------------------------------------------:|:-------------------------------------------------------------------------------------------|
+| Create Empty Entity                           | Creates [EntityCount] empty entities                                                       |
+| Create Entity With N Components               | Creates [EntityCount] entitites with N components                                          |
+| Add N Components                              | Adds N components to [EntityCount] entities                                                |
+| Remove N Components                           | Adds N components to [EntityCount] entities                                                |
+| Structural Changes                            | Adds \ Removes 1\2\3 components from 1-2-3-4 component entities (tests archetype migration |
+| System with N Components                      | Performs simple operations on entities (numbers sum)                                       |
+| System with N Components Multiple Composition | Same as *System with N Components* but with mixture of other components                    |
+| MultiSystem                                   | C1 \ C2 \ C1C2 entities iteraing with 3 different systems                                  |
+| Filter Mismatch                               | 100 archetypes and all not match 100 systems (empty iterations)                            |
 
 # Running
 
