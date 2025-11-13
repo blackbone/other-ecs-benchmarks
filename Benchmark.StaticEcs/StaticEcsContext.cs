@@ -136,7 +136,7 @@ public sealed class StaticEcsContext : IBenchmarkContext<W.Entity>
         for (var i = 0; i < entities.Length; i++) {
             var entity = entities[i];
             if (entity.IsNotDestroyed()) {
-                entity.TryDestroy();
+                entity.Destroy();
             }
         }
     }
