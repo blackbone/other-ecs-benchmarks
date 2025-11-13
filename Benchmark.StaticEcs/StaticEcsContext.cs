@@ -133,6 +133,8 @@ public sealed class StaticEcsContext : IBenchmarkContext<W.Entity>
 
     public void DeleteEntities(in W.Entity[] entities)
     {
+        if (entities[0].IsDestroyed()) return; // Overhead benchmark test fix
+        
         for (var i = 0; i < entities.Length; i++)
             entities[i].Destroy();
     }
@@ -218,20 +220,20 @@ public sealed class StaticEcsContext : IBenchmarkContext<W.Entity>
 
     public int CountWith<T1>(in int poolId) where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
-        return W.QueryEntities.For<All<T1>>().EntitiesCount();
+        return W.Query.Entities<All<T1>>().EntitiesCount();
     }
 
     public int CountWith<T1, T2>(in int poolId) where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T2 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
-        return W.QueryEntities.For<All<T1, T2>>().EntitiesCount();
+        return W.Query.Entities<All<T1, T2>>().EntitiesCount();
     }
 
     public int CountWith<T1, T2, T3>(in int poolId) where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T2 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T3 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
-        return W.QueryEntities.For<All<T1, T2, T3>>().EntitiesCount();
+        return W.Query.Entities<All<T1, T2, T3>>().EntitiesCount();
     }
 
     public int CountWith<T1, T2, T3, T4>(in int poolId) where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
@@ -239,7 +241,7 @@ public sealed class StaticEcsContext : IBenchmarkContext<W.Entity>
         where T3 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T4 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
-        return W.QueryEntities.For<All<T1, T2, T3, T4>>().EntitiesCount();
+        return W.Query.Entities<All<T1, T2, T3, T4>>().EntitiesCount();
     }
 
     public bool GetSingle<T1>(in W.Entity e, in int poolId, ref T1 c1) where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
@@ -338,11 +340,11 @@ public unsafe struct System<T1> : IUpdateSystem, W.IQueryFunction<T1>
     
     [MethodImpl(AggressiveInlining)]
     public void Update() {
-        W.Query.For<T1, System<T1>>(ref this);
+        W.Query.For<T1, System<T1>>(this);
     }
 
     [MethodImpl(AggressiveInlining)]
-    public void Run(World<Default>.Entity entity, ref T1 c1) {
+    public void Invoke(W.Entity entity, ref T1 c1) {
         method(ref c1);
     }
 }
@@ -356,11 +358,11 @@ public unsafe struct System<T1, T2> : IUpdateSystem, W.IQueryFunction<T1, T2>
     
     [MethodImpl(AggressiveInlining)]
     public void Update() {
-        W.Query.For<T1, T2, System<T1, T2>>(ref this);
+        W.Query.For<T1, T2, System<T1, T2>>(this);
     }
 
     [MethodImpl(AggressiveInlining)]
-    public void Run(World<Default>.Entity entity, ref T1 c1, ref T2 c2) {
+    public void Invoke(W.Entity entity, ref T1 c1, ref T2 c2) {
         method(ref c1, ref c2);
     }
 }
@@ -375,11 +377,11 @@ public unsafe struct System<T1, T2, T3> : IUpdateSystem, W.IQueryFunction<T1, T2
     
     [MethodImpl(AggressiveInlining)]
     public void Update() {
-        W.Query.For<T1, T2, T3, System<T1, T2, T3>>(ref this);
+        W.Query.For<T1, T2, T3, System<T1, T2, T3>>(this);
     }
 
     [MethodImpl(AggressiveInlining)]
-    public void Run(World<Default>.Entity entity, ref T1 c1, ref T2 c2, ref T3 c3) {
+    public void Invoke(W.Entity entity, ref T1 c1, ref T2 c2, ref T3 c3) {
         method(ref c1, ref c2, ref c3);
     }
 }
@@ -395,11 +397,11 @@ public unsafe struct System<T1, T2, T3, T4> : IUpdateSystem, W.IQueryFunction<T1
     
     [MethodImpl(AggressiveInlining)]
     public void Update() {
-        W.Query.For<T1, T2, T3, T4, System<T1, T2, T3, T4>>(ref this);
+        W.Query.For<T1, T2, T3, T4, System<T1, T2, T3, T4>>(this);
     }
 
     [MethodImpl(AggressiveInlining)]
-    public void Run(World<Default>.Entity entity, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4) {
+    public void Invoke(W.Entity entity, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4) {
         method(ref c1, ref c2, ref c3, ref c4);
     }
 }
