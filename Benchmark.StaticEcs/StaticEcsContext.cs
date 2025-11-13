@@ -133,10 +133,8 @@ public sealed class StaticEcsContext : IBenchmarkContext<W.Entity>
 
     public void DeleteEntities(in W.Entity[] entities)
     {
-        if (entities[0].IsDestroyed()) return; // Overhead benchmark test fix
-        
         for (var i = 0; i < entities.Length; i++)
-            entities[i].Destroy();
+            entities[i].TryDestroy();
     }
 
     public void AddComponent<T1>(in W.Entity[] entities, in int poolId, in T1 c1)
