@@ -13,13 +13,12 @@ namespace Benchmark.MassiveECS;
 
 public class MassiveEcsContext : IBenchmarkContext<Entity>
 {
-	private readonly Dictionary<int, SparseSet[]> _pools = new();
 	private readonly List<Action> _systems = new();
 	private World _world;
 
 	public bool DeletesEntityOnLastComponentDeletion => false;
 
-	public int NumberOfLivingEntities => _world.Entifiers.Count;
+	public int NumberOfLivingEntities => _world.Entities.Count;
 
 	public void Setup()
 	{
@@ -32,7 +31,6 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 
 	public void Cleanup()
 	{
-		_pools.Clear();
 		_systems.Clear();
 	}
 
@@ -42,22 +40,28 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 
 	public void Warmup<T1>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		_pools[poolId] = [_world.SparseSet<T1>()];
+		_world.BitSet<T1>();
 	}
 
 	public void Warmup<T1, T2>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		_pools[poolId] = [_world.SparseSet<T1>(), _world.SparseSet<T2>()];
+		_world.BitSet<T1>();
+		_world.BitSet<T2>();
 	}
 
 	public void Warmup<T1, T2, T3>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		_pools[poolId] = [_world.SparseSet<T1>(), _world.SparseSet<T2>(), _world.SparseSet<T3>()];
+		_world.BitSet<T1>();
+		_world.BitSet<T2>();
+		_world.BitSet<T3>();
 	}
 
 	public void Warmup<T1, T2, T3, T4>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		_pools[poolId] = [_world.SparseSet<T1>(), _world.SparseSet<T2>(), _world.SparseSet<T3>(), _world.SparseSet<T4>()];
+		_world.BitSet<T1>();
+		_world.BitSet<T2>();
+		_world.BitSet<T3>();
+		_world.BitSet<T4>();
 	}
 
 	public void DeleteEntities(in Entity[] entitySet)
@@ -79,8 +83,7 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 
 	public void CreateEntities<T1>(in Entity[] entitySet, in int poolId, in T1 c1) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		var pools = _pools[poolId];
-		var s1 = (DataSet<T1>)pools[0];
+		var s1 = _world.DataSet<T1>();
 		for (var i = 0; i < entitySet.Length; i++)
 		{
 			entitySet[i] = _world.CreateEntifier();
@@ -90,9 +93,8 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 
 	public void CreateEntities<T1, T2>(in Entity[] entitySet, in int poolId, in T1 c1, in T2 c2) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		var pools = _pools[poolId];
-		var s1 = (DataSet<T1>)pools[0];
-		var s2 = (DataSet<T2>)pools[1];
+		var s1 = _world.DataSet<T1>();
+		var s2 = _world.DataSet<T2>();
 		for (var i = 0; i < entitySet.Length; i++)
 		{
 			entitySet[i] = _world.CreateEntifier();
@@ -103,10 +105,9 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 
 	public void CreateEntities<T1, T2, T3>(in Entity[] entitySet, in int poolId, in T1 c1, in T2 c2, in T3 c3) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		var pools = _pools[poolId];
-		var s1 = (DataSet<T1>)pools[0];
-		var s2 = (DataSet<T2>)pools[1];
-		var s3 = (DataSet<T3>)pools[2];
+		var s1 = _world.DataSet<T1>();
+		var s2 = _world.DataSet<T2>();
+		var s3 = _world.DataSet<T3>();
 		for (var i = 0; i < entitySet.Length; i++)
 		{
 			entitySet[i] = _world.CreateEntifier();
@@ -118,11 +119,10 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 
 	public void CreateEntities<T1, T2, T3, T4>(in Entity[] entitySet, in int poolId, in T1 c1, in T2 c2, in T3 c3, in T4 c4) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		var pools = _pools[poolId];
-		var s1 = (DataSet<T1>)pools[0];
-		var s2 = (DataSet<T2>)pools[1];
-		var s3 = (DataSet<T3>)pools[2];
-		var s4 = (DataSet<T4>)pools[3];
+		var s1 = _world.DataSet<T1>();
+		var s2 = _world.DataSet<T2>();
+		var s3 = _world.DataSet<T3>();
+		var s4 = _world.DataSet<T4>();
 		for (var i = 0; i < entitySet.Length; i++)
 		{
 			entitySet[i] = _world.CreateEntifier();
@@ -135,8 +135,7 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 
 	public void AddComponent<T1>(in Entity[] entitySet, in int poolId, in T1 c1) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		var pools = _pools[poolId];
-		var s1 = (DataSet<T1>)pools[0];
+		var s1 = _world.DataSet<T1>();
 		for (var i = 0; i < entitySet.Length; i++)
 		{
 			s1.Set(entitySet[i].Id, c1);
@@ -145,9 +144,8 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 
 	public void AddComponent<T1, T2>(in Entity[] entitySet, in int poolId, in T1 c1, in T2 c2) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		var pools = _pools[poolId];
-		var s1 = (DataSet<T1>)pools[0];
-		var s2 = (DataSet<T2>)pools[1];
+		var s1 = _world.DataSet<T1>();
+		var s2 = _world.DataSet<T2>();
 		for (var i = 0; i < entitySet.Length; i++)
 		{
 			s1.Set(entitySet[i].Id, c1);
@@ -157,10 +155,9 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 
 	public void AddComponent<T1, T2, T3>(in Entity[] entitySet, in int poolId, in T1 c1, in T2 c2, in T3 c3) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		var pools = _pools[poolId];
-		var s1 = (DataSet<T1>)pools[0];
-		var s2 = (DataSet<T2>)pools[1];
-		var s3 = (DataSet<T3>)pools[2];
+		var s1 = _world.DataSet<T1>();
+		var s2 = _world.DataSet<T2>();
+		var s3 = _world.DataSet<T3>();
 		for (var i = 0; i < entitySet.Length; i++)
 		{
 			s1.Set(entitySet[i].Id, c1);
@@ -171,11 +168,10 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 
 	public void AddComponent<T1, T2, T3, T4>(in Entity[] entitySet, in int poolId, in T1 c1, in T2 c2, in T3 c3, in T4 c4) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		var pools = _pools[poolId];
-		var s1 = (DataSet<T1>)pools[0];
-		var s2 = (DataSet<T2>)pools[1];
-		var s3 = (DataSet<T3>)pools[2];
-		var s4 = (DataSet<T4>)pools[3];
+		var s1 = _world.DataSet<T1>();
+		var s2 = _world.DataSet<T2>();
+		var s3 = _world.DataSet<T3>();
+		var s4 = _world.DataSet<T4>();
 		for (var i = 0; i < entitySet.Length; i++)
 		{
 			s1.Set(entitySet[i].Id, c1);
@@ -187,8 +183,7 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 
 	public void RemoveComponent<T1>(in Entity[] entitySet, in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		var pools = _pools[poolId];
-		var s1 = pools[0];
+		var s1 = _world.DataSet<T1>();
 		for (var i = 0; i < entitySet.Length; i++)
 		{
 			s1.Remove(entitySet[i].Id);
@@ -197,9 +192,8 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 
 	public void RemoveComponent<T1, T2>(in Entity[] entitySet, in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		var pools = _pools[poolId];
-		var s1 = pools[0];
-		var s2 = pools[1];
+		var s1 = _world.DataSet<T1>();
+		var s2 = _world.DataSet<T2>();
 		for (var i = 0; i < entitySet.Length; i++)
 		{
 			s1.Remove(entitySet[i].Id);
@@ -209,10 +203,9 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 
 	public void RemoveComponent<T1, T2, T3>(in Entity[] entitySet, in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		var pools = _pools[poolId];
-		var s1 = pools[0];
-		var s2 = pools[1];
-		var s3 = pools[2];
+		var s1 = _world.DataSet<T1>();
+		var s2 = _world.DataSet<T2>();
+		var s3 = _world.DataSet<T3>();
 		for (var i = 0; i < entitySet.Length; i++)
 		{
 			s1.Remove(entitySet[i].Id);
@@ -223,11 +216,10 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 
 	public void RemoveComponent<T1, T2, T3, T4>(in Entity[] entitySet, in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		var pools = _pools[poolId];
-		var s1 = pools[0];
-		var s2 = pools[1];
-		var s3 = pools[2];
-		var s4 = pools[3];
+		var s1 = _world.DataSet<T1>();
+		var s2 = _world.DataSet<T2>();
+		var s3 = _world.DataSet<T3>();
+		var s4 = _world.DataSet<T4>();
 		for (var i = 0; i < entitySet.Length; i++)
 		{
 			s1.Remove(entitySet[i].Id);
@@ -254,13 +246,12 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 
 	public int CountWith<T1, T2, T3, T4>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		return _world.Include<T1, T2, T3, Include<T4>>().Count();
+		return _world.Include<T1, T2, T3, T4>().Count();
 	}
 
 	public bool GetSingle<T1>(in Entity entity, in int poolId, ref T1 c1) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		var pools = _pools[poolId];
-		var s1 = (DataSet<T1>)pools[0];
+		var s1 = _world.DataSet<T1>();
 
 		c1 = s1.Get(entity.Id);
 		return true;
@@ -268,9 +259,8 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 
 	public bool GetSingle<T1, T2>(in Entity entity, in int poolId, ref T1 c1, ref T2 c2) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		var pools = _pools[poolId];
-		var s1 = (DataSet<T1>)pools[0];
-		var s2 = (DataSet<T2>)pools[1];
+		var s1 = _world.DataSet<T1>();
+		var s2 = _world.DataSet<T2>();
 
 		c1 = s1.Get(entity.Id);
 		c2 = s2.Get(entity.Id);
@@ -279,10 +269,9 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 
 	public bool GetSingle<T1, T2, T3>(in Entity entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		var pools = _pools[poolId];
-		var s1 = (DataSet<T1>)pools[0];
-		var s2 = (DataSet<T2>)pools[1];
-		var s3 = (DataSet<T3>)pools[2];
+		var s1 = _world.DataSet<T1>();
+		var s2 = _world.DataSet<T2>();
+		var s3 = _world.DataSet<T3>();
 
 		c1 = s1.Get(entity.Id);
 		c2 = s2.Get(entity.Id);
@@ -292,11 +281,10 @@ public class MassiveEcsContext : IBenchmarkContext<Entity>
 
 	public bool GetSingle<T1, T2, T3, T4>(in Entity entity, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
 	{
-		var pools = _pools[poolId];
-		var s1 = (DataSet<T1>)pools[0];
-		var s2 = (DataSet<T2>)pools[1];
-		var s3 = (DataSet<T3>)pools[2];
-		var s4 = (DataSet<T4>)pools[3];
+		var s1 = _world.DataSet<T1>();
+		var s2 = _world.DataSet<T2>();
+		var s3 = _world.DataSet<T3>();
+		var s4 = _world.DataSet<T4>();
 
 		c1 = s1.Get(entity.Id);
 		c2 = s2.Get(entity.Id);
