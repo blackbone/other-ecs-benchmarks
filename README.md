@@ -52,7 +52,7 @@ General flow of any benchmark execution is divided into 3 steps:
 |                                        [Xeno](https://github.com/blackbone/xeno) | [0.1.7](https://github.com/blackbone/xeno/releases/tag/0.1.7)                                              |      ✅      |    ✅     |                                  N/A                                  |
 |                            [FriFlo](https://github.com/friflo/Friflo.Engine.ECS) | [3.2.3](https://www.nuget.org/packages/Friflo.Engine.ECS/3.2.3)                                            |      ✅      |    ❌     |                                  N/A                                  |
 |                    [StaticEcs](https://github.com/Felid-Force-Studios/StaticEcs) | [1.2.01](https://github.com/Felid-Force-Studios/StaticEcs/commit/6323d710c22cfff70100fe3748de432cb5fc70c8) |      ✅      |    ✅     | [StaticPack](https://github.com/Felid-Force-Studios/StaticPack) 1.0.6 |
-|                           [Massive ECS](https://github.com/nilpunch/massive-ecs) | [v20.0.0-alpha.5](https://github.com/nilpunch/massive-ecs/releases/tag/v20.0.0-alpha.5)                    |      ✅      |    ✅     |                                  N/A                                  |
+|                           [Massive ECS](https://github.com/nilpunch/massive-ecs) | [v20.0.0](https://github.com/nilpunch/massive-ecs/releases/tag/v20.0.0)                    |      ✅      |    ✅     |                                  N/A                                  |
 
 # Implemented benchmarks
 
