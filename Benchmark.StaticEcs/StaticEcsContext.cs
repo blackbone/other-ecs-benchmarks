@@ -12,6 +12,11 @@ public readonly struct DefaultSystemsId : ISystemsType;
 public abstract class W : World<Default> {}
 public abstract class Systems : W.Systems<DefaultSystemsId> {}
 
+public readonly struct EntityType1 : IEntityType { public static readonly byte Id = 1; }
+public readonly struct EntityType2 : IEntityType { public static readonly byte Id = 2; }
+public readonly struct EntityType3 : IEntityType { public static readonly byte Id = 3; }
+public readonly struct EntityType4 : IEntityType { public static readonly byte Id = 4; }
+
 public sealed class StaticEcsContext : IBenchmarkContext<W.Entity>
 {
     public bool DeletesEntityOnLastComponentDeletion => false;
@@ -21,6 +26,11 @@ public sealed class StaticEcsContext : IBenchmarkContext<W.Entity>
     public void Setup()
     {
         W.Create(WorldConfig.Default());
+        W.Types()
+         .EntityType<EntityType1>(EntityType1.Id)
+         .EntityType<EntityType2>(EntityType2.Id)
+         .EntityType<EntityType3>(EntityType3.Id)
+         .EntityType<EntityType4>(EntityType4.Id);
         Systems.Create();
     }
 
@@ -73,25 +83,29 @@ public sealed class StaticEcsContext : IBenchmarkContext<W.Entity>
     }
 
     private void TryRegisterComponent<T>() where T : struct, IComponent {
-        if (W.Components<T>.Value.IsRegistered()) {
+        if (W.Components<T>.Instance.IsRegistered) {
             return;
         }
         
-        W.RegisterComponentType(new ValueComponentConfig<T, Default>(clearable: false));
+        W.Types().Component(new ComponentTypeConfig<T>(noDataLifecycle: true));
     }
 
+    [MethodImpl(AggressiveInlining)]
+    public byte ResolveEntityType(int poolId) => (byte)(poolId > 4 ? 0 : poolId); 
+ 
     public void CreateEntities(in W.Entity[] entities)
     {
         for (var i = 0; i < entities.Length; i++)
-            entities[i] = W.Entity.New();
+            entities[i] = W.NewEntity<FFS.Libraries.StaticEcs.Default>();
     }
 
     public void CreateEntities<T1>(in W.Entity[] entities, in int poolId, in T1 c1)
         where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
+        var entType = ResolveEntityType(poolId);
         for (var i = 0; i < entities.Length; i++)
         {
-            entities[i] = W.Entity.New(c1);
+            entities[i] = W.NewEntity(entType).Set(c1);
         }
     }
 
@@ -99,10 +113,10 @@ public sealed class StaticEcsContext : IBenchmarkContext<W.Entity>
         where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T2 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
+        var entType = ResolveEntityType(poolId);
         for (var i = 0; i < entities.Length; i++)
         {
-            entities[i] = W.Entity.New(c1, c2);
-
+            entities[i] = W.NewEntity(entType).Set(c1, c2);
         }
     }
 
@@ -111,10 +125,10 @@ public sealed class StaticEcsContext : IBenchmarkContext<W.Entity>
         where T2 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T3 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
+        var entType = ResolveEntityType(poolId);
         for (var i = 0; i < entities.Length; i++)
         {
-            entities[i] = W.Entity.New(c1, c2, c3);
-
+            entities[i] = W.NewEntity(entType).Set(c1, c2, c3);
         }
     }
 
@@ -124,10 +138,10 @@ public sealed class StaticEcsContext : IBenchmarkContext<W.Entity>
         where T3 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T4 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
+        var entType = ResolveEntityType(poolId);
         for (var i = 0; i < entities.Length; i++)
         {
-            entities[i] = W.Entity.New(c1, c2, c3, c4);
-
+            entities[i] = W.NewEntity(entType).Set(c1, c2, c3, c4);
         }
     }
 
@@ -135,7 +149,7 @@ public sealed class StaticEcsContext : IBenchmarkContext<W.Entity>
     {
         for (var i = 0; i < entities.Length; i++) {
             var entity = entities[i];
-            if (entity.IsNotDestroyed()) {
+            if (entity.IsNotDestroyed) {
                 entity.Destroy();
             }
         }
@@ -145,7 +159,7 @@ public sealed class StaticEcsContext : IBenchmarkContext<W.Entity>
         where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
         for (var i = 0; i < entities.Length; i++)
-            entities[i].Add(c1);
+            entities[i].Set(c1);
     }
 
     public void AddComponent<T1, T2>(in W.Entity[] entities, in int poolId, in T1 c1, in T2 c2)
@@ -154,7 +168,7 @@ public sealed class StaticEcsContext : IBenchmarkContext<W.Entity>
     {
         for (var i = 0; i < entities.Length; i++)
         {
-            entities[i].Add(c1, c2);
+            entities[i].Set(c1, c2);
         }
     }
 
@@ -165,7 +179,7 @@ public sealed class StaticEcsContext : IBenchmarkContext<W.Entity>
     {
         for (var i = 0; i < entities.Length; i++)
         {
-            entities[i].Add(c1, c2, c3);
+            entities[i].Set(c1, c2, c3);
         }
     }
 
@@ -177,7 +191,7 @@ public sealed class StaticEcsContext : IBenchmarkContext<W.Entity>
     {
         for (var i = 0; i < entities.Length; i++)
         {
-            entities[i].Add(c1, c2, c3, c4);
+            entities[i].Set(c1, c2, c3, c4);
         }
     }
 
@@ -222,20 +236,20 @@ public sealed class StaticEcsContext : IBenchmarkContext<W.Entity>
 
     public int CountWith<T1>(in int poolId) where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
-        return W.Query.Entities<All<T1>>().EntitiesCount();
+        return W.Query<All<T1>>().EntitiesCount();
     }
 
     public int CountWith<T1, T2>(in int poolId) where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T2 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
-        return W.Query.Entities<All<T1, T2>>().EntitiesCount();
+        return W.Query<All<T1, T2>>().EntitiesCount();
     }
 
     public int CountWith<T1, T2, T3>(in int poolId) where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T2 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T3 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
-        return W.Query.Entities<All<T1, T2, T3>>().EntitiesCount();
+        return W.Query<All<T1, T2, T3>>().EntitiesCount();
     }
 
     public int CountWith<T1, T2, T3, T4>(in int poolId) where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
@@ -243,7 +257,7 @@ public sealed class StaticEcsContext : IBenchmarkContext<W.Entity>
         where T3 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T4 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
-        return W.Query.Entities<All<T1, T2, T3, T4>>().EntitiesCount();
+        return W.Query<All<T1, T2, T3, T4>>().EntitiesCount();
     }
 
     public bool GetSingle<T1>(in W.Entity e, in int poolId, ref T1 c1) where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
@@ -293,7 +307,7 @@ public sealed class StaticEcsContext : IBenchmarkContext<W.Entity>
     public unsafe void AddSystem<T1>(delegate*<ref T1, void> @delegate, int poolId)
         where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
-        Systems.AddUpdate(new System<T1> {
+        Systems.Add(new System<T1> {
             method = @delegate
         });
     }
@@ -302,7 +316,7 @@ public sealed class StaticEcsContext : IBenchmarkContext<W.Entity>
         where T1 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T2 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
-        Systems.AddUpdate(new System<T1, T2> {
+        Systems.Add(new System<T1, T2> {
             method = @delegate
         });
     }
@@ -312,7 +326,7 @@ public sealed class StaticEcsContext : IBenchmarkContext<W.Entity>
         where T2 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T3 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
-        Systems.AddUpdate(new System<T1, T2, T3> {
+        Systems.Add(new System<T1, T2, T3> {
             method = @delegate
         });
     }
@@ -323,7 +337,7 @@ public sealed class StaticEcsContext : IBenchmarkContext<W.Entity>
         where T3 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
         where T4 : struct, Scellecs.Morpeh.IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, IComponent
     {
-        Systems.AddUpdate(new System<T1, T2, T3, T4> {
+        Systems.Add(new System<T1, T2, T3, T4> {
             method = @delegate
         });
     }
@@ -334,76 +348,52 @@ public sealed class StaticEcsContext : IBenchmarkContext<W.Entity>
     }
 }
 
-public unsafe struct System<T1> : IUpdateSystem, W.IQueryFunction<T1>
+public unsafe struct System<T1> : ISystem
     where T1 : struct, IComponent
 {
-
     public delegate*<ref T1, void> method;
     
     [MethodImpl(AggressiveInlining)]
     public void Update() {
-        W.Query.For<T1, System<T1>>(this);
-    }
-
-    [MethodImpl(AggressiveInlining)]
-    public void Invoke(W.Entity entity, ref T1 c1) {
-        method(ref c1);
+        W.Query().For(method);
     }
 }
 
-public unsafe struct System<T1, T2> : IUpdateSystem, W.IQueryFunction<T1, T2>
+public unsafe struct System<T1, T2> : ISystem
     where T1 : struct, IComponent
     where T2 : struct, IComponent
 {
-
     public delegate*<ref T1, ref T2, void> method;
     
     [MethodImpl(AggressiveInlining)]
     public void Update() {
-        W.Query.For<T1, T2, System<T1, T2>>(this);
-    }
-
-    [MethodImpl(AggressiveInlining)]
-    public void Invoke(W.Entity entity, ref T1 c1, ref T2 c2) {
-        method(ref c1, ref c2);
+        W.Query().For(method);
     }
 }
 
-public unsafe struct System<T1, T2, T3> : IUpdateSystem, W.IQueryFunction<T1, T2, T3>
+public unsafe struct System<T1, T2, T3> : ISystem
     where T1 : struct, IComponent
     where T2 : struct, IComponent
     where T3 : struct, IComponent
 {
-
     public delegate*<ref T1, ref T2, ref T3, void> method;
     
     [MethodImpl(AggressiveInlining)]
     public void Update() {
-        W.Query.For<T1, T2, T3, System<T1, T2, T3>>(this);
-    }
-
-    [MethodImpl(AggressiveInlining)]
-    public void Invoke(W.Entity entity, ref T1 c1, ref T2 c2, ref T3 c3) {
-        method(ref c1, ref c2, ref c3);
+        W.Query().For(method);
     }
 }
 
-public unsafe struct System<T1, T2, T3, T4> : IUpdateSystem, W.IQueryFunction<T1, T2, T3, T4>
+public unsafe struct System<T1, T2, T3, T4> : ISystem
     where T1 : struct, IComponent
     where T2 : struct, IComponent
     where T3 : struct, IComponent
     where T4 : struct, IComponent
 {
-
     public delegate*<ref T1, ref T2, ref T3, ref T4, void> method;
     
     [MethodImpl(AggressiveInlining)]
     public void Update() {
-        W.Query.For<T1, T2, T3, T4, System<T1, T2, T3, T4>>(this);
-    }
-
-    [MethodImpl(AggressiveInlining)]
-    public void Invoke(W.Entity entity, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4) {
-        method(ref c1, ref c2, ref c3, ref c4);
+        W.Query().For(method);
     }
 }
