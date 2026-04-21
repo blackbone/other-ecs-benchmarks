@@ -25,13 +25,13 @@ public sealed class LeoEcsContext : IBenchmarkContext<EcsEntity>
 
     public void FinishSetup()
     {
-        foreach (var system in _systems!)
+        foreach (var system in _systems)
             system.Init();
     }
 
     public void Cleanup()
     {
-        foreach (var system in _systems!)
+        foreach (var system in _systems)
             system.Destroy();
         _systems.Clear();
         _world.Destroy();
@@ -298,20 +298,20 @@ public sealed class LeoEcsContext : IBenchmarkContext<EcsEntity>
 
     public void Tick(float delta)
     {
-        foreach (var system in _systems!)
+        foreach (var system in _systems)
             system.Run();
     }
 
     public unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId)
         where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        _systems.Add(new EcsSystems(_world!).Add(new System<T1>(method)).ProcessInjects());
+        _systems.Add(new EcsSystems(_world).Add(new System<T1>(method)).ProcessInjects());
     }
 
     public unsafe void AddSystem<T1, T2>(delegate*<ref T1, ref T2, void> method, int poolId)
         where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        _systems.Add(new EcsSystems(_world!).Add(new System<T1, T2>(method)).ProcessInjects());
+        _systems.Add(item: new EcsSystems(_world).Add(system: new System<T1, T2>(method)).ProcessInjects());
     }
 
     public unsafe void AddSystem<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> method, int poolId)
@@ -319,7 +319,7 @@ public sealed class LeoEcsContext : IBenchmarkContext<EcsEntity>
         where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
         where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        _systems.Add(new EcsSystems(_world!).Add(new System<T1, T2, T3>(method)).ProcessInjects());
+        _systems.Add(new EcsSystems(_world).Add(new System<T1, T2, T3>(method)).ProcessInjects());
     }
 
     public unsafe void AddSystem<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> method, int poolId)
@@ -328,7 +328,7 @@ public sealed class LeoEcsContext : IBenchmarkContext<EcsEntity>
         where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
         where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
-        _systems.Add(new EcsSystems(_world!).Add(new System<T1, T2, T3, T4>(method)).ProcessInjects());
+        _systems.Add(new EcsSystems(_world).Add(new System<T1, T2, T3, T4>(method)).ProcessInjects());
     }
 
     public EcsEntity[] PrepareSet(in int count)

@@ -4,6 +4,7 @@
     <mapping directory="" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/submodules/DragonECS" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/submodules/StaticEcs" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/submodules/StaticPack" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/submodules/leopotam-ecs" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/submodules/leopotam-ecslite" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/submodules/massive-ecs" vcs="Git" />

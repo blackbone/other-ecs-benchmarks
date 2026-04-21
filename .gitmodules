@@ -22,3 +22,6 @@
 [submodule "submodules/StaticPack"]
 	path = submodules/StaticPack
 	url = git@github.com:Felid-Force-Studios/StaticPack.git
+[submodule "submodules/TinyEcs"]
+	path = submodules/TinyEcs
+	url = https://github.com/andreakarasho/TinyEcs.git

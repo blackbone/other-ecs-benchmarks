@@ -9,11 +9,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="TinyEcs.Main" Version="2.0.0" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\Benchmark._Context\Benchmark._Context.csproj" />
+      <ProjectReference Include="..\submodules\TinyEcs\src\TinyEcs.Bevy\TinyEcs.Bevy.csproj" />
+      <ProjectReference Include="..\submodules\TinyEcs\src\TinyEcs\TinyEcs.csproj" />
     </ItemGroup>
 
 </Project>

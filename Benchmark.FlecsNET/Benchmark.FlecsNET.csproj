@@ -8,12 +8,9 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
-    <ItemGroup Condition="$(Configuration) == Release">
-        <PackageReference Include="Flecs.NET.Release" Version="4.0.4-build.548" />
-    </ItemGroup>
-
-    <ItemGroup Condition="$(Configuration) == Debug">
-        <PackageReference Include="Flecs.NET.Debug" Version="4.0.3" />
+    <ItemGroup>
+        <PackageReference Condition="$(Configuration) == Release" Include="Flecs.NET.Release" Version="4.0.3" />
+        <PackageReference Condition="$(Configuration) == Debug" Include="Flecs.NET.Debug" Version="4.0.3" />
     </ItemGroup>
 
     <ItemGroup>
