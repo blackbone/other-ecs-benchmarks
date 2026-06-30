@@ -21,16 +21,16 @@ public sealed class TinyEcsContext : IBenchmarkContext<TinyEcs.EntityView>
     public void FinishSetup() {
     }
 
-    public void Warmup<T1>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent {
+    public void Warmup<T1>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent {
         _world.Entity().Set<T1>(default(T1)).Delete();
     }
-    public void Warmup<T1, T2>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent {
+    public void Warmup<T1, T2>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent {
         _world.Entity().Set<T1>(default(T1)).Set<T2>(default(T2)).Delete();
     }
-    public void Warmup<T1, T2, T3>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent {
+    public void Warmup<T1, T2, T3>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent {
         _world.Entity().Set<T1>(default(T1)).Set<T2>(default(T2)).Set<T3>(default(T3)).Delete();
     }
-    public void Warmup<T1, T2, T3, T4>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent {
+    public void Warmup<T1, T2, T3, T4>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T4 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent {
         _world.Entity().Set<T1>(default(T1)).Set<T2>(default(T2)).Set<T3>(default(T3)).Set<T4>(default(T4)).Delete();
     }
     public void Cleanup() {}
@@ -61,7 +61,7 @@ public sealed class TinyEcsContext : IBenchmarkContext<TinyEcs.EntityView>
         NumberOfLivingEntities += entities.Length;
     }
 
-    public void CreateEntities<T1>(in TinyEcs.EntityView[] entities, in int poolId, in T1 c1) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+    public void CreateEntities<T1>(in TinyEcs.EntityView[] entities, in int poolId, in T1 c1) where T1 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         for (var i = 0; i < entities.Length; i++)
             entities[i] = _world.Entity().Set(c1);
@@ -69,7 +69,7 @@ public sealed class TinyEcsContext : IBenchmarkContext<TinyEcs.EntityView>
         NumberOfLivingEntities += entities.Length;
     }
 
-    public void CreateEntities<T1, T2>(in TinyEcs.EntityView[] entities, in int poolId, in T1 c1, in T2 c2) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+    public void CreateEntities<T1, T2>(in TinyEcs.EntityView[] entities, in int poolId, in T1 c1, in T2 c2) where T1 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         for (var i = 0; i < entities.Length; i++)
             entities[i] = _world.Entity().Set(c1).Set(c2);
@@ -78,7 +78,7 @@ public sealed class TinyEcsContext : IBenchmarkContext<TinyEcs.EntityView>
     }
 
     public void CreateEntities<T1, T2, T3>(in TinyEcs.EntityView[] entities, in int poolId, in T1 c1, in T2 c2,
-        in T3 c3) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        in T3 c3) where T1 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         for (var i = 0; i < entities.Length; i++)
             entities[i] = _world.Entity().Set(c1).Set(c2).Set(c3);
@@ -87,7 +87,7 @@ public sealed class TinyEcsContext : IBenchmarkContext<TinyEcs.EntityView>
     }
 
     public void CreateEntities<T1, T2, T3, T4>(in TinyEcs.EntityView[] entities, in int poolId, in T1 c1, in T2 c2,
-        in T3 c3, in T4 c4) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        in T3 c3, in T4 c4) where T1 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T4 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         for (var i = 0; i < entities.Length; i++)
             entities[i] = _world.Entity().Set(c1).Set(c2).Set(c3).Set(c4);
@@ -95,82 +95,82 @@ public sealed class TinyEcsContext : IBenchmarkContext<TinyEcs.EntityView>
         NumberOfLivingEntities += entities.Length;
     }
 
-    public void AddComponent<T1>(in TinyEcs.EntityView[] entities, in int poolId, in T1 c1) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+    public void AddComponent<T1>(in TinyEcs.EntityView[] entities, in int poolId, in T1 c1) where T1 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         for (var i = 0; i < entities.Length; i++)
             entities[i].Set(c1);
     }
 
-    public void AddComponent<T1, T2>(in TinyEcs.EntityView[] entities, in int poolId, in T1 c1, in T2 c2) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+    public void AddComponent<T1, T2>(in TinyEcs.EntityView[] entities, in int poolId, in T1 c1, in T2 c2) where T1 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         for (var i = 0; i < entities.Length; i++)
             entities[i].Set(c1).Set(c2);
     }
 
     public void AddComponent<T1, T2, T3>(in TinyEcs.EntityView[] entities, in int poolId, in T1 c1, in T2 c2,
-        in T3 c3) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        in T3 c3) where T1 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         for (var i = 0; i < entities.Length; i++)
             entities[i].Set(c1).Set(c2).Set(c3);
     }
 
     public void AddComponent<T1, T2, T3, T4>(in TinyEcs.EntityView[] entities, in int poolId, in T1 c1, in T2 c2,
-        in T3 c3, in T4 c4) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        in T3 c3, in T4 c4) where T1 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T4 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         for (var i = 0; i < entities.Length; i++)
             entities[i].Set(c1).Set(c2).Set(c3).Set(c4);
     }
 
-    public void RemoveComponent<T1>(in TinyEcs.EntityView[] entities, in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+    public void RemoveComponent<T1>(in TinyEcs.EntityView[] entities, in int poolId) where T1 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         for (var i = 0; i < entities.Length; i++)
             entities[i].Unset<T1>();
     }
 
-    public void RemoveComponent<T1, T2>(in TinyEcs.EntityView[] entities, in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+    public void RemoveComponent<T1, T2>(in TinyEcs.EntityView[] entities, in int poolId) where T1 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         for (var i = 0; i < entities.Length; i++)
             entities[i].Unset<T1>().Unset<T2>();
     }
 
-    public void RemoveComponent<T1, T2, T3>(in TinyEcs.EntityView[] entities, in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+    public void RemoveComponent<T1, T2, T3>(in TinyEcs.EntityView[] entities, in int poolId) where T1 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         for (var i = 0; i < entities.Length; i++)
             entities[i].Unset<T1>().Unset<T2>().Unset<T3>();
     }
 
-    public void RemoveComponent<T1, T2, T3, T4>(in TinyEcs.EntityView[] entities, in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+    public void RemoveComponent<T1, T2, T3, T4>(in TinyEcs.EntityView[] entities, in int poolId) where T1 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T4 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         for (var i = 0; i < entities.Length; i++)
             entities[i].Unset<T1>().Unset<T2>().Unset<T3>().Unset<T4>();
     }
 
-    public int CountWith<T1>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+    public int CountWith<T1>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
         => _world.QueryBuilder().With<T1>().Build().Count();
 
-    public int CountWith<T1, T2>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+    public int CountWith<T1, T2>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
         => _world.QueryBuilder().With<T1>().With<T2>().Build().Count();
 
-    public int CountWith<T1, T2, T3>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+    public int CountWith<T1, T2, T3>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
         => _world.QueryBuilder().With<T1>().With<T2>().With<T3>().Build().Count();
 
-    public int CountWith<T1, T2, T3, T4>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+    public int CountWith<T1, T2, T3, T4>(in int poolId) where T1 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T4 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
         => _world.QueryBuilder().With<T1>().With<T2>().With<T3>().With<T4>().Build().Count();
 
-    public bool GetSingle<T1>(in TinyEcs.EntityView e, in int poolId, ref T1 c1) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+    public bool GetSingle<T1>(in TinyEcs.EntityView e, in int poolId, ref T1 c1) where T1 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         c1 = e.Get<T1>();
         return true;
     }
 
-    public bool GetSingle<T1, T2>(in TinyEcs.EntityView e, in int poolId, ref T1 c1, ref T2 c2) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+    public bool GetSingle<T1, T2>(in TinyEcs.EntityView e, in int poolId, ref T1 c1, ref T2 c2) where T1 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         c1 = e.Get<T1>();
         c2 = e.Get<T2>();
         return true;
     }
 
-    public bool GetSingle<T1, T2, T3>(in TinyEcs.EntityView e, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+    public bool GetSingle<T1, T2, T3>(in TinyEcs.EntityView e, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3) where T1 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         c1 = e.Get<T1>();
         c2 = e.Get<T2>();
@@ -178,7 +178,7 @@ public sealed class TinyEcsContext : IBenchmarkContext<TinyEcs.EntityView>
         return true;
     }
 
-    public bool GetSingle<T1, T2, T3, T4>(in TinyEcs.EntityView e, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4) where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+    public bool GetSingle<T1, T2, T3, T4>(in TinyEcs.EntityView e, in int poolId, ref T1 c1, ref T2 c2, ref T3 c3, ref T4 c4) where T1 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T2 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T3 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent where T4 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         c1 = e.Get<T1>();
         c2 = e.Get<T2>();
@@ -190,7 +190,7 @@ public sealed class TinyEcsContext : IBenchmarkContext<TinyEcs.EntityView>
     public void Tick(float delta) => _app.Run();
 
     public unsafe void AddSystem<T1>(delegate*<ref T1, void> method, int poolId)
-        where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent {
+        where T1 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent {
         var sysDelegate = Sys;
         _app.AddSystem(TinyEcs.Bevy.Stage.Update, TinyEcs.Bevy.SystemFunctionAdapters.Create(sysDelegate));
 
@@ -201,8 +201,8 @@ public sealed class TinyEcsContext : IBenchmarkContext<TinyEcs.EntityView>
     }
 
     public unsafe void AddSystem<T1, T2>(delegate*<ref T1, ref T2, void> method, int poolId)
-        where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
-        where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T1 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T2 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         var sysDelegate = Sys;
         _app.AddSystem(TinyEcs.Bevy.Stage.Update, TinyEcs.Bevy.SystemFunctionAdapters.Create(sysDelegate));
@@ -214,9 +214,9 @@ public sealed class TinyEcsContext : IBenchmarkContext<TinyEcs.EntityView>
     }
 
     public unsafe void AddSystem<T1, T2, T3>(delegate*<ref T1, ref T2, ref T3, void> method, int poolId)
-        where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
-        where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
-        where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T1 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T2 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T3 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         var sysDelegate = Sys;
         _app.AddSystem(TinyEcs.Bevy.Stage.Update, TinyEcs.Bevy.SystemFunctionAdapters.Create(sysDelegate));
@@ -228,10 +228,10 @@ public sealed class TinyEcsContext : IBenchmarkContext<TinyEcs.EntityView>
     }
 
     public unsafe void AddSystem<T1, T2, T3, T4>(delegate*<ref T1, ref T2, ref T3, ref T4, void> method, int poolId)
-        where T1 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
-        where T2 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
-        where T3 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
-        where T4 : struct, IComponent, IEcsComponent, Xeno.IComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T1 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T2 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T3 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
+        where T4 : struct, IComponent, IEcsComponent, Friflo.Engine.ECS.IComponent, FFS.Libraries.StaticEcs.IComponent
     {
         Action<TinyEcs.Bevy.Query<TinyEcs.Bevy.Data<T1, T2, T3, T4>>> sysDelegate = Sys;
         _app.AddSystem(TinyEcs.Bevy.Stage.Update, TinyEcs.Bevy.SystemFunctionAdapters.Create(sysDelegate));

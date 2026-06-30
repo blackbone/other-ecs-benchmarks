@@ -8,10 +8,56 @@ using Benchmark;
 using BenchmarkDotNet.Attributes;
 
 const bool IS_ITERATIVE_RUN = true;
-const int ITERATIONS_OR_MILLISECONDS = 1_000;
+const int ITERATIONS_OR_MILLISECONDS = 100;
 const int ENTITY_COUNT = 1_000_000;
 
-RunBenchType(typeof(SystemWith3Components_ArrayECSContext));
+
+RunBenchType(typeof(FilterMismatchSystems_MassiveEcsContext));
+RunBenchType(typeof(FilterMismatchSystems_StaticEcsContext));
+RunBenchType(typeof(FilterMismatchSystems_LeoEcsLiteContext));
+RunBenchType(typeof(FilterMismatchSystems_MorpehContext));
+RunBenchType(typeof(FilterMismatchSystems_XenoContext));
+
+Console.WriteLine();
+
+RunBenchType(typeof(RareFilterMismatchSystems_MassiveEcsContext));
+RunBenchType(typeof(RareFilterMismatchSystems_StaticEcsContext));
+RunBenchType(typeof(RareFilterMismatchSystems_LeoEcsLiteContext));
+RunBenchType(typeof(RareFilterMismatchSystems_MorpehContext));
+RunBenchType(typeof(RareFilterMismatchSystems_XenoContext));
+
+Console.WriteLine();
+
+RunBenchType(typeof(SystemWith3Components_MassiveEcsContext));
+RunBenchType(typeof(SystemWith3Components_StaticEcsContext));
+RunBenchType(typeof(SystemWith3Components_LeoEcsLiteContext));
+RunBenchType(typeof(SystemWith3Components_MorpehContext));
+RunBenchType(typeof(SystemWith3Components_XenoContext));
+
+Console.WriteLine();
+
+RunBenchType(typeof(MultiSystems_MassiveEcsContext));
+RunBenchType(typeof(MultiSystems_StaticEcsContext));
+RunBenchType(typeof(MultiSystems_LeoEcsLiteContext));
+RunBenchType(typeof(MultiSystems_MorpehContext));
+RunBenchType(typeof(MultiSystems_XenoContext));
+
+Console.WriteLine();
+
+RunBenchType(typeof(FourRemoveThreeComponents_MassiveEcsContext));
+RunBenchType(typeof(FourRemoveThreeComponents_StaticEcsContext));
+RunBenchType(typeof(FourRemoveThreeComponents_LeoEcsLiteContext));
+RunBenchType(typeof(FourRemoveThreeComponents_MorpehContext));
+RunBenchType(typeof(FourRemoveThreeComponents_XenoContext));
+
+Console.WriteLine();
+
+RunBenchType(typeof(OneAddThreeComponents_MassiveEcsContext));
+RunBenchType(typeof(OneAddThreeComponents_StaticEcsContext));
+RunBenchType(typeof(OneAddThreeComponents_LeoEcsLiteContext));
+RunBenchType(typeof(OneAddThreeComponents_MorpehContext));
+RunBenchType(typeof(OneAddThreeComponents_XenoContext));
+
 return;
 
 
@@ -19,7 +65,7 @@ Console.WriteLine("use this for testing and debugging\n\n");
 
 var results = new Dictionary<Type, double[]>();
 foreach (var (bench, impls) in BenchMap.Runs) {
-    Console.WriteLine(bench.Name + " bechnmark runs...\n");
+    Console.WriteLine(bench.Name + " benchmark runs...\n");
 
     var res = new double[impls.Length];
     for (var i = 0; i < impls.Length; i++) {

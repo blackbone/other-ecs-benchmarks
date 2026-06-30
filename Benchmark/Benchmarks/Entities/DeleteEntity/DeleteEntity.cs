@@ -28,6 +28,9 @@ public abstract class DeleteEntity<T, TE> : IBenchmark<T, TE> where T : IBenchma
     [IterationSetup]
     public void IterationSetup()
     {
+        if (_entitySet.Length != EntityCount)
+            _entitySet = Context.PrepareSet(EntityCount);
+
         Context.CreateEntities(_entitySet);
     }
 

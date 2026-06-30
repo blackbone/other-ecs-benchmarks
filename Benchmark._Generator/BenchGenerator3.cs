@@ -38,7 +38,6 @@ public sealed class BenchGenerator3 : IIncrementalGenerator {
                 .AddUsings(
                     UsingDirective(ParseName("MorpehComponent = Scellecs.Morpeh.IComponent")),
                     UsingDirective(ParseName("DragonComponent = DCFApixels.DragonECS.IEcsComponent")),
-                    UsingDirective(ParseName("XenoComponent = Xeno.IComponent")),
                     UsingDirective(ParseName("FrifloComponent = Friflo.Engine.ECS.IComponent")),
                     UsingDirective(ParseName("StaticEcsComponent = FFS.Libraries.StaticEcs.IComponent")))
                 .AddMembers(NamespaceDeclaration(ParseName("Benchmark"))
@@ -52,13 +51,13 @@ public sealed class BenchGenerator3 : IIncrementalGenerator {
 
         private static IEnumerable<MemberDeclarationSyntax> GetComponentTypes() {
             for (var i = 1; i <= Count; i++) {
-                yield return ParseMemberDeclaration($"public struct Component{i} : MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent {{ public int Value; }}");
+                yield return ParseMemberDeclaration($"public struct Component{i} : MorpehComponent, DragonComponent, FrifloComponent, StaticEcsComponent {{ public int Value; }}");
             }
         }
 
         private static IEnumerable<MemberDeclarationSyntax> GetPaddingTypes() {
             for (var i = 1; i <= Count; i++) {
-                yield return ParseMemberDeclaration($"public struct Padding{i} : MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent {{ public long Value1; public long Value2; public long Value3; public long Value4; }}");
+                yield return ParseMemberDeclaration($"public struct Padding{i} : MorpehComponent, DragonComponent, FrifloComponent, StaticEcsComponent {{ public long Value1; public long Value2; public long Value3; public long Value4; }}");
             }
         }
     }

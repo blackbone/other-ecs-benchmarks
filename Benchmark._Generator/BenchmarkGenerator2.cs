@@ -18,11 +18,13 @@ public class ComponentsGenerator : ISourceGenerator {
         // no op
     }
     public void Execute(GeneratorExecutionContext ctx) {
+        if (ctx.Compilation.AssemblyName != "Benchmark._Context")
+            return;
+
         var source = CompilationUnit()
             .AddUsings(
                 UsingDirective(ParseName("MorpehComponent = Scellecs.Morpeh.IComponent")),
                 UsingDirective(ParseName("DragonComponent = DCFApixels.DragonECS.IEcsComponent")),
-                UsingDirective(ParseName("XenoComponent = Xeno.IComponent")),
                 UsingDirective(ParseName("FrifloComponent = Friflo.Engine.ECS.IComponent")),
                 UsingDirective(ParseName("StaticEcsComponent = FFS.Libraries.StaticEcs.IComponent")))
             .AddMembers(NamespaceDeclaration(ParseName("Benchmark"))
@@ -36,13 +38,13 @@ public class ComponentsGenerator : ISourceGenerator {
 
     private IEnumerable<MemberDeclarationSyntax> GetComponentTypes() {
         for (int i = 1; i <= 100; i++) {
-            yield return ParseMemberDeclaration($"public struct Component{i} : MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent {{ public int Value; }}");
+            yield return ParseMemberDeclaration($"public struct Component{i} : MorpehComponent, DragonComponent, FrifloComponent, StaticEcsComponent {{ public int Value; }}");
         }
     }
 
     private IEnumerable<MemberDeclarationSyntax> GetPaddingTypes() {
         for (int i = 1; i <= 100; i++) {
-            yield return ParseMemberDeclaration($"public struct Padding{i} : MorpehComponent, DragonComponent, XenoComponent, FrifloComponent, StaticEcsComponent {{ public long Value1; public long Value2; public long Value3; public long Value4; }}");
+            yield return ParseMemberDeclaration($"public struct Padding{i} : MorpehComponent, DragonComponent, FrifloComponent, StaticEcsComponent {{ public long Value1; public long Value2; public long Value3; public long Value4; }}");
         }
     }
 }
@@ -50,6 +52,27 @@ public class ComponentsGenerator : ISourceGenerator {
 [Generator]
 public class BenchmarksGenerator : ISourceGenerator {
     private static readonly StringBuilder log = new();
+
+    private sealed class XenoBenchmarkInfo {
+        public readonly List<string> Components = [];
+        public readonly List<XenoOperation> Warmups = [];
+        public readonly List<XenoOperation> Creates = [];
+        public readonly List<XenoOperation> Adds = [];
+        public readonly List<XenoOperation> Removes = [];
+        public readonly List<XenoSystemCall> Systems = [];
+    }
+
+    private sealed class XenoOperation {
+        public string MethodName;
+        public string[] Types;
+    }
+
+    private sealed class XenoSystemCall {
+        public string[] Types;
+        public string UpdateCall;
+        public int Order;
+    }
+
     public void Initialize(GeneratorInitializationContext context) {
         // No initialization required
     }
@@ -210,6 +233,256 @@ public class BenchmarksGenerator : ISourceGenerator {
         log.AppendLine($"Generating: {className} done\n");
         return className;
     }
+
+    private static string GenerateXenoBenchmark(INamedTypeSymbol benchmark, GeneratorExecutionContext context) {
+        var className = $"{benchmark.Name}_XenoContext";
+        log.AppendLine($"Generating xeno: {className}...");
+
+        var artifactsPathArgument = $".benchmark_results/{benchmark.Name}";
+        var originalUsings = GetOriginalUsings(benchmark);
+        var mergedUsings = MergeUsings(originalUsings, new[] { UsingDirective(ParseName("Xeno")) });
+        var info = CollectXenoBenchmarkInfo(benchmark);
+
+        var benchmarkClass = GetXenoBenchmarkClassDeclaration(className, benchmark, info)
+            .WithAttributeLists(ReplaceArtifactsPathAttribute(benchmark, artifactsPathArgument));
+        var worldClass = GetXenoWorldDeclaration(className, info);
+
+        var compilationUnit = CompilationUnit()
+            .AddUsings(mergedUsings.ToArray())
+            .AddMembers(NamespaceDeclaration(ParseName("Benchmark"))
+                .AddMembers(benchmarkClass, worldClass))
+            .NormalizeWhitespace();
+
+        var code = StringReplacements(compilationUnit.ToFullString(), "global::Xeno.Entity");
+        context.AddSource($"BenchmarksGenerator/{className}.g.cs", SourceText.From(code, Encoding.UTF8));
+        log.AppendLine($"Generating xeno: {className} done\n");
+        return className;
+    }
+
+    private static ClassDeclarationSyntax GetXenoBenchmarkClassDeclaration(string className, INamedTypeSymbol benchmarkType, XenoBenchmarkInfo info) {
+        var classAttributes = CopyClassAttributes(benchmarkType);
+        var benchmarkFields = GetFields(benchmarkType);
+        var benchmarkProperties = GetProperties(benchmarkType);
+        var benchmarkMethods = GetXenoBenchmarkMethods(benchmarkType);
+        var helperMembers = GetXenoHelperMembers(className, info);
+        var systemTypes = GetXenoSystemTypes(info);
+
+        return ClassDeclaration(className)
+            .AddBaseListTypes(SimpleBaseType(ParseTypeName("IBenchmark")))
+            .AddModifiers(Token(SyntaxKind.PublicKeyword))
+            .AddAttributeLists(classAttributes.ToArray())
+            .AddMembers(
+                benchmarkFields
+                    .Concat(benchmarkProperties)
+                    .Concat(benchmarkMethods)
+                    .Concat(helperMembers)
+                    .Concat(systemTypes)
+                    .ToArray());
+    }
+
+    private static XenoBenchmarkInfo CollectXenoBenchmarkInfo(INamedTypeSymbol benchmarkType) {
+        var info = new XenoBenchmarkInfo();
+        var benchmarkSyntax = benchmarkType.GetTypeDeclarationSyntax();
+        if (benchmarkSyntax == null)
+            return info;
+
+        foreach (var invocation in benchmarkSyntax.DescendantNodes().OfType<InvocationExpressionSyntax>()) {
+            if (invocation.Expression is not MemberAccessExpressionSyntax memberAccess)
+                continue;
+
+            if (memberAccess.Expression.ToString() != "Context")
+                continue;
+
+            var methodName = memberAccess.Name.Identifier.Text;
+            var types = memberAccess.Name is GenericNameSyntax genericName
+                ? genericName.TypeArgumentList.Arguments.Select(a => a.ToString()).ToArray()
+                : Array.Empty<string>();
+
+            foreach (var type in types)
+                TrackXenoComponent(info, type);
+
+            switch (methodName) {
+                case "Warmup":
+                    TrackXenoOperation(info.Warmups, methodName, types);
+                    break;
+                case "CreateEntities":
+                    if (types.Length > 0)
+                        TrackXenoOperation(info.Creates, methodName, types);
+                    break;
+                case "AddComponent":
+                    TrackXenoOperation(info.Adds, methodName, types);
+                    break;
+                case "RemoveComponent":
+                    TrackXenoOperation(info.Removes, methodName, types);
+                    break;
+                case "AddSystem":
+                    info.Systems.Add(new XenoSystemCall {
+                        Types = types,
+                        UpdateCall = NormalizeXenoUpdateCall(invocation.ArgumentList.Arguments.FirstOrDefault()?.ToString() ?? string.Empty),
+                        Order = info.Systems.Count
+                    });
+                    break;
+            }
+        }
+
+        return info;
+    }
+
+    private static void TrackXenoOperation(List<XenoOperation> operations, string methodName, string[] types) {
+        if (operations.Any(op => op.MethodName == methodName && op.Types.SequenceEqual(types)))
+            return;
+
+        operations.Add(new XenoOperation {
+            MethodName = methodName,
+            Types = types
+        });
+    }
+
+    private static void TrackXenoComponent(XenoBenchmarkInfo info, string typeName) {
+        if (!info.Components.Contains(typeName))
+            info.Components.Add(typeName);
+    }
+
+    private static string NormalizeXenoUpdateCall(string value) {
+        var normalized = value.Trim();
+        if (normalized.StartsWith("&"))
+            normalized = normalized[1..];
+        return normalized.Trim();
+    }
+
+    private static IEnumerable<MemberDeclarationSyntax> GetXenoBenchmarkMethods(INamedTypeSymbol benchmarkType) {
+        var benchmarkSyntax = benchmarkType.GetTypeDeclarationSyntax();
+        if (benchmarkSyntax == null)
+            return Enumerable.Empty<MemberDeclarationSyntax>();
+
+        return benchmarkSyntax.Members
+            .OfType<MethodDeclarationSyntax>()
+            .Select(method => (MemberDeclarationSyntax)new XenoInvocationRewriter().Visit(method));
+    }
+
+    private static IEnumerable<MemberDeclarationSyntax> GetXenoHelperMembers(string className, XenoBenchmarkInfo info) {
+        var worldTypeName = $"{className}_World";
+
+        yield return ParseMemberDeclaration($"private {worldTypeName} _world;")!;
+        yield return ParseMemberDeclaration($@"
+public void Setup() {{
+    _world = new {worldTypeName}($""xeno_{{global::System.DateTimeOffset.UtcNow.Ticks}}"");
+    _world.EnsureCapacity(EntityCount);
+}}")!;
+        yield return ParseMemberDeclaration("public void FinishSetup() { _world.Start(); }")!;
+        yield return ParseMemberDeclaration("public void Cleanup() { _world.Stop(); }")!;
+        yield return ParseMemberDeclaration("public void Dispose() { if (_world != null) _world.Dispose(); _world = null; }")!;
+        yield return ParseMemberDeclaration("public global::Xeno.Entity[] PrepareSet(in int count) => new global::Xeno.Entity[count];")!;
+        yield return ParseMemberDeclaration("public void DeleteEntities(in global::Xeno.Entity[] entities) { _world.DestroyEntities(entities); }")!;
+        yield return ParseMemberDeclaration(@"
+public void CreateEntities(in global::Xeno.Entity[] entities) {
+    for (var i = 0; i < entities.Length; i++)
+        entities[i] = _world.CreateEntity();
+}")!;
+        yield return ParseMemberDeclaration("public void Tick(float delta) { _world.Tick(delta); }")!;
+
+        foreach (var operation in info.Warmups)
+            yield return ParseMemberDeclaration($"public void {BuildXenoHelperName(operation.MethodName, operation.Types)}(in int poolId) {{ }}")!;
+
+        foreach (var system in info.Systems.GroupBy(s => string.Join("|", s.Types)).Select(g => g.First()))
+            yield return ParseMemberDeclaration($"public void {BuildXenoHelperName("AddSystem", system.Types)}(int poolId) {{ }}")!;
+
+        foreach (var operation in info.Creates) {
+            var helperName = BuildXenoHelperName(operation.MethodName, operation.Types);
+            var parameters = BuildXenoOperationParameters(includeEntitySet: true, includePoolId: true, operation.Types);
+            var args = BuildXenoArgumentList(operation.Types.Length);
+            yield return ParseMemberDeclaration($@"
+public void {helperName}({parameters}) {{
+    for (var i = 0; i < entities.Length; i++)
+        entities[i] = _world.CreateEntity({args});
+}}")!;
+        }
+
+        foreach (var operation in info.Adds) {
+            var helperName = BuildXenoHelperName(operation.MethodName, operation.Types);
+            var parameters = BuildXenoOperationParameters(includeEntitySet: true, includePoolId: true, operation.Types);
+            var args = BuildXenoArgumentList(operation.Types.Length);
+            yield return ParseMemberDeclaration($@"
+public void {helperName}({parameters}) {{
+    for (var i = 0; i < entities.Length; i++)
+        _world.Add(entities[i], {args});
+}}")!;
+        }
+
+        foreach (var operation in info.Removes) {
+            var helperName = BuildXenoHelperName(operation.MethodName, operation.Types);
+            var removeCalls = string.Join("\n", operation.Types.Select(typeName => $"        _world.Remove{typeName}(entities[i]);"));
+            yield return ParseMemberDeclaration($@"
+public void {helperName}(in global::Xeno.Entity[] entities, in int poolId) {{
+    for (var i = 0; i < entities.Length; i++) {{
+{removeCalls}
+    }}
+}}")!;
+        }
+    }
+
+    private static IEnumerable<TypeDeclarationSyntax> GetXenoSystemTypes(XenoBenchmarkInfo info) {
+        for (var i = 0; i < info.Systems.Count; i++) {
+            var system = info.Systems[i];
+            var parameters = string.Join(", ", system.Types.Select((typeName, index) => $"ref {typeName} c{index + 1}"));
+            var refs = string.Join(", ", system.Types.Select((_, index) => $"ref c{index + 1}"));
+            yield return (TypeDeclarationSyntax)ParseMemberDeclaration($@"
+public sealed class XenoSystem{i} {{
+    [SystemMethod(SystemMethodType.Update, {system.Order})]
+    public static void Run({parameters}) {{
+        {system.UpdateCall}({refs});
+    }}
+}}")!;
+        }
+    }
+
+    private static ClassDeclarationSyntax GetXenoWorldDeclaration(string className, XenoBenchmarkInfo info) {
+        var attrs = new List<string>();
+        foreach (var component in info.Components)
+            attrs.Add($"[RegisterComponent(typeof({component}))]");
+        for (var i = 0; i < info.Systems.Count; i++)
+            attrs.Add($"[RegisterSystem(typeof({className}.XenoSystem{i}), {info.Systems[i].Order})]");
+
+        var createDeclarations = info.Creates
+            .Where(op => op.Types.Length > 1)
+            .Select(op => $"public partial global::Xeno.Entity CreateEntity({BuildWorldComponentParameters(op.Types)});");
+        var addDeclarations = info.Adds
+            .Where(op => op.Types.Length > 1)
+            .Select(op => $"public partial void Add(in global::Xeno.Entity entity, {BuildWorldComponentParameters(op.Types)});");
+
+        var source = $@"
+{string.Join("\n", attrs)}
+public partial class {className}_World : World {{
+{string.Join("\n", createDeclarations.Concat(addDeclarations))}
+}}";
+
+        return (ClassDeclarationSyntax)ParseMemberDeclaration(source)!;
+    }
+
+    private static string BuildXenoHelperName(string methodName, string[] types) {
+        if (types.Length == 0)
+            return methodName;
+
+        return methodName + "_" + string.Join("_", types.Select(SanitizeXenoName));
+    }
+
+    private static string SanitizeXenoName(string value) => Regex.Replace(value, "[^A-Za-z0-9_]", "_");
+
+    private static string BuildXenoArgumentList(int count) =>
+        string.Join(", ", Enumerable.Range(1, count).Select(i => $"c{i}"));
+
+    private static string BuildXenoOperationParameters(bool includeEntitySet, bool includePoolId, string[] types) {
+        var parts = new List<string>();
+        if (includeEntitySet)
+            parts.Add("in global::Xeno.Entity[] entities");
+        if (includePoolId)
+            parts.Add("in int poolId");
+        parts.AddRange(types.Select((typeName, index) => $"in {typeName} c{index + 1}"));
+        return string.Join(", ", parts);
+    }
+
+    private static string BuildWorldComponentParameters(string[] types) =>
+        string.Join(", ", types.Select((typeName, index) => $"in {typeName} c{index + 1}"));
 
     private static SyntaxList<AttributeListSyntax> ReplaceArtifactsPathAttribute(
         INamedTypeSymbol benchmarkType,
@@ -777,6 +1050,45 @@ public class BenchmarksGenerator : ISourceGenerator {
             log.AppendLine($"{origin} -> {updated}");
 
         return expression;
+    }
+
+    private sealed class XenoInvocationRewriter : CSharpSyntaxRewriter {
+        public override SyntaxNode VisitExpressionStatement(ExpressionStatementSyntax node) {
+            if (node.Expression is AssignmentExpressionSyntax assignment && assignment.Left.ToString() == "Context")
+                return null;
+
+            return base.VisitExpressionStatement(node);
+        }
+
+        public override SyntaxNode VisitInvocationExpression(InvocationExpressionSyntax node) {
+            if (node.Expression is not MemberAccessExpressionSyntax memberAccess || memberAccess.Expression.ToString() != "Context")
+                return base.VisitInvocationExpression(node);
+
+            var methodName = memberAccess.Name.Identifier.Text;
+            var types = memberAccess.Name is GenericNameSyntax genericName
+                ? genericName.TypeArgumentList.Arguments.Select(a => a.ToString()).ToArray()
+                : Array.Empty<string>();
+            var helperName = BuildXenoHelperName(methodName, types);
+            var arguments = node.ArgumentList.Arguments;
+
+            if (methodName == "AddSystem" && arguments.Count > 0)
+                arguments = SeparatedList(arguments.Skip(1));
+
+            var updatedArguments = arguments
+                .Select(argument => (ArgumentSyntax)Visit(argument))
+                .ToArray();
+
+            return InvocationExpression(
+                IdentifierName(helperName),
+                ArgumentList(SeparatedList(updatedArguments)));
+        }
+
+        public override SyntaxNode VisitMemberAccessExpression(MemberAccessExpressionSyntax node) {
+            if (node.Expression.ToString() == "Context")
+                return IdentifierName(node.Name.Identifier.Text);
+
+            return base.VisitMemberAccessExpression(node);
+        }
     }
 
     private static string StringReplacements(string code, string entityTypeName) {

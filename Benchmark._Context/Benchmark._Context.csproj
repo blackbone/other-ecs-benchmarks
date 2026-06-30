@@ -11,6 +11,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Benchmark._Generator\Benchmark._Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
       <ProjectReference Include="..\FFS.StaticEcs.Workaround\FFS.StaticEcs.Workaround.csproj" />
       <ProjectReference Include="..\LeoECSLite\LeoECSLite.csproj" />
       <ProjectReference Include="..\LeoECS\LeoECS.csproj" />
