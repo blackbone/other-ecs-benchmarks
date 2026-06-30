@@ -4,8 +4,8 @@ on:
   push:
     branches: [ "main" ]
     paths:
-      - './github/workflows/benchmark.yml'
-      - './github/workflows/test.yml'
+      - '.github/workflows/benchmark.yml'
+      - 'submodules/xeno'
       - '**.cs'
       - '**.csproj'
       - '**.sln'
