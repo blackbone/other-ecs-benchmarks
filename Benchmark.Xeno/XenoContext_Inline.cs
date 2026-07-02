@@ -7,17 +7,7 @@ using Xeno;
 
 namespace Benchmark.Xeno;
 
-public enum WorldKind
-{
-    Entity,
-    System1,
-    System2,
-    System3,
-    MultiSystems,
-    FilterMismatch,
-}
-
-public sealed class XenoContext : IBenchmarkContext<Entity>
+public sealed class XenoContext_Inline : IBenchmarkContext<Entity>
 {
     private WorldKind _worldKind;
     private World _world;
@@ -294,12 +284,12 @@ public sealed class XenoContext : IBenchmarkContext<Entity>
         _worldKind = DetectWorldKind();
         var name = $"xeno_{DateTimeOffset.UtcNow.Ticks}";
         return _worldKind switch {
-            WorldKind.System1 => new XenoSystem1World(name),
-            WorldKind.System2 => new XenoSystem2World(name),
-            WorldKind.System3 => new XenoSystem3World(name),
-            WorldKind.MultiSystems => new XenoMultiSystemsWorld(name),
-            WorldKind.FilterMismatch => new XenoFilterMismatchWorld(name),
-            _ => new XenoEntityWorld(name),
+            WorldKind.System1 => new XenoSystem1World_Inline(name),
+            WorldKind.System2 => new XenoSystem2World_Inline(name),
+            WorldKind.System3 => new XenoSystem3World_Inline(name),
+            WorldKind.MultiSystems => new XenoMultiSystemsWorld_Inline(name),
+            WorldKind.FilterMismatch => new XenoFilterMismatchWorld_Inline(name),
+            _ => new XenoEntityWorld_Inline(name),
         };
     }
 
@@ -325,31 +315,31 @@ public sealed class XenoContext : IBenchmarkContext<Entity>
 
         return _worldKind switch {
             WorldKind.System1 => poolId switch {
-                0 => ((XenoSystem1World)_world).CreateEntity(Cast<T1, Component1>(in c1)),
-                1 => ((XenoSystem1World)_world).CreateEntity(Cast<T1, Padding1>(in c1)),
+                0 => ((XenoSystem1World_Inline)_world).CreateEntity(Cast<T1, Component1>(in c1)),
+                1 => ((XenoSystem1World_Inline)_world).CreateEntity(Cast<T1, Padding1>(in c1)),
                 _ => throw new NotSupportedException(),
             },
             WorldKind.System2 => poolId switch {
-                1 => ((XenoSystem2World)_world).CreateEntity(Cast<T1, Component1>(in c1)),
-                2 => ((XenoSystem2World)_world).CreateEntity(Cast<T1, Component2>(in c1)),
+                1 => ((XenoSystem2World_Inline)_world).CreateEntity(Cast<T1, Component1>(in c1)),
+                2 => ((XenoSystem2World_Inline)_world).CreateEntity(Cast<T1, Component2>(in c1)),
                 _ => throw new NotSupportedException(),
             },
             WorldKind.System3 => poolId switch {
-                1 => ((XenoSystem3World)_world).CreateEntity(Cast<T1, Component1>(in c1)),
-                2 => ((XenoSystem3World)_world).CreateEntity(Cast<T1, Component2>(in c1)),
-                3 => ((XenoSystem3World)_world).CreateEntity(Cast<T1, Component3>(in c1)),
+                1 => ((XenoSystem3World_Inline)_world).CreateEntity(Cast<T1, Component1>(in c1)),
+                2 => ((XenoSystem3World_Inline)_world).CreateEntity(Cast<T1, Component2>(in c1)),
+                3 => ((XenoSystem3World_Inline)_world).CreateEntity(Cast<T1, Component3>(in c1)),
                 _ => throw new NotSupportedException(),
             },
             WorldKind.MultiSystems => poolId switch {
-                0 => ((XenoMultiSystemsWorld)_world).CreateEntity(Cast<T1, Component1>(in c1)),
-                1 => ((XenoMultiSystemsWorld)_world).CreateEntity(Cast<T1, Component2>(in c1)),
+                0 => ((XenoMultiSystemsWorld_Inline)_world).CreateEntity(Cast<T1, Component1>(in c1)),
+                1 => ((XenoMultiSystemsWorld_Inline)_world).CreateEntity(Cast<T1, Component2>(in c1)),
                 _ => throw new NotSupportedException(),
             },
             _ => poolId switch {
-                0 => ((XenoEntityWorld)_world).CreateEntity(Cast<T1, Component1>(in c1)),
-                1 => ((XenoEntityWorld)_world).CreateEntity(Cast<T1, Component2>(in c1)),
-                2 => ((XenoEntityWorld)_world).CreateEntity(Cast<T1, Component3>(in c1)),
-                3 => ((XenoEntityWorld)_world).CreateEntity(Cast<T1, Component4>(in c1)),
+                0 => ((XenoEntityWorld_Inline)_world).CreateEntity(Cast<T1, Component1>(in c1)),
+                1 => ((XenoEntityWorld_Inline)_world).CreateEntity(Cast<T1, Component2>(in c1)),
+                2 => ((XenoEntityWorld_Inline)_world).CreateEntity(Cast<T1, Component3>(in c1)),
+                3 => ((XenoEntityWorld_Inline)_world).CreateEntity(Cast<T1, Component4>(in c1)),
                 _ => throw new NotSupportedException(),
             },
         };
@@ -357,7 +347,7 @@ public sealed class XenoContext : IBenchmarkContext<Entity>
 
     private Entity CreateFilterEntity<T1>(int poolId, T1 c1) where T1 : struct
     {
-        var world = (XenoFilterMismatchWorld)_world;
+        var world = (XenoFilterMismatchWorld_Inline)_world;
         return poolId switch {
             200 => world.CreateEntity(Cast<T1, Padding1>(in c1)),
             100 => world.CreateEntity(Cast<T1, Component1>(in c1)),
@@ -468,12 +458,12 @@ public sealed class XenoContext : IBenchmarkContext<Entity>
         where T1 : struct where T2 : struct
     {
         return (_worldKind, poolId) switch {
-            (WorldKind.System2, _) => ((XenoSystem2World)_world).CreateEntity(Cast<T1, Component1>(in c1), Cast<T2, Component2>(in c2)),
-            (WorldKind.MultiSystems, _) => ((XenoMultiSystemsWorld)_world).CreateEntity(Cast<T1, Component1>(in c1), Cast<T2, Component2>(in c2)),
-            (_, 0) => ((XenoEntityWorld)_world).CreateEntity(Cast<T1, Component1>(in c1), Cast<T2, Component2>(in c2)),
-            (_, 1) => ((XenoEntityWorld)_world).CreateEntity(Cast<T1, Component2>(in c1), Cast<T2, Component3>(in c2)),
-            (_, 2) => ((XenoEntityWorld)_world).CreateEntity(Cast<T1, Component3>(in c1), Cast<T2, Component4>(in c2)),
-            (_, 3) => ((XenoEntityWorld)_world).CreateEntity(Cast<T1, Component4>(in c1), Cast<T2, Component1>(in c2)),
+            (WorldKind.System2, _) => ((XenoSystem2World_Inline)_world).CreateEntity(Cast<T1, Component1>(in c1), Cast<T2, Component2>(in c2)),
+            (WorldKind.MultiSystems, _) => ((XenoMultiSystemsWorld_Inline)_world).CreateEntity(Cast<T1, Component1>(in c1), Cast<T2, Component2>(in c2)),
+            (_, 0) => ((XenoEntityWorld_Inline)_world).CreateEntity(Cast<T1, Component1>(in c1), Cast<T2, Component2>(in c2)),
+            (_, 1) => ((XenoEntityWorld_Inline)_world).CreateEntity(Cast<T1, Component2>(in c1), Cast<T2, Component3>(in c2)),
+            (_, 2) => ((XenoEntityWorld_Inline)_world).CreateEntity(Cast<T1, Component3>(in c1), Cast<T2, Component4>(in c2)),
+            (_, 3) => ((XenoEntityWorld_Inline)_world).CreateEntity(Cast<T1, Component4>(in c1), Cast<T2, Component1>(in c2)),
             _ => throw new NotSupportedException(),
         };
     }
@@ -482,11 +472,11 @@ public sealed class XenoContext : IBenchmarkContext<Entity>
         where T1 : struct where T2 : struct where T3 : struct
     {
         return (_worldKind, poolId) switch {
-            (WorldKind.System3, _) => ((XenoSystem3World)_world).CreateEntity(Cast<T1, Component1>(in c1), Cast<T2, Component2>(in c2), Cast<T3, Component3>(in c3)),
-            (_, 0) => ((XenoEntityWorld)_world).CreateEntity(Cast<T1, Component1>(in c1), Cast<T2, Component2>(in c2), Cast<T3, Component3>(in c3)),
-            (_, 1) => ((XenoEntityWorld)_world).CreateEntity(Cast<T1, Component2>(in c1), Cast<T2, Component3>(in c2), Cast<T3, Component4>(in c3)),
-            (_, 2) => ((XenoEntityWorld)_world).CreateEntity(Cast<T1, Component3>(in c1), Cast<T2, Component4>(in c2), Cast<T3, Component1>(in c3)),
-            (_, 3) => ((XenoEntityWorld)_world).CreateEntity(Cast<T1, Component4>(in c1), Cast<T2, Component1>(in c2), Cast<T3, Component2>(in c3)),
+            (WorldKind.System3, _) => ((XenoSystem3World_Inline)_world).CreateEntity(Cast<T1, Component1>(in c1), Cast<T2, Component2>(in c2), Cast<T3, Component3>(in c3)),
+            (_, 0) => ((XenoEntityWorld_Inline)_world).CreateEntity(Cast<T1, Component1>(in c1), Cast<T2, Component2>(in c2), Cast<T3, Component3>(in c3)),
+            (_, 1) => ((XenoEntityWorld_Inline)_world).CreateEntity(Cast<T1, Component2>(in c1), Cast<T2, Component3>(in c2), Cast<T3, Component4>(in c3)),
+            (_, 2) => ((XenoEntityWorld_Inline)_world).CreateEntity(Cast<T1, Component3>(in c1), Cast<T2, Component4>(in c2), Cast<T3, Component1>(in c3)),
+            (_, 3) => ((XenoEntityWorld_Inline)_world).CreateEntity(Cast<T1, Component4>(in c1), Cast<T2, Component1>(in c2), Cast<T3, Component2>(in c3)),
             _ => throw new NotSupportedException(),
         };
     }
@@ -494,7 +484,7 @@ public sealed class XenoContext : IBenchmarkContext<Entity>
     private Entity CreateEntityQuad<T1, T2, T3, T4>(T1 c1, T2 c2, T3 c3, T4 c4)
         where T1 : struct where T2 : struct where T3 : struct where T4 : struct
     {
-        return ((XenoEntityWorld)_world).CreateEntity(
+        return ((XenoEntityWorld_Inline)_world).CreateEntity(
             Cast<T1, Component1>(in c1),
             Cast<T2, Component2>(in c2),
             Cast<T3, Component3>(in c3),
@@ -503,7 +493,7 @@ public sealed class XenoContext : IBenchmarkContext<Entity>
 
     private void AddSingle<T1>(Entity entity, int poolId, T1 c1) where T1 : struct
     {
-        var world = (XenoEntityWorld)_world;
+        var world = (XenoEntityWorld_Inline)_world;
         switch (poolId) {
             case 0:
                 world.Add(entity, Cast<T1, Component1>(in c1));
@@ -525,7 +515,7 @@ public sealed class XenoContext : IBenchmarkContext<Entity>
     private void AddPair<T1, T2>(Entity entity, int poolId, T1 c1, T2 c2)
         where T1 : struct where T2 : struct
     {
-        var world = (XenoEntityWorld)_world;
+        var world = (XenoEntityWorld_Inline)_world;
         switch (poolId) {
             case 0:
                 world.Add(entity, Cast<T1, Component1>(in c1), Cast<T2, Component2>(in c2));
@@ -547,7 +537,7 @@ public sealed class XenoContext : IBenchmarkContext<Entity>
     private void AddTriple<T1, T2, T3>(Entity entity, int poolId, T1 c1, T2 c2, T3 c3)
         where T1 : struct where T2 : struct where T3 : struct
     {
-        var world = (XenoEntityWorld)_world;
+        var world = (XenoEntityWorld_Inline)_world;
         switch (poolId) {
             case 0:
                 world.Add(entity, Cast<T1, Component1>(in c1), Cast<T2, Component2>(in c2), Cast<T3, Component3>(in c3));
@@ -569,7 +559,7 @@ public sealed class XenoContext : IBenchmarkContext<Entity>
     private void AddQuad<T1, T2, T3, T4>(Entity entity, T1 c1, T2 c2, T3 c3, T4 c4)
         where T1 : struct where T2 : struct where T3 : struct where T4 : struct
     {
-        ((XenoEntityWorld)_world).Add(
+        ((XenoEntityWorld_Inline)_world).Add(
             entity,
             Cast<T1, Component1>(in c1),
             Cast<T2, Component2>(in c2),
@@ -579,7 +569,7 @@ public sealed class XenoContext : IBenchmarkContext<Entity>
 
     private void RemoveSingle(Entity entity, int poolId)
     {
-        var world = (XenoEntityWorld)_world;
+        var world = (XenoEntityWorld_Inline)_world;
         switch (poolId) {
             case 0: world.RemoveComponent1(entity); return;
             case 1: world.RemoveComponent2(entity); return;
@@ -591,7 +581,7 @@ public sealed class XenoContext : IBenchmarkContext<Entity>
 
     private void RemovePair(Entity entity, int poolId)
     {
-        var world = (XenoEntityWorld)_world;
+        var world = (XenoEntityWorld_Inline)_world;
         switch (poolId) {
             case 0:
                 world.RemoveComponent1AndComponent2(entity);
@@ -612,7 +602,7 @@ public sealed class XenoContext : IBenchmarkContext<Entity>
 
     private void RemoveTriple(Entity entity, int poolId)
     {
-        var world = (XenoEntityWorld)_world;
+        var world = (XenoEntityWorld_Inline)_world;
         switch (poolId) {
             case 0:
                 world.RemoveComponent1AndComponent2AndComponent3(entity);
@@ -633,7 +623,7 @@ public sealed class XenoContext : IBenchmarkContext<Entity>
 
     private void RemoveQuad(Entity entity)
     {
-        ((XenoEntityWorld)_world).RemoveComponent1AndComponent2AndComponent3AndComponent4(entity);
+        ((XenoEntityWorld_Inline)_world).RemoveComponent1AndComponent2AndComponent3AndComponent4(entity);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

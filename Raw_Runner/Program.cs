@@ -4,19 +4,37 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using Benchmark;
+using Benchmark.Context;
+using Benchmark.Xeno;
 // using Benchmark.Generated;
 using BenchmarkDotNet.Attributes;
 
 const bool IS_ITERATIVE_RUN = true;
-const int ITERATIONS_OR_MILLISECONDS = 100;
+const int ITERATIONS_OR_MILLISECONDS = 10;
 const int ENTITY_COUNT = 1_000_000;
 
+BenchmarkHash.Enabled = false;
+
+var selectedBench = Environment.GetEnvironmentVariable("RAW_BENCH");
+
+if (!string.IsNullOrWhiteSpace(selectedBench)) {
+    var type = AppDomain.CurrentDomain
+        .GetAssemblies()
+        .SelectMany(a => a.GetTypes())
+        .FirstOrDefault(t => t.Name == selectedBench);
+    if (type == null)
+        throw new InvalidOperationException($"Benchmark type '{selectedBench}' not found.");
+
+    RunBenchType(type);
+    return;
+}
 
 RunBenchType(typeof(FilterMismatchSystems_MassiveEcsContext));
 RunBenchType(typeof(FilterMismatchSystems_StaticEcsContext));
 RunBenchType(typeof(FilterMismatchSystems_LeoEcsLiteContext));
 RunBenchType(typeof(FilterMismatchSystems_MorpehContext));
 RunBenchType(typeof(FilterMismatchSystems_XenoContext));
+RunBenchType(typeof(FilterMismatchSystems_XenoContext_Inline));
 
 Console.WriteLine();
 
@@ -25,6 +43,7 @@ RunBenchType(typeof(RareFilterMismatchSystems_StaticEcsContext));
 RunBenchType(typeof(RareFilterMismatchSystems_LeoEcsLiteContext));
 RunBenchType(typeof(RareFilterMismatchSystems_MorpehContext));
 RunBenchType(typeof(RareFilterMismatchSystems_XenoContext));
+RunBenchType(typeof(RareFilterMismatchSystems_XenoContext_Inline));
 
 Console.WriteLine();
 
@@ -33,6 +52,7 @@ RunBenchType(typeof(SystemWith3Components_StaticEcsContext));
 RunBenchType(typeof(SystemWith3Components_LeoEcsLiteContext));
 RunBenchType(typeof(SystemWith3Components_MorpehContext));
 RunBenchType(typeof(SystemWith3Components_XenoContext));
+RunBenchType(typeof(SystemWith3Components_XenoContext_Inline));
 
 Console.WriteLine();
 
@@ -41,6 +61,7 @@ RunBenchType(typeof(MultiSystems_StaticEcsContext));
 RunBenchType(typeof(MultiSystems_LeoEcsLiteContext));
 RunBenchType(typeof(MultiSystems_MorpehContext));
 RunBenchType(typeof(MultiSystems_XenoContext));
+RunBenchType(typeof(MultiSystems_XenoContext_Inline));
 
 Console.WriteLine();
 
@@ -49,6 +70,7 @@ RunBenchType(typeof(FourRemoveThreeComponents_StaticEcsContext));
 RunBenchType(typeof(FourRemoveThreeComponents_LeoEcsLiteContext));
 RunBenchType(typeof(FourRemoveThreeComponents_MorpehContext));
 RunBenchType(typeof(FourRemoveThreeComponents_XenoContext));
+RunBenchType(typeof(FourRemoveThreeComponents_XenoContext_Inline));
 
 Console.WriteLine();
 
@@ -57,6 +79,7 @@ RunBenchType(typeof(OneAddThreeComponents_StaticEcsContext));
 RunBenchType(typeof(OneAddThreeComponents_LeoEcsLiteContext));
 RunBenchType(typeof(OneAddThreeComponents_MorpehContext));
 RunBenchType(typeof(OneAddThreeComponents_XenoContext));
+RunBenchType(typeof(OneAddThreeComponents_XenoContext_Inline));
 
 return;
 
@@ -101,7 +124,11 @@ double RunBenchIterations(Type type) {
 
     var n = 0;
     var t = 0.0;
-    while (n < ITERATIONS_OR_MILLISECONDS) {
+    var iterations = Environment.GetEnvironmentVariable("RAW_ITERATIONS") is { Length: > 0 } rawIterations
+                     && int.TryParse(rawIterations, out var parsedIterations)
+        ? parsedIterations
+        : ITERATIONS_OR_MILLISECONDS;
+    while (n < iterations) {
         b.IterationSetup();
         var sw = Stopwatch.StartNew();
         b.Run();
@@ -130,7 +157,11 @@ double RunBenchDuration(Type type) {
     var n = 0;
     double t = 0.0;
     var _ = Stopwatch.StartNew();
-    while (_.ElapsedMilliseconds < ITERATIONS_OR_MILLISECONDS) {
+    var milliseconds = Environment.GetEnvironmentVariable("RAW_ITERATIONS") is { Length: > 0 } rawMilliseconds
+                       && int.TryParse(rawMilliseconds, out var parsedMilliseconds)
+        ? parsedMilliseconds
+        : ITERATIONS_OR_MILLISECONDS;
+    while (_.ElapsedMilliseconds < milliseconds) {
         b.IterationSetup();
         var sw = Stopwatch.StartNew();
         b.Run();
@@ -146,7 +177,10 @@ double RunBenchDuration(Type type) {
 }
 
 static void InjectParameters(IBenchmark benchmark) {
-    benchmark.EntityCount = ENTITY_COUNT;
+    benchmark.EntityCount = Environment.GetEnvironmentVariable("RAW_ENTITY_COUNT") is { Length: > 0 } rawEntityCount
+                            && int.TryParse(rawEntityCount, out var parsedEntityCount)
+        ? parsedEntityCount
+        : ENTITY_COUNT;
 
     var properties = benchmark.GetType()
         .GetProperties(BindingFlags.Instance | BindingFlags.Public)

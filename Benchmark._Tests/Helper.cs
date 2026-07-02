@@ -8,7 +8,17 @@ using BenchmarkDotNet.Attributes;
 namespace Bentchmark.Tests;
 
 public static class Helper {
+    public sealed class BenchmarkInjection {
+        public string Key { get; set; }
+
+        public Action<IBenchmark> Apply { get; set; }
+    }
+
     public static IEnumerable<Action<IBenchmark>> GetInjections(Type benchmarkType) {
+        return GetBenchmarkInjections(benchmarkType).Select(injection => injection.Apply);
+    }
+
+    public static IEnumerable<BenchmarkInjection> GetBenchmarkInjections(Type benchmarkType) {
         var paramProps = benchmarkType
             .GetProperties(BindingFlags.Instance | BindingFlags.Public)
             .Where(p => p.Name != nameof(IBenchmark.EntityCount))
@@ -21,13 +31,26 @@ public static class Helper {
             .ToArray();
 
         foreach (var combination in CartesianProduct(allValues)) {
-            yield return benchmark => {
-                benchmark.EntityCount = Constants.SmallEntityCount;
-                for (int i = 0; i < paramProps.Length; i++) {
-                    paramProps[i].p.SetValue(benchmark, combination[i]);
+            var currentCombination = combination;
+            yield return new BenchmarkInjection {
+                Key = GetInjectionKey(paramProps, currentCombination),
+                Apply = benchmark => {
+                    benchmark.EntityCount = Constants.SmallEntityCount;
+                    for (int i = 0; i < paramProps.Length; i++) {
+                        paramProps[i].p.SetValue(benchmark, currentCombination[i]);
+                    }
                 }
             };
         }
+    }
+
+    private static string GetInjectionKey((PropertyInfo p, ParamsAttribute attr)[] paramProps, object[] combination) {
+        var values = new List<string> { nameof(IBenchmark.EntityCount) + "=" + Constants.SmallEntityCount };
+        for (int i = 0; i < paramProps.Length; i++) {
+            values.Add(paramProps[i].p.Name + "=" + combination[i]);
+        }
+
+        return string.Join(";", values);
     }
     
     private static IEnumerable<object[]> CartesianProduct(object[][] sequences) {

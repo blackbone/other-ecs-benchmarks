@@ -1,10 +1,18 @@
 using System;
+using System.Runtime.InteropServices;
 
 namespace Benchmark;
 
 public static class ArrayExtensions
 {
-    public static readonly Random Rnd = new(2052513957);
+    private const int Seed = 2052513957;
+
+    public static Random Rnd = new(Seed);
+
+    public static void ResetRandom()
+    {
+        Rnd = new Random(Seed);
+    }
 
     public static void Shuffle<T>(this T[] array)
     {

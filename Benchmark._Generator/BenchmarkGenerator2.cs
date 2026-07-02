@@ -541,7 +541,8 @@ public partial class {className}_World : World {{
 
         var benchmarkFields = GetFields(benchmarkType);
         var benchmarkProperties = GetProperties(benchmarkType);
-        var benchmarkMethods = InlineBenchmarkMethods(benchmarkType, contextType);
+        var benchmarkMethods = InstrumentLifecycleMethods(InlineBenchmarkMethods(benchmarkType, contextType), className);
+        var hashLifecycleMethods = GetMissingHashLifecycleMethods(benchmarkMethods, className);
 
         // Generate the benchmark class
         return ClassDeclaration(className)
@@ -554,6 +555,7 @@ public partial class {className}_World : World {{
                     .Concat(benchmarkFields)
                     .Concat(benchmarkProperties)
                     .Concat(benchmarkMethods)
+                    .Concat(hashLifecycleMethods)
                     .Concat(contextMethods)
                     .Concat(contextInnerTypes)
                     .ToArray());
@@ -625,6 +627,76 @@ public partial class {className}_World : World {{
                 .OfType<MethodDeclarationSyntax>()
                 .Select(method => InlineRemainingMemberAccess(InlineMethodCall(method, contextType)))
             ?? [];
+    }
+
+    private static IEnumerable<MemberDeclarationSyntax> InstrumentLifecycleMethods(IEnumerable<MemberDeclarationSyntax> members, string className) {
+        foreach (var member in members) {
+            if (member is not MethodDeclarationSyntax method || method.Body == null) {
+                yield return member;
+                continue;
+            }
+
+            if (HasAttribute(method, "IterationSetup")) {
+                yield return method.WithBody(method.Body.WithStatements(method.Body.Statements.InsertRange(0, HashSetupStatements())));
+                continue;
+            }
+
+            if (HasAttribute(method, "IterationCleanup")) {
+                yield return method.WithBody(method.Body.WithStatements(method.Body.Statements.InsertRange(0, HashCleanupStatements(className))));
+                continue;
+            }
+
+            yield return member;
+        }
+    }
+
+    private static IEnumerable<MemberDeclarationSyntax> GetMissingHashLifecycleMethods(IEnumerable<MemberDeclarationSyntax> members, string className) {
+        var methods = members.OfType<MethodDeclarationSyntax>().ToArray();
+
+        if (!methods.Any(method => HasAttribute(method, "IterationSetup"))) {
+            yield return ParseMemberDeclaration(@"
+[BenchmarkDotNet.Attributes.IterationSetup]
+public void HashIterationSetup() {
+    if (global::Benchmark.Context.BenchmarkHash.Enabled) {
+        global::Benchmark.Context.BenchmarkHash.Reset();
+        global::Benchmark.Context.BenchmarkHash.AddEntityCount(NumberOfLivingEntities);
+    }
+}")!;
+        }
+
+        if (!methods.Any(method => HasAttribute(method, "IterationCleanup"))) {
+            yield return ParseMemberDeclaration(@"
+[BenchmarkDotNet.Attributes.IterationCleanup]
+public void HashIterationCleanup() {
+    if (global::Benchmark.Context.BenchmarkHash.Enabled) {
+        global::Benchmark.Context.BenchmarkHash.PrintAndReset(""Benchmark." + className + @""");
+    }
+}")!;
+        }
+    }
+
+    private static SyntaxList<StatementSyntax> HashSetupStatements() {
+        return SingletonList(ParseStatement(@"
+if (global::Benchmark.Context.BenchmarkHash.Enabled) {
+    global::Benchmark.Context.BenchmarkHash.Reset();
+    global::Benchmark.Context.BenchmarkHash.AddEntityCount(NumberOfLivingEntities);
+}"));
+    }
+
+    private static SyntaxList<StatementSyntax> HashCleanupStatements(string className) {
+        return SingletonList(ParseStatement($@"
+if (global::Benchmark.Context.BenchmarkHash.Enabled) {{
+    global::Benchmark.Context.BenchmarkHash.PrintAndReset(""Benchmark.{className}"");
+}}"));
+    }
+
+    private static bool HasAttribute(MethodDeclarationSyntax method, string name) {
+        return method.AttributeLists
+            .SelectMany(list => list.Attributes)
+            .Any(attr => {
+                var attrName = attr.Name.ToString();
+                return attrName == name || attrName == name + "Attribute" || attrName.EndsWith("." + name) || attrName.EndsWith("." + name + "Attribute");
+            });
     }
 
     private static IEnumerable<MemberDeclarationSyntax> GetContextMethods(INamedTypeSymbol contextType) {
@@ -783,6 +855,7 @@ public partial class {className}_World : World {{
                         var substitutions = GetArgumentSubstitutions(inlinedMethod, invocation);
                         var inlinedStatements = InlineMethodBodyWithArgumentsAndGenerics(inlinedMethod, substitutions, genericSubstitutions, returnVariable).ToArray();
                         newStatements.AddRange(inlinedStatements);
+                        newStatements.AddRange(GetHashStatements(methodName, memberAccess, invocation));
                         continue;
                     }
 
@@ -802,6 +875,7 @@ public partial class {className}_World : World {{
                         var substitutions = GetArgumentSubstitutions(inlinedMethod, fieldInvocation);
                         var inlinedStatements = InlineMethodBodyWithArgumentsAndGenerics(inlinedMethod, substitutions, genericSubstitutions, returnVariable).ToArray();
                         newStatements.AddRange(inlinedStatements);
+                        newStatements.AddRange(GetHashStatements(methodName, fieldMemberAccess, fieldInvocation));
                         continue;
                     }
                     break;
@@ -822,6 +896,7 @@ public partial class {className}_World : World {{
                     var substitutions = GetArgumentSubstitutions(inlinedMethod, localVarInvocation);
                     var inlinedStatements = InlineMethodBodyWithArgumentsAndGenerics(inlinedMethod, substitutions, genericSubstitutions, returnVariable).ToArray();
                     newStatements.AddRange(inlinedStatements);
+                    newStatements.AddRange(GetHashStatements(methodName, localVarMemberAccess, localVarInvocation));
                     continue;
                 }
             }
@@ -839,6 +914,7 @@ public partial class {className}_World : World {{
                     var substitutions = GetArgumentSubstitutions(inlinedMethod, methodInvocation);
                     var inlinedStatements = InlineMethodBodyWithArgumentsAndGenerics(inlinedMethod, substitutions, genericSubstitutions).ToArray();
                     newStatements.AddRange(inlinedStatements);
+                    newStatements.AddRange(GetHashStatements(methodName, invocationMemberAccess, methodInvocation));
                     continue;
                 }
             }
@@ -856,6 +932,7 @@ public partial class {className}_World : World {{
                     var substitutions = GetArgumentSubstitutions(inlinedMethod, genericMethodInvocation);
                     var inlinedStatements = InlineMethodBodyWithArgumentsAndGenerics(inlinedMethod, substitutions, genericSubstitutions).ToArray();
                     newStatements.AddRange(inlinedStatements);
+                    newStatements.AddRange(GetHashStatements(methodName, genericMemberAccess, genericMethodInvocation));
                     continue;
                 }
             }
@@ -873,6 +950,51 @@ public partial class {className}_World : World {{
         }
 
         return newStatements;
+    }
+
+    private static IEnumerable<StatementSyntax> GetHashStatements(string methodName, MemberAccessExpressionSyntax memberAccess, InvocationExpressionSyntax invocation) {
+        var arguments = invocation.ArgumentList.Arguments
+            .Select(argument => argument.Expression.ToString())
+            .ToArray();
+        var types = memberAccess.Name is GenericNameSyntax genericName
+            ? genericName.TypeArgumentList.Arguments.Select(argument => argument.ToString()).ToArray()
+            : Array.Empty<string>();
+
+        string statement = null;
+        switch (methodName) {
+            case "CreateEntities":
+                if (arguments.Length == 0)
+                    break;
+                statement = types.Length == 0
+                    ? $"global::Benchmark.Context.BenchmarkHash.AddCreateEntities({arguments[0]}.Length, NumberOfLivingEntities);"
+                    : $"global::Benchmark.Context.BenchmarkHash.AddCreateEntities<{string.Join(", ", types)}>({arguments[0]}.Length, {string.Join(", ", arguments.Skip(2))}, NumberOfLivingEntities);";
+                break;
+            case "AddComponent":
+                if (arguments.Length == 0 || types.Length == 0)
+                    break;
+                statement = $"global::Benchmark.Context.BenchmarkHash.AddComponentEntities<{string.Join(", ", types)}>({arguments[0]}.Length, {string.Join(", ", arguments.Skip(2))}, NumberOfLivingEntities);";
+                break;
+            case "RemoveComponent":
+                if (arguments.Length == 0 || types.Length == 0)
+                    break;
+                statement = $"global::Benchmark.Context.BenchmarkHash.AddRemoveComponent<{string.Join(", ", types)}>({arguments[0]}.Length, NumberOfLivingEntities);";
+                break;
+            case "DeleteEntities":
+                if (arguments.Length == 0)
+                    break;
+                statement = $"global::Benchmark.Context.BenchmarkHash.AddDeleteEntities({arguments[0]}.Length, NumberOfLivingEntities);";
+                break;
+            case "Tick":
+                if (arguments.Length == 0)
+                    break;
+                statement = $"global::Benchmark.Context.BenchmarkHash.AddTick({arguments[0]}, NumberOfLivingEntities);";
+                break;
+        }
+
+        if (statement == null)
+            return Enumerable.Empty<StatementSyntax>();
+
+        return new[] { ParseStatement("if (global::Benchmark.Context.BenchmarkHash.Enabled) " + statement) };
     }
 
     private static Dictionary<string, string> GetArgumentSubstitutions(MethodDeclarationSyntax methodSyntax, InvocationExpressionSyntax invocation) {
